@@ -31,7 +31,7 @@ namespace emp
 	void ToolManager::Update(float)
 	{
 	}
-	const float toolbarSize = 25;
+	const float toolbarSize = 50;
 	
 	void ToolManager::Draw()
 	{
@@ -43,15 +43,6 @@ namespace emp
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// TODO
-		// Save off menu bar height for later.
-		menuBarHeight = ImGui::GetCurrentWindow()->MenuBarHeight();
-		// TODO
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x, viewport->Pos.y + menuBarHeight));
-		ImGui::SetNextWindowSize(ImVec2(viewport->Size.x, toolbarSize));
-		//ImGui::SetNextTreeNodeOpen(viewport->ID);
-
 		ImGuiWindowFlags window_flags = 0
 		//| ImGuiWindowFlags_NoDocking 
 		| ImGuiWindowFlags_NoTitleBar 
@@ -60,24 +51,40 @@ namespace emp
 		| ImGuiWindowFlags_NoScrollbar 
 		| ImGuiWindowFlags_NoSavedSettings
 		;
+		
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 		ImGui::Begin("TOOLBAR", NULL, window_flags);
 		ImGui::PopStyleVar();
-  
-		ImGui::Button("TODO", ImVec2(0, 37));
-  
-		ImGui::End();
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("New"))
+				{
+					//Do something
+				}
+				ImGui::EndMenu();
+			}
 
-		ImGui::ShowDemoWindow();
+			if (ImGui::BeginMenu("Tool"))
+			{
+				if (ImGui::MenuItem("New"))
+				{
+					tools.push_back(new sampleTool());
+				}
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMainMenuBar();
+		}
+ 		ImGui::End();
 
 		// render your GUI
 		ImGui::Begin("Editor");
 		ImGui::Button("Mushroom Editor say Hello!");
 		ImGui::End();
 
-		
-		
-
+	
 		for (Tool* tool : tools)
 		{
 			tool->Draw();
@@ -108,7 +115,6 @@ namespace emp
 		ImGui::Begin("Tool");
 		ImGui::Button("Tool say Hello!");
 		ImGui::End();
-
 	}
 
 	void sampleTool::Destroy()
