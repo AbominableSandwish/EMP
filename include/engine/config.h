@@ -1,9 +1,8 @@
 #include <string>
 using namespace std;
 
-namespace mushgine
-{
-	
+namespace emp
+{	
     class Configuration {
     public:
 		Configuration(string name);

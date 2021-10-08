@@ -1,7 +1,7 @@
 #include "engine/system.h"
 
 
-namespace mushgine
+namespace emp
 {	
 	
 }

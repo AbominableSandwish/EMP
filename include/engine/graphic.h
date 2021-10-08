@@ -7,20 +7,32 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 
 
-namespace mushgine {
-	class GraphicManager : public mushgine::System<GraphicManager>
+namespace emp {
+	class GraphicManager : public System<GraphicManager>
 	{
 	public:
 		void Init() override;
 		void Update(float) override;
+		void Draw();
 		void Destroy() override;
 
+		GLFWwindow* GetWindow();
+
 	protected:
-		GLFWwindow* window;
+		GLFWwindow* window = nullptr;
+	};
+
+	template<typename T>
+	class Element
+	{
+	public:
+		virtual void Init() = 0;
+		virtual void Draw() = 0;
+		virtual void Destroy() = 0;
+	protected:
+		virtual ~Element() {};
+		string name;
 	};
 }

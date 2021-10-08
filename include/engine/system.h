@@ -5,7 +5,7 @@
 #include <string>
 
 using namespace std;
-namespace mushgine
+namespace emp
 {
     template<typename T>
     class System

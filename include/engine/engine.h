@@ -1,8 +1,11 @@
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
-namespace mushgine
+namespace emp
 {
 	class GraphicManager;
     class ConfigEngine;
+    class ToolManager;
 
 	class Engine
 	{
@@ -31,9 +34,14 @@ namespace mushgine
         * \brief Called before we load a scene
         */
 
+        GLFWwindow* GetWindow();
+
         bool is_running = false;
+
+		
     protected:
         GraphicManager* m_Graphic = nullptr;
         ConfigEngine* m_Config = nullptr;
+        ToolManager* m_Editor = nullptr;
     };
 }

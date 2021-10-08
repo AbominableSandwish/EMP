@@ -2,8 +2,10 @@
 #include <iostream>
 #include <ctime>
 #include <engine/graphic.h>
+#include <editor/editor.h>
 
-namespace mushgine
+
+namespace emp
 {
     constexpr int WIDTH = 1000000;
 
@@ -39,6 +41,9 @@ namespace mushgine
         this->m_Graphic = new GraphicManager();
         this->m_Graphic->Init();
 
+        this->m_Editor = new emp::ToolManager();
+        this->m_Editor->Init(*this);
+
         this->is_running = true;
 	}
 
@@ -59,6 +64,8 @@ namespace mushgine
             float dt = start - end;
         	
             this->m_Graphic->Update(dt);
+            this->m_Graphic->Draw();
+            this->m_Editor->Draw();
 
             start = clock();
             max = max_value(arr, WIDTH);
@@ -74,6 +81,10 @@ namespace mushgine
 		
 	}
 
+    GLFWwindow* Engine::GetWindow()
+    {
+        return this->m_Graphic->GetWindow();
+    }
 }
 
 /*include  datetime import datetime

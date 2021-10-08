@@ -1,8 +1,6 @@
 #include <engine/graphic.h>
 
-
-
-namespace mushgine {
+namespace emp {
 	
 	void GraphicManager::Init()
 	{
@@ -19,16 +17,6 @@ namespace mushgine {
 			return;
 		}
 		glfwMakeContextCurrent(this->window);
-
-		// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		// Setup Platform/Renderer bindings
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init();
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
 	}
 
 	float timer = 0.0f;
@@ -36,33 +24,23 @@ namespace mushgine {
 	{
 		timer += dt;
 		//while (!glfwWindowShouldClose(this->window))
-
-
 		glfwPollEvents();
-		//glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// feed inputs to dear imgui, start new frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		
+	}
 
-		// render your GUI
-		ImGui::Begin("Demo window");
-		ImGui::Button("Mushroom Engine say Hello!");
-		char msg = (timer);
-		ImGui::Text(&msg);
-		ImGui::End();
-
-		// Render dear imgui into screen
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+	void GraphicManager::Draw()
+	{
 		glfwSwapBuffers(this->window);
 	}
 
 	void GraphicManager::Destroy()
 	{
 		glfwTerminate();
+	}
+
+	GLFWwindow* GraphicManager::GetWindow()
+	{
+		return this->window;
 	}
 }

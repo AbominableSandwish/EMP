@@ -1,7 +1,7 @@
 #include <engine/config.h>
 using namespace std;
 
-namespace mushgine
+namespace emp
 {
 	Configuration::Configuration(string name)
 	{
