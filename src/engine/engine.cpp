@@ -4,6 +4,7 @@
 #include <engine/graphic.h>
 #include <engine/log.h>
 #include <editor/editor.h>
+#include <engine/file.h>
 
 
 namespace emp
@@ -36,7 +37,9 @@ namespace emp
 
     void Engine::Init(ConfigEngine* config)
 	{
-
+        this->m_File = new FileManager(*this, "File Manager");
+        this->m_File->Init();
+    	
         this->m_Logger = new LogManager(*this ,"Log Manager");
         this->m_Logger->Init();
 
@@ -73,6 +76,7 @@ namespace emp
             this->m_Graphic->Update(dt);
             this->m_Editor->Draw();
             this->m_Graphic->Draw();
+            this->m_File->Update(dt);
             
 
             start = clock();

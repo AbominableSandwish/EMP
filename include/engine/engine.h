@@ -7,6 +7,7 @@ namespace emp
     class ConfigEngine;
     class Editor;
     class LogManager;
+    class FileManager;
 
 	class Engine
 	{
@@ -29,6 +30,7 @@ namespace emp
 		
     protected:
         LogManager* m_Logger = nullptr;
+        FileManager* m_File = nullptr;
         GraphicManager* m_Graphic = nullptr;
         ConfigEngine* m_Config = nullptr;
         Editor* m_Editor = nullptr;
