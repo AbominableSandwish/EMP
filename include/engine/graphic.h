@@ -2,7 +2,6 @@
  * Author: Dylan von Arx
  * Time: 07.10.2021
 */
-
 #include <engine/system.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -10,9 +9,10 @@
 
 
 namespace emp {
-	class GraphicManager : public System<GraphicManager>
+	class GraphicManager : public System
 	{
 	public:
+		GraphicManager(Engine&, string);
 		void Init() override;
 		void Update(float) override;
 		void Draw();

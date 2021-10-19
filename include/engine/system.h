@@ -3,19 +3,24 @@
  * Time: 02.10.2021
 */
 #include <string>
+#pragma once
 
-using namespace std;
+
 namespace emp
 {
-    template<typename T>
+    class Engine;
+    using namespace std;
     class System
     {
     public:
+        System(Engine&, string);
         virtual void Init() = 0;
         virtual void Update(float) = 0;
         virtual void Destroy() = 0;
+    	virtual ~System() = default;
     protected:
-        virtual ~System() {};
         string name;
+        Engine* engine;
+    	
     };
 }

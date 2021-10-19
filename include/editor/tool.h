@@ -7,33 +7,17 @@
 
 namespace emp
 {
-    class Tool;
-    class GraphicManager;
-    class Engine;
+	class Engine;
 
-	enum ToolType
-	{
-		Sample
-	};
-
-	
-	class ToolManager
-	{
-	public:
-        ToolManager();
-        void Init(Engine&);
-        void Update(float);
-        void Draw();
-        void Destroy();
-	private:
-        std::list<Tool*> tools;
-	};
-
-    // /brief System Tool for editor
-	//template<typename T>
+	// /brief System Tool for editor
     class Tool
     {
     public:
+        Tool(Engine& engine, std::string name)
+        {
+            this->m_engine = &engine;
+            this->name = name;
+        }
         virtual void Init() = 0;
         virtual void Update(float) = 0;
         virtual void Draw() = 0;
@@ -41,14 +25,28 @@ namespace emp
     protected:
         virtual ~Tool() {};
         std::string name;
+        Engine* m_engine = nullptr;
     };
-
-	class sampleTool : public Tool
+	
+    class GraphicManager;
+    class Engine;
+	
+	enum ToolType
 	{
+		SAMPLE,
+		LOGGER,
+		PROFILER,
+		HEIGHT
+	};
+
+    class sampleTool : public Tool
+    {
+    public:
+        sampleTool(Engine&, std::string);
         void Init() override;
         void Update(float) override;
         void Draw() override;
         void Destroy() override;
-	};
+    };
 }
 
