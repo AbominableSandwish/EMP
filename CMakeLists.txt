@@ -43,7 +43,9 @@ include_directories(${IMGUI_ROOT} ${GLFW_IMGUI})
 LIST(APPEND MUSHROOM_LIBRARIES imgui-glfw)
 
 
-
+#MUSHROOM_TOOLS
+SET(MUHSROOM_TOOLS_DIR ${CMAKE_SOURCE_DIR}/tools)
+file(GLOB TOOLS_DIR ${MUSHROOM_TOOLS_DIR}/*)
 
 #MUSHROOM_COMMON
 if(NOT WIN32)
@@ -54,8 +56,22 @@ add_library(MUSHROOM_COMMON STATIC ${MUSHROOM_SRC})
 include_directories(include/)
 target_link_libraries(MUSHROOM_COMMON PUBLIC ${MUSHROOM_LIBRARIES})
 
-# add the executable
+#MUSHROOM_TOOL
+if(NOT WIN32)
+LIST(APPEND MUSHROOM_LIBRARIES
+  stdc++fs)
+ENDIF()
+add_library(MUSHROOM_TOOL STATIC ${MUSHROOM_SRC})
+include_directories(include/)
+target_link_libraries(MUSHROOM_TOOL PUBLIC MUSHROOM_COMMON)
 
+#MUSHROOM_TEST
+SET(MUSHROOM_TEST_DIR ${CMAKE_SOURCE_DIR}/tests)
+file(GLOB TEST_FILES ${MUSHROOM_TEST_DIR}/*.cpp )
+add_executable(MUSHROOM_TEST ${TEST_FILES} tests/test.cpp)
+target_link_libraries(MUSHROOM_TEST MUSHROOM_COMMON)
+
+# add the executable
 add_executable(MUSHROOM src/main.cpp)
 target_compile_definitions(MUSHROOM PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW)
 MESSAGE("MUSHROOM_COMMON: " ${MUSHROOM_LIBRARIES})

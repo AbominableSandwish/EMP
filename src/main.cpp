@@ -4,10 +4,8 @@
 #include "engine/config.h"
 
 int main() {
-
-
-	
-    emp::ConfigEngine* config = new emp::ConfigEngine("Mushroom Engine");
+	emp::Mode mode = emp::Mode::Console;
+    emp::ConfigEngine* config = new emp::ConfigEngine("Mushroom Engine", mode);
     emp::Engine engine = emp::Engine();
     engine.Init(config);
     engine.Start();

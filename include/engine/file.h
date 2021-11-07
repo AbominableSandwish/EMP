@@ -79,7 +79,7 @@ namespace emp
 		void Update(float) override;
 		void Destroy() override;
 
-		void ReadFile(string);
+		Data ReadFile(string);
 		void WriteFile(Data);
 		void AppendFile(Data);
 		void RemoveFile(string);

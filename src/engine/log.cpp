@@ -10,29 +10,30 @@ namespace emp
 
 	void LogManager::Update(float dt)
 	{
-		LogType type;
-		switch ((rand() % 5)+1)
-		{
-		case 0:
-			type = LogType::NONE;
-			break;
-		case 1:
-			type = LogType::DEBUG;
-			break;
-		case 2:
-			type = LogType::INFO;
-			break;
-		case 3:
-			type = LogType::WARNING;
-			break;
-		case 4:
-			type = LogType::ERROR;
-			break;
-		case 5:
-			type = LogType::CRITICAL;
-			break;
-		}
-		AddLog(Log((int)this->m_logs.size(), type, std::to_string(dt)));
+		//LogType type;
+		//switch ((rand() % 5)+1)
+		//{
+		//case 0:
+		//	type = LogType::NONE;
+		//	break;
+		//case 1:
+		//	type = LogType::DEBUG;
+		//	break;
+		//case 2:
+		//	type = LogType::INFO;
+		//	break;
+		//case 3:
+		//	type = LogType::WARNING;
+		//	break;
+		//case 4:
+		//	type = LogType::ERROR;
+		//	break;
+		//case 5:
+		//	type = LogType::CRITICAL;
+		//	break;
+		//}
+		//AddLog(Log((int)this->m_logs.size(), type, std::to_string(dt)));
+		
 	}
 
 	void LogManager::Destroy()
@@ -57,7 +58,7 @@ namespace emp
 		case LogType::WARNING:
 			type = "[ WARNING ]";
 			break;
-		case LogType::ERROR:
+		case LogType::ERROOR:
 			type = "[ ERROR ]";
 			break;
 		case LogType::CRITICAL:

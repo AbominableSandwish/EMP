@@ -20,6 +20,7 @@ namespace emp
 
         void Init(ConfigEngine* config);
         void Start();
+        void Stop();
         virtual void Destroy();
         GLFWwindow* GetWindow();
 		

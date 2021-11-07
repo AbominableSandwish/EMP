@@ -1,7 +1,7 @@
 #include "engine/engine.h"
 #include <iostream>
 #include <ctime>
-#include <engine/graphic.h>
+#include <graphic/graphic.h>
 #include <engine/log.h>
 #include <editor/editor.h>
 #include <engine/file.h>
@@ -10,6 +10,17 @@
 namespace emp
 {
     constexpr int WIDTH = 1000000;
+
+    int random(int min, int max) //range : [min, max]
+    {
+        static bool first = true;
+        if (first)
+        {
+            srand(time(NULL)); //seeding for the first time only!
+            first = false;
+        }
+        return min + rand() % ((max + 1) - min);
+    }
 
     int max_index(int arr[], int size) {
         size_t max = 0;
@@ -47,13 +58,18 @@ namespace emp
         std::cout << "[ ... ] Loading configuration\n";
         this->m_Config = config;
 
-        this->m_Graphic = new GraphicManager(*this, "Graphic Manager");
+        this->m_Graphic = new GraphicManager(*this, "Graphic Manager", this->m_Config->mode);
         this->m_Graphic->Init();
 
-        this->m_Editor = new Editor(*this);
-        this->m_Editor->Init();
+        //this->m_Editor = new Editor(*this);
+        //this->m_Editor->Init();
 
         this->is_running = true;
+
+        if (random(0, 10) > 5)
+            std::cout << "Welcome Master...";
+        else
+            std::cout << "Hey Master...";
 	}
 
 	void Engine::Start()
@@ -74,7 +90,8 @@ namespace emp
 
             this->m_Logger->Update(dt);
             this->m_Graphic->Update(dt);
-            this->m_Editor->Draw();
+        	if(this->m_Editor != nullptr)
+				this->m_Editor->Draw();
             this->m_Graphic->Draw();
             this->m_File->Update(dt);
             
@@ -87,8 +104,19 @@ namespace emp
         }
 	}
 
+    void Engine::Stop()
+    {
+        this->m_Logger = nullptr;
+        this->m_Graphic = nullptr;
+        this->m_Editor = nullptr;
+        this->m_Graphic = nullptr;
+        this->m_File = nullptr;
+    	
+        this->is_running = false;
+    }
 
-	void Engine::Destroy()
+
+    void Engine::Destroy()
 	{
 		
 	}

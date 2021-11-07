@@ -49,7 +49,7 @@ namespace emp
 				type = "[WARNING] ";
 				color = ImVec4(1, 1, 0, 1);
 				break;
-			case LogType::ERROR:
+			case LogType::ERROOR:
 				type = "[ ERROR ] ";
 				color = ImVec4(1, 0, 0, 1);
 				break;
