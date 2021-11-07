@@ -1,39 +1,39 @@
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
-namespace mushgine
+namespace emp
 {
 	class GraphicManager;
     class ConfigEngine;
+    class Editor;
+    class LogManager;
+    class FileManager;
 
 	class Engine
 	{
     public:
         Engine();
-
         virtual ~Engine() = default;
         Engine& operator=(const Engine&) = delete;
-        Engine(Engine&&) = default; //move constructor
-        Engine(const Engine&) = delete; //delete copy constructor
-        //explicit System(const System & system);
+        Engine(Engine&&) = default;
+        Engine(const Engine&) = delete;
 
-        /**
-        * \brief Called to initialize the Engine
-        */
         void Init(ConfigEngine* config);
-        /**
-		* \brief Starting the Engine after the Init
-		*/
         void Start();
-        /**
-        * \brief Used instead of the destructor to delete all heap created structure and finalize
-        */
+        void Stop();
         virtual void Destroy();
-        /**
-        * \brief Called before we load a scene
-        */
-
+        GLFWwindow* GetWindow();
+		
         bool is_running = false;
+
+        LogManager* GetLogManager();
+        
+		
     protected:
+        LogManager* m_Logger = nullptr;
+        FileManager* m_File = nullptr;
         GraphicManager* m_Graphic = nullptr;
         ConfigEngine* m_Config = nullptr;
+        Editor* m_Editor = nullptr;
     };
 }

@@ -1,9 +1,8 @@
 #include <string>
 using namespace std;
 
-namespace mushgine
-{
-	
+namespace emp
+{	
     class Configuration {
     public:
 		Configuration(string name);
@@ -16,16 +15,27 @@ namespace mushgine
 
     };
 
+	enum Mode
+	{
+		Console,
+		Launcher,
+		Editor,
+		Game
+	};
+
 	class ConfigEngine : Configuration
 	{
 	public:
 		ConfigEngine(string name);
+		ConfigEngine(string name, Mode& mode);
 		
 		int GetWidth()
 		{
 			return this->width;
 		}
+		Mode mode;
 	protected:
+		
 		int width = 1024;
 		int height = 800;
 	};

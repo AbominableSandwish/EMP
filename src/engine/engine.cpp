@@ -1,11 +1,26 @@
 #include "engine/engine.h"
 #include <iostream>
 #include <ctime>
-#include <engine/graphic.h>
+#include <graphic/graphic.h>
+#include <engine/log.h>
+#include <editor/editor.h>
+#include <engine/file.h>
 
-namespace mushgine
+
+namespace emp
 {
     constexpr int WIDTH = 1000000;
+
+    int random(int min, int max) //range : [min, max]
+    {
+        static bool first = true;
+        if (first)
+        {
+            srand(time(NULL)); //seeding for the first time only!
+            first = false;
+        }
+        return min + rand() % ((max + 1) - min);
+    }
 
     int max_index(int arr[], int size) {
         size_t max = 0;
@@ -33,13 +48,28 @@ namespace mushgine
 
     void Engine::Init(ConfigEngine* config)
 	{
+        this->m_File = new FileManager(*this, "File Manager");
+        this->m_File->Init();
+    	
+        this->m_Logger = new LogManager(*this ,"Log Manager");
+        this->m_Logger->Init();
+
+
         std::cout << "[ ... ] Loading configuration\n";
         this->m_Config = config;
 
-        this->m_Graphic = new GraphicManager();
+        this->m_Graphic = new GraphicManager(*this, "Graphic Manager", this->m_Config->mode);
         this->m_Graphic->Init();
 
+        //this->m_Editor = new Editor(*this);
+        //this->m_Editor->Init();
+
         this->is_running = true;
+
+        if (random(0, 10) > 5)
+            std::cout << "Welcome Master...";
+        else
+            std::cout << "Hey Master...";
 	}
 
 	void Engine::Start()
@@ -56,24 +86,53 @@ namespace mushgine
         {
             start = clock();
             end = clock();
-            float dt = start - end;
-        	
+            float dt = float(start - end);
+
+            this->m_Logger->Update(dt);
             this->m_Graphic->Update(dt);
+        	if(this->m_Editor != nullptr)
+				this->m_Editor->Draw();
+            this->m_Graphic->Draw();
+            this->m_File->Update(dt);
+            
 
             start = clock();
             max = max_value(arr, WIDTH);
             end = clock();
-            printf("max_value: %0.3f sec, max = %d, Timer = %d\n",
-                ((float)end - start) / CLOCKS_PER_SEC, max, clock() / 1000);
+            //printf("max_value: %0.3f sec, max = %d, Timer = %d\n",
+                //((float)end - start) / CLOCKS_PER_SEC, max, clock() / 1000);
         }
 	}
 
+    void Engine::Stop()
+    {
+        this->m_Logger = nullptr;
+        this->m_Graphic = nullptr;
+        this->m_Editor = nullptr;
+        this->m_Graphic = nullptr;
+        this->m_File = nullptr;
+    	
+        this->is_running = false;
+    }
 
-	void Engine::Destroy()
+
+    void Engine::Destroy()
 	{
 		
 	}
 
+    GLFWwindow* Engine::GetWindow()
+    {
+        return this->m_Graphic->GetWindow();
+    }
+
+    LogManager* Engine::GetLogManager()
+    {
+    	if(this->m_Logger != nullptr)
+			return this->m_Logger;
+        return nullptr;
+	
+    }
 }
 
 /*include  datetime import datetime

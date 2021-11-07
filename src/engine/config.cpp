@@ -1,7 +1,7 @@
 #include <engine/config.h>
 using namespace std;
 
-namespace mushgine
+namespace emp
 {
 	Configuration::Configuration(string name)
 	{
@@ -15,5 +15,11 @@ namespace mushgine
 
 	ConfigEngine::ConfigEngine(string name) : Configuration(name)
 	{
+		mode = Console;
+	}
+
+	ConfigEngine::ConfigEngine(string name, Mode& mode) : Configuration(name)
+	{
+		this->mode = mode;
 	}
 }
