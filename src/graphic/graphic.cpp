@@ -2,17 +2,40 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <graphic/stb_image.h>
 #include "wtypes.h"
-
 #include <iostream>
+
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace emp {
     unsigned int shaderProgram;
     unsigned int VBO, VAO, EBO;
     unsigned int texture;
 
-    GraphicManager::GraphicManager(Engine& engine, string name, Mode& mode) : System(engine, name)
+    //struct Vector2
+    //{
+    //    float x;
+    //    float y;
+
+    //    Vector2();
+    //	Vector2(float x, float y)
+    //	{
+    //        this->x = x;
+    //        this->y = y;
+    //	}
+    //};
+    //struct iVector2
+    //{
+    //    int x;
+    //    int y;
+    //};
+
+
+    GraphicManager::GraphicManager(Engine& engine, string name, ConfigGraphic& config) : System(engine, name)
     {
-        this->mode = mode;
+        this->config = &config;
     }
 
     GraphicManager::GraphicManager(Engine& engine, string name) : System(engine, name)
@@ -40,10 +63,11 @@ namespace emp {
 
             "out vec3 ourColor;\n"
             "out vec2 TexCoord;\n"
+    		"uniform mat4 transform;"
 
             "void main()\n"
             "{\n"
-            "gl_Position = vec4(aPos, 1.0);\n"
+            "gl_Position = transform * vec4(aPos, 1.0);\n"
             "ourColor = aColor;\n"
             "TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
             "}\0";
@@ -112,11 +136,11 @@ namespace emp {
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         float vertices[] = {
-            // positions          // colors           // texture coords
-             1.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-             1.0f, -1.0, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-            -1.0f, -1.0, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-            -1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+            // positions            // colors           // texture coords
+            1.0f,  1.0f, 0.0f,      1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+            1.0f, -1.0f, 0.0f,       0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+            -1.0f, -1.0, 0.0f,      0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+            -1.0f,  1.0f, 0.0f,     1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
         };
 
         unsigned int indices[] = {
@@ -165,7 +189,7 @@ namespace emp {
         stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
 
     	// The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-        string path = "./data/wall.jpg";
+        string path = "./data/NewLogoPixelColoredx192v2.jpg";
     	unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
         if (data)
         {
@@ -179,8 +203,7 @@ namespace emp {
     	
         stbi_image_free(data);
     }
-
-
+	
 	
     void GraphicManager::Init()
     {
@@ -192,42 +215,21 @@ namespace emp {
         glfwInit();
         int positionX = 0;
         int positionY = 0;
-       
-        const int SPACE_BORDER = 40;
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        this->window = glfwCreateWindow(width, height, "Engine Mushroom Portuaire", NULL, NULL);
-    	
-        screen = Screen();
+        this->window = glfwCreateWindow(config->width, config->height, "Engine Mushroom Portuaire", NULL, NULL);
+
         this->screen._backgroundColor = ColorRGB(0.14f, 0.14f, 0.14f);
     	
-        if (this->mode == Editor) {
-            glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_TRUE);
-        	
-        }
-        if (this->mode == Launcher) {
-            width = 640;
-            height = 480;
-            glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
-            glfwSetWindowPos(this->window, screen._horizontal/2 - width/2, screen._vertical/2 - height/2 - SPACE_BORDER);
-            glfwSetWindowSize(this->window, width, height);
-            glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
-        }
-        if (this->mode == Console) {
-            width = 192;
-            height = 192;
-            int positionX = screen._horizontal - width;
-            int positionY = screen._vertical - height - SPACE_BORDER;
-            glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_TRUE);
-            glfwSetWindowPos(this->window, positionX, positionY);
-            glfwSetWindowSize(this->window, width, height);
-            glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-        	
-        }
+        glfwSetWindowAttrib(window, GLFW_DECORATED, config->decorated);
+        glfwSetWindowPos(this->window, config->x, config->y);
+        glfwSetWindowSize(this->window, config->window_width, config->window_height);
+        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, config->transparent);
 
+    	
         if (window == NULL)
         {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -246,8 +248,6 @@ namespace emp {
 		timer += dt;
 		//while (!glfwWindowShouldClose(this->window))
 		glfwPollEvents();
-
-		
 	}
 
 	void GraphicManager::Draw()
@@ -261,13 +261,23 @@ namespace emp {
         // bind Texture
         glBindTexture(GL_TEXTURE_2D, texture);
 
-        // render container
+        // create transformations
+        glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));
+        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+      
+
+
+        //render container
         glUseProgram(shaderProgram);
+
+		// get matrix's uniform location and set matrix
+        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+		
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-       
-
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

@@ -88,7 +88,7 @@ namespace emp {
 	class GraphicManager : public System
 	{
 	public:
-		GraphicManager(Engine&, string, Mode&);
+		GraphicManager(Engine&, string, ConfigGraphic&);
 		GraphicManager(Engine&, string);
 		void Init() override;
 		void Update(float) override;
@@ -99,7 +99,7 @@ namespace emp {
 
 	protected:
 		GLFWwindow* window = nullptr;
-		Mode mode;
+		ConfigGraphic* config = nullptr;
 
 		Screen screen;
 

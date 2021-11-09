@@ -42,6 +42,12 @@ add_subdirectory(${GLFW_IMGUI})
 include_directories(${IMGUI_ROOT} ${GLFW_IMGUI})
 LIST(APPEND MUSHROOM_LIBRARIES imgui-glfw)
 
+#GLM
+set(GLM ${EXTERNAL_DIR}/glm/)
+add_subdirectory(${GLM})
+include_directories(${GLM} ${GLM})
+LIST(APPEND MUSHROOM_LIBRARIES glm)
+
 
 #MUSHROOM_TOOLS
 SET(MUHSROOM_TOOLS_DIR ${CMAKE_SOURCE_DIR}/tools)

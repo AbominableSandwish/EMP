@@ -58,11 +58,16 @@ namespace emp
         std::cout << "[ ... ] Loading configuration\n";
         this->m_Config = config;
 
-        this->m_Graphic = new GraphicManager(*this, "Graphic Manager", this->m_Config->mode);
+        emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
+        this->m_Graphic = new GraphicManager(*this, "Graphic Manager", *configGraphic);
         this->m_Graphic->Init();
 
-        //this->m_Editor = new Editor(*this);
-        //this->m_Editor->Init();
+    	if(config->editor)
+    	{
+            this->m_Editor = new class Editor(*this);
+			this->m_Editor->Init();
+    	}
+       
 
         this->is_running = true;
 
