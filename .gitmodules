@@ -1,0 +1,2 @@
+[submodule "externals/freetype2"]
+	url = https://github.com/aseprite/freetype2
