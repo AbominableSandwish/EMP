@@ -94,11 +94,24 @@ namespace emp
             float dt = float(start - end);
 
             this->m_Logger->Update(dt);
+
+          
             this->m_Graphic->Update(dt);
-        	if(this->m_Editor != nullptr)
-				this->m_Editor->Draw();
-            this->m_Graphic->Draw();
+         
+        
+            if (this->m_Editor != nullptr) {
+                this->m_Editor->Draw(this->m_Graphic);
+            }
+        	else
+            {
+                this->m_Graphic->Draw();
+            }
+
+
+        	
             this->m_File->Update(dt);
+
+        	
             
 
             start = clock();

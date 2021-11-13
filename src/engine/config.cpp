@@ -49,10 +49,11 @@ namespace emp
 			transparent = true;
 			break;
 		case emp::Editor:
-			width = 1024;
-			height = 800;
+		
 			window_width = horizontal;
 			window_height = vertical - SPACE_BORDER - 30;
+			width = window_width;
+			height = window_height;
 			decorated = true;
 			transparent = false;
 			x = 0;

@@ -48,6 +48,14 @@ add_subdirectory(${GLM})
 include_directories(${GLM} ${GLM})
 LIST(APPEND MUSHROOM_LIBRARIES glm)
 
+# FreeType
+#set(FREETYPE_INCLUDE_DIRS ${EXTERNAL_DIR}/freetype2/include/)
+set(FREETYPE ${EXTERNAL_DIR}/freetype2/)
+add_subdirectory(${FREETYPE})
+#find_package(Freetype REQUIRED)
+#target_link_libraries(main PRIVATE ${FREETYPE_LIBRARIES})
+#target_include_directories(MUSHROOM_COMMON PRIVATE ${FREETYPE_INCLUDE_DIRS})
+LIST(APPEND MUSHROOM_LIBRARIES freetype)
 
 #MUSHROOM_TOOLS
 SET(MUHSROOM_TOOLS_DIR ${CMAKE_SOURCE_DIR}/tools)

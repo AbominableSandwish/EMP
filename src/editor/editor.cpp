@@ -3,6 +3,7 @@
 #include <engine/engine.h>
 
 #include "tool/log_tool.h"
+#include "graphic/graphic.h"
 
 namespace emp
 {
@@ -33,9 +34,7 @@ namespace emp
 
 	void Editor::Draw()
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 		// feed inputs to dear imgui, start new frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -99,6 +98,81 @@ namespace emp
 		// Render dear imgui into screen
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void Editor::Draw(GraphicManager* graphic)
+	{
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// feed inputs to dear imgui, start new frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		
+
+		ImGuiWindowFlags window_flags = 0
+			//| ImGuiWindowFlags_NoDocking 
+			| ImGuiWindowFlags_NoTitleBar
+			| ImGuiWindowFlags_NoResize
+			| ImGuiWindowFlags_NoMove
+			| ImGuiWindowFlags_NoScrollbar
+			| ImGuiWindowFlags_NoSavedSettings
+			;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
+		ImGui::Begin("TOOLBAR", NULL, window_flags);
+		ImGui::PopStyleVar();
+		if (ImGui::BeginMainMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("New"))
+				{
+					//Do something
+				}
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Tool"))
+			{
+				if (ImGui::MenuItem("Profiler"))
+				{
+					Newtool(ToolType::PROFILER);
+				}
+				if (ImGui::MenuItem("Logger"))
+				{
+					Newtool(ToolType::LOGGER);
+				}
+				if (ImGui::MenuItem("Sample"))
+				{
+					Newtool(ToolType::SAMPLE);
+				}
+				ImGui::EndMenu();
+			}
+
+			ImGui::EndMainMenuBar();
+		}
+		ImGui::End();
+
+		graphic->Draw();
+
+		// render your GUI
+		ImGui::Begin("Editor");
+		ImGui::Button("Mushroom Editor say Hello!");
+		ImGui::End();
+
+
+		for (Tool* tool : tools)
+		{
+			tool->Draw();
+		}
+
+		// Render dear imgui into screen
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		graphic->Swap();
 	}
 
 	void Editor::Destroy()

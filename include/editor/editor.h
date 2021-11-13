@@ -10,6 +10,7 @@ namespace emp
         void Init();
         void Update(float);
         void Draw();
+        void Draw(GraphicManager*);
         void Destroy();
         void Newtool(ToolType);
     private:
