@@ -2,7 +2,7 @@
  * Author: Dylan von Arx
  * Time: 07.10.2021
 */
-#include <engine/system.h>
+#include <core/system.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>

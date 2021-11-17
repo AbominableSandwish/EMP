@@ -1,6 +1,6 @@
 #include "editor/editor.h"
 #include <imgui_internal.h>
-#include <engine/engine.h>
+#include <core/engine.h>
 
 #include "tool/log_tool.h"
 #include "graphic/graphic.h"

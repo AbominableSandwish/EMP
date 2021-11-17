@@ -57,9 +57,15 @@ add_subdirectory(${FREETYPE})
 #target_include_directories(MUSHROOM_COMMON PRIVATE ${FREETYPE_INCLUDE_DIRS})
 LIST(APPEND MUSHROOM_LIBRARIES freetype)
 
-#MUSHROOM_TOOLS
-SET(MUHSROOM_TOOLS_DIR ${CMAKE_SOURCE_DIR}/tools)
-file(GLOB TOOLS_DIR ${MUSHROOM_TOOLS_DIR}/*)
+#MUSHROOM_CORE
+if(NOT WIN32)
+LIST(APPEND MUSHROOM_LIBRARIES
+  stdc++fs)
+ENDIF()
+file(GLOB_RECURSE CORE_SRC src/core/*.cpp include/core/*.h)
+add_library(MUSHROOM_CORE STATIC ${CORE_SRC})
+include_directories(include/)
+target_link_libraries(MUSHROOM_CORE PUBLIC MUSHROOM_COMMON)
 
 #MUSHROOM_COMMON
 if(NOT WIN32)
@@ -75,9 +81,10 @@ if(NOT WIN32)
 LIST(APPEND MUSHROOM_LIBRARIES
   stdc++fs)
 ENDIF()
-add_library(MUSHROOM_TOOL STATIC ${MUSHROOM_SRC})
+file(GLOB_RECURSE TOOL_SRC src/tool/*.cpp include/tool/*.h)
+add_library(MUSHROOM_TOOL STATIC ${TOOL_SRC})
 include_directories(include/)
-target_link_libraries(MUSHROOM_TOOL PUBLIC MUSHROOM_COMMON)
+target_link_libraries(MUSHROOM_TOOL PRIVATE MUSHROOM_COMMON)
 
 #MUSHROOM_TEST
 SET(MUSHROOM_TEST_DIR ${CMAKE_SOURCE_DIR}/tests)
