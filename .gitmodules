@@ -1,2 +1,5 @@
 [submodule "externals/freetype2"]
 	url = https://github.com/aseprite/freetype2
+[submodule "externals/glfw"]
+	path = externals/glfw
+	url = https://github.com/glfw/glfw
