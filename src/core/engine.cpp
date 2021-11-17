@@ -2,9 +2,9 @@
 #include <iostream>
 #include <ctime>
 #include <graphic/graphic.h>
-#include <engine/log.h>
+#include <core/log.h>
 #include <editor/editor.h>
-#include <engine/file.h>
+#include <core/file.h>
 
 
 namespace emp
@@ -48,18 +48,17 @@ namespace emp
 
     void Engine::Init(ConfigEngine* config)
 	{
-        this->m_File = new FileManager(*this, "File Manager");
-        this->m_File->Init();
-    	
-        this->m_Logger = new LogManager(*this ,"Log Manager");
-        this->m_Logger->Init();
-
-
         std::cout << "[ ... ] Loading configuration\n";
+    	
         this->m_Config = config;
-
         emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
+    	
+        this->m_File = new FileManager(*this, "File Manager");
+        this->m_Logger = new LogManager(*this ,"Log Manager");
         this->m_Graphic = new GraphicManager(*this, "Graphic Manager", *configGraphic);
+    	
+        this->m_File->Init();
+        this->m_Logger->Init();
         this->m_Graphic->Init();
 
     	if(config->editor)
@@ -67,14 +66,13 @@ namespace emp
             this->m_Editor = new class Editor(*this);
 			this->m_Editor->Init();
     	}
-       
-
-        this->is_running = true;
 
         if (random(0, 10) > 5)
-            std::cout << "Welcome Master...";
+            std::cout << "[ ... ] Welcome Master";
         else
-            std::cout << "Hey Master...";
+            std::cout << "[ ... ] Hey Master";
+
+        this->is_running = true;
 	}
 
 	void Engine::Start()
@@ -94,11 +92,9 @@ namespace emp
             float dt = float(start - end);
 
             this->m_Logger->Update(dt);
-
-          
             this->m_Graphic->Update(dt);
-         
-        
+            this->m_File->Update(dt);
+               
             if (this->m_Editor != nullptr) {
                 this->m_Editor->Draw(this->m_Graphic);
             }
@@ -107,36 +103,27 @@ namespace emp
                 this->m_Graphic->Draw();
             }
 
-
-        	
-            this->m_File->Update(dt);
-
-        	
-            
-
             start = clock();
             max = max_value(arr, WIDTH);
             end = clock();
-            //printf("max_value: %0.3f sec, max = %d, Timer = %d\n",
-                //((float)end - start) / CLOCKS_PER_SEC, max, clock() / 1000);
         }
 	}
 
     void Engine::Stop()
     {
-        this->m_Logger = nullptr;
-        this->m_Graphic = nullptr;
-        this->m_Editor = nullptr;
-        this->m_Graphic = nullptr;
-        this->m_File = nullptr;
-    	
-        this->is_running = false;
+        this->Destroy();
     }
 
 
     void Engine::Destroy()
 	{
-		
+        this->m_Logger = nullptr;
+        this->m_Graphic = nullptr;
+        this->m_Editor = nullptr;
+        this->m_Graphic = nullptr;
+        this->m_File = nullptr;
+
+        this->is_running = false;
 	}
 
     GLFWwindow* Engine::GetWindow()

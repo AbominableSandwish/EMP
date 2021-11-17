@@ -9,11 +9,7 @@ namespace emp
 		Configuration(string name);
 		string GetName();
     protected:
-        std::string name;
-
-    
-      
-
+        std::string name;      
     };
 
 	enum Mode

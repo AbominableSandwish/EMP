@@ -1,4 +1,4 @@
-#include <engine/config.h>
+#include <core/config.h>
 
 #include "GLFW/glfw3.h"
 //#include <graphic/graphic.h>
@@ -72,7 +72,6 @@ namespace emp
 
 	ConfigEngine::ConfigEngine(string name, Mode& mode) : Configuration(name)
 	{
-
 		switch (mode)
 		{
 		case emp::Console:

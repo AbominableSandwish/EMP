@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "core/engine.h"
-#include "engine/config.h"
+#include <core/engine.h>
+#include <core/config.h>
 
 int main() {
 	emp::Mode mode = emp::Mode::Editor;

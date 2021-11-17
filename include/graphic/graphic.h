@@ -11,7 +11,7 @@
 
 
 #include "stb_image.h"
-#include "engine/config.h"
+#include "core/config.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -21,8 +21,8 @@
 #include <map>
 
 #include FT_FREETYPE_H  
-#include "engine/component.h"
-#include "engine/transform.h"
+#include "core/component.h"
+#include "common/transform.h"
 
 
 namespace emp {

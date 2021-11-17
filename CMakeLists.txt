@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(MUSHROOM VERSION 0.0)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
@@ -13,7 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/externals)
 #set INCLUDE_DIR and SRC_DIR
 include_directories(include ${CMAKE_SOURCE_DIR}/include)
-file(GLOB_RECURSE MUSHROOM_SRC src/*.cpp include/*.h)
 
 #GLEW
 set(GLEW_DIR ${EXTERNAL_DIR}/glew)
@@ -68,6 +67,23 @@ include_directories(include/)
 target_link_libraries(MUSHROOM_CORE PUBLIC MUSHROOM_COMMON)
 
 #MUSHROOM_COMMON
+#file(GLOB_RECURSE MUSHROOM_SRC src/*.cpp include/*.h)
+
+set_property(GLOBAL PROPERTY USE_FOLDERS On)
+SET_SOURCE_FILES_PROPERTIES( ${MUSHROOM_SRC} PROPERTIES
+                FOLDER "${CMAKE_SOURCE_DIR}/src" )
+				
+file(GLOB_RECURSE CORE_HEAD	src/core/*.cpp include/core/*.h)
+source_group("Core" FILES ${CORE_HEAD})
+file(GLOB_RECURSE COMMON_HEAD src/common/*.cpp include/common/*.h)
+source_group("Common" FILES ${COMMON_HEAD})
+file(GLOB_RECURSE EDITOR_HEAD	src/editor/*.cpp include/editor/*.h)
+source_group("Editor" FILES ${EDITOR_HEAD})
+file(GLOB_RECURSE TOOL_HEAD	src/tool/*.cpp include/tool/*.h)
+source_group("Tool" FILES ${TOOL_HEAD})
+
+List(APPEND MUSHROOM_SRC  ${CORE_HEAD} ${COMMON_HEAD} ${EDITOR_HEAD} ${TOOL_HEAD})
+
 if(NOT WIN32)
 LIST(APPEND MUSHROOM_LIBRARIES
   stdc++fs)
@@ -84,7 +100,7 @@ ENDIF()
 file(GLOB_RECURSE TOOL_SRC src/tool/*.cpp include/tool/*.h)
 add_library(MUSHROOM_TOOL STATIC ${TOOL_SRC})
 include_directories(include/)
-target_link_libraries(MUSHROOM_TOOL PRIVATE MUSHROOM_COMMON)
+target_link_libraries(MUSHROOM_TOOL PUBLIC MUSHROOM_COMMON)
 
 #MUSHROOM_TEST
 SET(MUSHROOM_TEST_DIR ${CMAKE_SOURCE_DIR}/tests)

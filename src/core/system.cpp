@@ -1,5 +1,5 @@
-#include "engine/system.h"
-#include "engine/engine.h"
+#include "core/system.h"
+#include "core/engine.h"
 
 namespace emp
 {

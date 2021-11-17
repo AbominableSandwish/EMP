@@ -1,5 +1,5 @@
 #include <editor/tool.h>
-#include "engine/log.h"
+#include "core/log.h"
 
 
 namespace emp
