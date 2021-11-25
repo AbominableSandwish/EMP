@@ -6,11 +6,12 @@ namespace emp
 	
 	void Logger::Init()
 	{
-	
+		collapse = new bool;
 	}
 
 	Logger::Logger(Engine& engine, string name) : Tool(engine, name)
 	{
+		collapse = new bool;
 	}
 
 	void Logger::Update(float)
@@ -24,8 +25,6 @@ namespace emp
 		ImGui::Begin("Logger", &is_open, ImGuiWindowFlags_MenuBar);
 		if (ImGui::BeginMenuBar())
 		{
-			if (collapse == nullptr)
-				collapse = new bool;
 			if (ImGui::Checkbox("Collapse: ", collapse))
 			{
 			}
