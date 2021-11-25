@@ -48,13 +48,13 @@ namespace emp
 
     void Engine::Init(ConfigEngine* config)
 	{
-        std::cout << "[ ... ] Loading configuration\n";
+        LOG::Info("Loading configuration");
     	
         this->m_Config = config;
         emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
     	
         this->m_File = new FileManager(*this, "File Manager");
-        this->m_Logger = new LogManager(*this ,"Log Manager");
+        this->m_Logger = LogManager::GetInstance();
         this->m_Graphic = new GraphicManager(*this, "Graphic Manager", *configGraphic);
     	
         this->m_File->Init();
@@ -75,26 +75,36 @@ namespace emp
         this->is_running = true;
 	}
 
+    float counter = 0.0f;
+    clock_t oldTime;
 	void Engine::Start()
 	{
         clock_t start, end;
+        end = 0;
         int max;
         int* arr = new int[WIDTH];
         std::srand(std::time(nullptr));
         for (size_t i = 0; i < WIDTH; i++) {
             arr[i] = std::rand();
         }
-
+        LOG::Info(this->m_Config->GetName() + "is ready");
+      
         while (this->is_running)
         {
+            ///DELTATIME AND FPS COUNTING
+            clock_t deltaTime = clock() - oldTime;
+            fps = (1.0 / deltaTime) * 1000;
+            oldTime = clock();
+        	for(int turn = 0; turn < 1; turn++)
+				LOG::Debug("clock per sec: "+ to_string(deltaTime));
             start = clock();
-            end = clock();
             float dt = float(start - end);
+            counter += dt;
 
             this->m_Logger->Update(dt);
             this->m_Graphic->Update(dt);
             this->m_File->Update(dt);
-               
+            //LOG::Debug(to_string(counter));
             if (this->m_Editor != nullptr) {
                 this->m_Editor->Draw(this->m_Graphic);
             }
@@ -103,8 +113,6 @@ namespace emp
                 this->m_Graphic->Draw();
             }
 
-            start = clock();
-            max = max_value(arr, WIDTH);
             end = clock();
         }
 	}
@@ -122,7 +130,6 @@ namespace emp
         this->m_Editor = nullptr;
         this->m_Graphic = nullptr;
         this->m_File = nullptr;
-
         this->is_running = false;
 	}
 

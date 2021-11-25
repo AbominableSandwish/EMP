@@ -8,9 +8,6 @@
 #include <iostream>
 #include <windows.h>
 
-
-
-#include "stb_image.h"
 #include "core/config.h"
 
 #include <glm/glm.hpp>
@@ -22,7 +19,10 @@
 
 #include FT_FREETYPE_H  
 #include "core/component.h"
+#include "graphic/texture.h"
 #include "common/transform.h"
+
+
 
 
 namespace emp {
@@ -107,6 +107,8 @@ namespace emp {
         }
     };
 
+ 
+
 	class GraphicComponent : public Component
 	{
 	public :
@@ -164,8 +166,6 @@ namespace emp {
             glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
             transf = glm::translate(transf, glm::vec3(this->transform->x, this->transform->y, 0.0f));
             transf = glm::rotate(transf, (float)glfwGetTime() / speedRotate, glm::vec3(0.0f, 0.0f, 1.0));
-
-
 
 
             //render container

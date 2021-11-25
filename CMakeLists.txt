@@ -81,8 +81,10 @@ file(GLOB_RECURSE EDITOR_HEAD	src/editor/*.cpp include/editor/*.h)
 source_group("Editor" FILES ${EDITOR_HEAD})
 file(GLOB_RECURSE TOOL_HEAD	src/tool/*.cpp include/tool/*.h)
 source_group("Tool" FILES ${TOOL_HEAD})
+file(GLOB_RECURSE GRAPHIC_HEAD	src/graphic/*.cpp include/graphic/*.h)
+source_group("Graphic" FILES ${GRAPHIC_HEAD})
 
-List(APPEND MUSHROOM_SRC  ${CORE_HEAD} ${COMMON_HEAD} ${EDITOR_HEAD} ${TOOL_HEAD})
+List(APPEND MUSHROOM_SRC  ${CORE_HEAD} ${COMMON_HEAD} ${EDITOR_HEAD} ${TOOL_HEAD} ${GRAPHIC_HEAD})
 
 if(NOT WIN32)
 LIST(APPEND MUSHROOM_LIBRARIES

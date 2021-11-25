@@ -1,5 +1,7 @@
+#include <string>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 
 namespace emp
 {
@@ -27,13 +29,20 @@ namespace emp
         bool is_running = false;
 
         LogManager* GetLogManager();
-        
-		
+
+		double GetFPS()
+		{
+            return this->fps;
+		}
+
     protected:
         LogManager* m_Logger = nullptr;
         FileManager* m_File = nullptr;
         GraphicManager* m_Graphic = nullptr;
         ConfigEngine* m_Config = nullptr;
         Editor* m_Editor = nullptr;
+	private:
+        double fps = 0.0;
     };
+
 }

@@ -84,12 +84,6 @@ namespace emp
 		}
 		ImGui::End();
 
-		// render your GUI
-		ImGui::Begin("Editor");
-		ImGui::Button("Mushroom Editor say Hello!");
-		ImGui::End();
-
-
 		for (Tool* tool : tools)
 		{
 			tool->Draw();
@@ -100,6 +94,9 @@ namespace emp
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
 
+	int x = 0;
+	int list_fps[100];
+	
 	void Editor::Draw(GraphicManager* graphic)
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -157,9 +154,25 @@ namespace emp
 
 		graphic->Draw();
 
+		list_fps[x] = (int)this->m_engine->GetFPS();
+		x++;
+		if (x > 100)
+			x = 0;
+		int average = 0;
+		for (int element : list_fps)
+		{
+			average += element;
+		}
+		average / 100;
 		// render your GUI
 		ImGui::Begin("Editor");
-		ImGui::Button("Mushroom Editor say Hello!");
+		string text = "FPS : " + to_string(average/60);
+		ImGui::Text(text.c_str());
+		
+		if(ImGui::Button("Mushroom Editor say Hello!"))
+		{
+			ImGui::Text("Hello...");
+		}
 		ImGui::End();
 
 
@@ -174,6 +187,7 @@ namespace emp
 
 		graphic->Swap();
 	}
+
 
 	void Editor::Destroy()
 	{

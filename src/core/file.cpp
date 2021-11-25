@@ -1,6 +1,7 @@
 #include <core/file.h>
 #include <iostream>
 #include <fstream>
+#include <core/log.h>
 
 namespace emp
 {
@@ -9,9 +10,10 @@ namespace emp
 	}
 
 	void FileManager::Init()
-	{
+	{	
 		this->queue_Data = queue<Data>();
 		this->queue_Data.push(Data("data.txt", ios_base::out));
+		
 	}
 
 	void FileManager::Update(float)

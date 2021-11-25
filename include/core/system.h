@@ -5,6 +5,7 @@
 #include <string>
 #pragma once
 
+#include <core/singleton.h>
 
 namespace emp
 {
@@ -13,6 +14,7 @@ namespace emp
     class System
     {
     public:
+        System(){}
         System(Engine&, string);
         virtual void Init() = 0;
         virtual void Update(float) = 0;

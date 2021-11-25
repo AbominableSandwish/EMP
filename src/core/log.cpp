@@ -1,81 +1,68 @@
 #include <core/log.h>
 #include <iostream>
+#include "core/engine.h"
 
 namespace emp
 {
-	void LogManager::Init()
-	{
-		AddLog(Log((int)this->m_logs.size(), LogType::DEBUG, "Start"));
-	}
+	LogManager::LogManager() : System() {}
 
-	void LogManager::Update(float dt)
-	{
-		//LogType type;
-		//switch ((rand() % 5)+1)
-		//{
-		//case 0:
-		//	type = LogType::NONE;
-		//	break;
-		//case 1:
-		//	type = LogType::DEBUG;
-		//	break;
-		//case 2:
-		//	type = LogType::INFO;
-		//	break;
-		//case 3:
-		//	type = LogType::WARNING;
-		//	break;
-		//case 4:
-		//	type = LogType::ERROR;
-		//	break;
-		//case 5:
-		//	type = LogType::CRITICAL;
-		//	break;
-		//}
-		//AddLog(Log((int)this->m_logs.size(), type, std::to_string(dt)));
-		
-	}
+	LogManager::LogManager(Engine& engine, string name) : System(engine, name) { instance = this; }
 
-	void LogManager::Destroy()
+	void LogManager::Init() { instance = this; }
+
+	void LogManager::Update(float dt) {}
+
+	void LogManager::Destroy() {}
+
+	LogManager* LogManager::GetInstance()
 	{
-		
+		if (instance == nullptr)
+		{
+			instance = new LogManager();
+		}
+		return instance;
 	}
 
 	void LogManager::AddLog(Log log)
 	{
 		string type;
+		const char* color = "\033[39m";
 		switch (log.type)
 		{
 		case LogType::NONE:
-			type = "[ NONE ]";
+			type = "   [ NONE ]";
 			break;
 		case LogType::DEBUG:
-			type = "[ DEBUG ]";
+			type = "  [ DEBUG    ]";
+			color = "\033[36m";
 			break;
 		case LogType::INFO:
-			type = "[ INFO ]";
+			type = "  [ INFO     ]";
 			break;
 		case LogType::WARNING:
-			type = "[ WARNING ]";
+			type = "  [ WARNING  ]";
+			color = "\033[33m";
 			break;
 		case LogType::ERROOR:
-			type = "[ ERROR ]";
+			type = "  [ ERROR    ]";
+			color = "\033[31m";
 			break;
 		case LogType::CRITICAL:
-			type = "[ CRITICAL ]";
+			type = "  [ CRITICAL ]";
+			color = "\033[35m";
 			break;
 		}
-		std::cout << "[ LOG ]" <<  type << " " << log.msg << std::endl;
+		std::cout << "[ LOG ]" << color << type << "\033[39m"  <<"\t" << log.msg << std::endl;
 		this->m_logs.push_back(log);
 	}
 
-	std::list<Log> LogManager::GetLogs()
+	std::vector<Log>& LogManager::GetLogs()
 	{
 		return this->m_logs;
 	}
 
-	LogManager::LogManager(Engine& engine, string name) : System(engine, name)
+	void LogManager::ClearLogs()
 	{
-		
+		this->m_logs.clear();
 	}
 }

@@ -15,6 +15,16 @@ namespace emp
 	protected:
 		LogManager* m_manager = nullptr;
 		bool is_open = true;
+
+		bool* collapse;
+		// Filter
+		bool* debug;
+		bool* info;
+		bool* warning;
+		bool* error;
+		bool* critical;
 		
+		const int HEADER_HEIGHT = 40;
+		const int CHARACTER_SIZE = 16;// 16 Pixel
 	};
 }

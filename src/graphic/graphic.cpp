@@ -1,18 +1,80 @@
 #include <graphic/graphic.h>
+
 #define STB_IMAGE_IMPLEMENTATION
-#include <graphic/stb_image.h>
+#include "graphic/stb_image.h"
 #include "wtypes.h"
 #include <iostream>
+#include "core/log.h"
 
 
 namespace emp {
+    namespace Shader
+    {
+        void static CheckVertexCompile(unsigned int& vertexShader) {
+            // check for shader compile errors
+            int success;
+            char infoLog[512];
+            glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+                string msg = "[SHADER] VERTEX::COMPILATION_FAILED\n";
+                for (char element : msg)
+                {
+                    msg += element;
+                }
 
+                msg += "\n";
+                LOG::Error(msg);
+            }
+        }
+
+        void static CheckFragmentCompile(unsigned int& fragmentShader) {
+            // check for shader compile errorsg
+            int success;
+            char infoLog[512];
+            glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+            if (!success)
+            {
+                glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+                string msg = "[SHADER] FRAGMENT::COMPILATION_FAILED\n";
+                for (char element : msg)
+                {
+                    msg += element;
+                }
+
+                msg += "\n";
+                LOG::Error(msg);
+            }
+        }
+
+    	void static ChechShaderCompile(unsigned int& shaderProgram)
+        {
+            // check for shader compile errorsg
+            int success;
+            char infoLog[512];
+            // check for linking errors
+            glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+            if (!success) {
+                glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+                string msg = "[SHADER] PROGRAM::LINKING_FAILED\n";
+                for (char element : msg)
+                {
+                    msg += element;
+                }
+
+                msg += "\n";
+                LOG::Error(msg);
+            }
+        }
+    }
 
     void SpriteGraphic::Init() {
         this->vs = "#version 330 core\n"
             "layout(location = 0) in vec3 aPos;\n"
             "layout(location = 1) in vec3 aColor;\n"
             "layout(location = 2) in vec2 aTexCoord;\n"
+    		"layout(location = 3) in vec2 aresolution;\n"
 
             "out vec3 ourColor;\n"
             "out vec2 TexCoord;\n"
@@ -20,6 +82,7 @@ namespace emp {
 
             "void main()\n"
             "{\n"
+
             "gl_Position = transform * vec4(aPos, 1.0);\n"
             "ourColor = aColor;\n"
             "TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
@@ -36,7 +99,8 @@ namespace emp {
 
             "void main()\n"
             "{\n"
-            "FragColor = texture(texture1, TexCoord);\n"
+            
+            "FragColor = texture2D(texture1, TexCoord);\n"
             "}\0";
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -59,42 +123,21 @@ namespace emp {
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vs, NULL);
         glCompileShader(vertexShader);
-        // check for shader compile errors
-        int success;
-        char infoLog[512];
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-        }
+        Shader::CheckVertexCompile(vertexShader);
         // fragment shader
         unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragmentShader, 1, &frag, NULL);
         glCompileShader(fragmentShader);
-        // check for shader compile errors
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-        if (!success)
-        {
-            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-        }
+        Shader::CheckFragmentCompile(fragmentShader);
+      
         // link shaders
         shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragmentShader);
         glLinkProgram(shaderProgram);
-        // check for linking errors
-        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-        if (!success) {
-            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-            std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-        }
+        Shader::ChechShaderCompile(shaderProgram);
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
-
-
-
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -118,43 +161,25 @@ namespace emp {
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
-        // load and create a texture 
-        // -------------------------
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-
-        // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+        
+        // set the resolution
+        //uniform2f(resolutionLocation, 128, 128);
 
         // load image, create texture and generate mipmaps
-        int width, height, nrChannels;
-        stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+        int width, height, level;
+        unsigned char* file = stbi_load(path.c_str(), &width, &height, &level, 0);
+        Texture::loadTexture(file, width, height, texture, path.c_str(), level);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(file);
 
-        // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-        unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture" << std::endl;
-        }
-
-        stbi_image_free(data);
-
+    	//Init rotation speed
         srand(time(NULL));
-
         speedRotate += rand() % 20;
-
         speedRotate *= 2.0f;
     }
+
+  
 
 
     void TextGraphic::Init() {
@@ -353,6 +378,12 @@ namespace emp {
         glBindVertexArray(0);
     }
 
+    Transform obj_1 = Transform(1, 0);
+    Transform obj_2 = Transform(-1, 0);
+    GraphicComponent* component2 = new SpriteGraphic("./data/NewLogoPixelColoredx192v2.jpg", obj_1);
+	GraphicComponent* component = new SpriteGraphic("./data/NewLogoPixelColoredx192v2.jpg", obj_2);
+    GraphicComponent* component3 = new TextGraphic();
+
     GraphicManager::GraphicManager(Engine& engine, string name, ConfigGraphic& config) : System(engine, name)
     {
         this->config = &config;
@@ -362,14 +393,6 @@ namespace emp {
     {
     }
 
-    Transform obj_1 = Transform(1, 0);
-    Transform obj_2 = Transform(-1, 0);
-    GraphicComponent* component2 = new SpriteGraphic("./data/wall.jpg", obj_1);
-    //Old GraphicComponent component = GraphicComponent("./data/NewLogoPixelColoredx192v2.jpg", obj_2);
-    GraphicComponent* component = new SpriteGraphic("./data/NewLogoPixelColoredx192v2.jpg", obj_2);
-
-    GraphicComponent* component3 = new TextGraphic();
-	
     void GraphicManager::Init()
     {
         //Get Info Screen Resolution
@@ -462,29 +485,13 @@ namespace emp {
 		ICO
 	};
 
-    struct Texture
-	{
-        int id;
-        string name;
-        string path;
-        Type type;
-
-    	Texture(string& name, string& path)
-    	{
-            this->id = 0;
-            this->name = name;
-            this->path = path;
-    	}
-	};
-
     struct Sprite
     {
         int id;
         string name;
-        Texture texture;
+        //Texture texture;
 
         int x, y;
         int size_x, size_y;
     };
-	
 }

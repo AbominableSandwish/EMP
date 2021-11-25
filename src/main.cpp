@@ -3,13 +3,13 @@
 #include <core/engine.h>
 #include <core/config.h>
 
+
 int main() {
 	emp::Mode mode = emp::Mode::Editor;
 	
     emp::ConfigEngine* config = new emp::ConfigEngine("Mushroom Engine", mode);
-    emp::Engine engine = emp::Engine();
-    engine.Init(config);
-    engine.Start();
-		
+    emp::Engine* engine = new emp::Engine();
+    engine->Init(config);
+    engine->Start();	
     exit(EXIT_SUCCESS);
 }

@@ -58,7 +58,7 @@ namespace emp
 	};
 	
 
-	class ConfigEngine : Configuration
+	class ConfigEngine : public Configuration
 	{
 	public:
 		ConfigEngine(string name);
