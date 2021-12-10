@@ -33,16 +33,19 @@ namespace emp
 	
 	enum ToolType
 	{
-		SAMPLE,
-		LOGGER,
-		PROFILER,
+		EMPTY,
+		CONSOLE,
+		PROFILER,  // todo
+                HIERARCHY, 
+                INSPECTOR, // todo
+                VIEW,      // todo
 		HEIGHT
 	};
 
-    class sampleTool : public Tool
+    class EmptyTool : public Tool
     {
     public:
-        sampleTool(Engine&, std::string);
+        EmptyTool(Engine&, std::string);
         void Init() override;
         void Update(float) override;
         void Draw() override;

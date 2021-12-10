@@ -2,7 +2,6 @@
 #include <vector>
 #include <core/system.h>
 
-
 namespace  emp
 {
 	class LogManager;

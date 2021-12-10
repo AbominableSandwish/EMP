@@ -1,4 +1,4 @@
-#include <string>
+#include <ctime>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -7,9 +7,9 @@ namespace emp
 {
 	class GraphicManager;
     class ConfigEngine;
-    class Editor;
     class LogManager;
     class FileManager;
+    class EntityManager;
 
 	class Engine
 	{
@@ -22,6 +22,7 @@ namespace emp
 
         void Init(ConfigEngine* config);
         void Start();
+        void Update();
         void Stop();
         virtual void Destroy();
         GLFWwindow* GetWindow();
@@ -29,20 +30,24 @@ namespace emp
         bool is_running = false;
 
         LogManager* GetLogManager();
+        EntityManager* GetEntityManager();
+        GraphicManager* GetGraphicManager();
+		
 
-		double GetFPS()
-		{
-            return this->fps;
-		}
+        double GetFPS()
+	{
+               return this->fps;
+	}
 
     protected:
-        LogManager* m_Logger = nullptr;
-        FileManager* m_File = nullptr;
-        GraphicManager* m_Graphic = nullptr;
-        ConfigEngine* m_Config = nullptr;
-        Editor* m_Editor = nullptr;
+        ConfigEngine* config_ = nullptr;
+        LogManager* logger_ = nullptr;
+        FileManager* file_ = nullptr;
+        EntityManager* entity_ = nullptr;
+        GraphicManager* graphic_ = nullptr;
 	private:
         double fps = 0.0;
+        clock_t start, end;
     };
 
 }

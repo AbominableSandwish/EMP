@@ -27,7 +27,7 @@ namespace emp
 			GetDesktopWindowResolution(horizontal, vertical);
 		switch (mode)
 		{
-		case emp::Console:
+		case emp::Empty:
 			
 			width = 192;
 			height = 192;
@@ -67,14 +67,14 @@ namespace emp
 
 	ConfigEngine::ConfigEngine(string name) : Configuration(name)
 	{
-		mode = Console;
+		mode = Empty;
 	}
 
 	ConfigEngine::ConfigEngine(string name, Mode& mode) : Configuration(name)
 	{
 		switch (mode)
 		{
-		case emp::Console:
+		case emp::Empty:
 			editor = false;
 			break;
 		case emp::Launcher:

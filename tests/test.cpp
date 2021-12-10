@@ -20,16 +20,16 @@ public:
 
 	void Update(float dt)
 	{
-        this->m_Logger->Update(dt);
-        this->m_Graphic->Update(dt);
-        this->m_File->Update(dt);
+        this->logger_->Update(dt);
+        this->graphic_->Update(dt);
+        this->file_->Update(dt);
 
-        if (this->m_Editor != nullptr) {
-            this->m_Editor->Draw(this->m_Graphic);
+        if (this->editor_ != nullptr) {
+            this->editor_->Draw(this->graphic_);
         }
         else
         {
-            this->m_Graphic->Draw();
+            this->graphic_->Draw();
         }
 	}
 };
@@ -74,7 +74,7 @@ public:
 	TestConsole()
 	{
         name = "Engine Mode Console";
-        mode = emp::Mode::Console;
+        mode = emp::Mode::Empty;
         config = new emp::ConfigEngine("Mushroom Engine", mode);
 	}
 
@@ -115,15 +115,45 @@ public:
     }
 };
 
-class TestEditor : public Test
+class TestLogger : public Test
 {
 public:
-	TestEditor()
+    TestLogger()
 	{
-        name = "Engine Mode Launcher";
+        name = "TEST logger";
         mode = emp::Mode::Editor;
         config = new emp::ConfigEngine("Mushroom Engine", mode);
 	}
+	
+    void Check(EngineCustom& engine) override
+    {
+        if (engine.GetLogManager()->GetLogs().size() > 1000)
+        {
+            if (engine.GetFPS() < 120) {
+                Success();
+            }
+            else
+            {
+                Fail();
+            }
+        }else
+        {
+            emp::LOG::Info("Test log");
+        }
+       
+    }
+};
+
+
+class TestEditor : public Test
+{
+public:
+    TestEditor()
+    {
+        name = "TEST Engine mode Editor";
+        mode = emp::Mode::Editor;
+        config = new emp::ConfigEngine("Mushroom Engine", mode);
+    }
 
     void Check(EngineCustom& engine) override
     {
@@ -157,6 +187,16 @@ int main()
     tests.push_back(new TestConsole());
     tests.push_back(new TestLauncher());
     tests.push_back(new TestEditor());
+    tests.push_back(new TestConsole());
+    tests.push_back(new TestLauncher());
+    tests.push_back(new TestEditor());
+    tests.push_back(new TestConsole());
+    tests.push_back(new TestLauncher());
+    tests.push_back(new TestEditor());
+    tests.push_back(new TestConsole());
+    tests.push_back(new TestLauncher());
+    tests.push_back(new TestEditor());
+    tests.push_back(new TestLogger());
 	
 	std::cout << "Launching of the test manager\n";
     std::cout << "Number of test: "<< tests.size() <<"\n\n";
@@ -179,9 +219,6 @@ int main()
 
         EngineCustom engine = EngineCustom();
         engine.Init(test->config);
-
-      
-
         while (engine.is_running && !test->success && !test->fail)
         {
             start = clock();
