@@ -2,19 +2,19 @@
 
 namespace emp
 {
-	void sampleTool::Init()
+	void EmptyTool::Init()
 	{
 	}
 
-	sampleTool::sampleTool(Engine& engine, std::string name): Tool(engine, name)
+	EmptyTool::EmptyTool(Engine& engine, std::string name): Tool(engine, name)
 	{
 	}
 
-	void sampleTool::Update(float)
+	void EmptyTool::Update(float)
 	{
 	}
 
-	void sampleTool::Draw()
+	void EmptyTool::Draw()
 	{
 		// render your GUI
 		ImGui::Begin("Tool");
@@ -22,7 +22,7 @@ namespace emp
 		ImGui::End();
 	}
 
-	void sampleTool::Destroy()
+	void EmptyTool::Destroy()
 	{
 	}
 }

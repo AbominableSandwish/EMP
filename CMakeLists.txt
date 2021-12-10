@@ -7,8 +7,6 @@ project(MUSHROOM VERSION 0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-
-
 #set EXTERNAL_DIR
 set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/externals)
 #set INCLUDE_DIR and SRC_DIR
@@ -44,8 +42,15 @@ LIST(APPEND MUSHROOM_LIBRARIES imgui-glfw)
 #GLM
 set(GLM ${EXTERNAL_DIR}/glm/)
 add_subdirectory(${GLM})
-include_directories(${GLM} ${GLM})
+include_directories(${GLM})
 LIST(APPEND MUSHROOM_LIBRARIES glm)
+
+#JSON
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+#find_package(nlohmann_json REQUIRED)
+#add_subdirectory(${nlohmann_json_source} ${EXTERNAL_DIR}/json-3.10.4/include/nlohmann_json)
+#LIST(APPEND MUSHROOM_LIBRARIES  nlohmann_json::nlohmann_json)
+
 
 # FreeType
 #set(FREETYPE_INCLUDE_DIRS ${EXTERNAL_DIR}/freetype2/include/)

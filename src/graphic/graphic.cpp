@@ -5,6 +5,7 @@
 #include "wtypes.h"
 #include <iostream>
 #include "core/log.h"
+#include "core/engine.h"
 
 
 namespace emp {
@@ -439,7 +440,10 @@ namespace emp {
 	void GraphicManager::Update(float dt)
 	{
 		timer += dt;
-		//while (!glfwWindowShouldClose(this->window))
+		if (glfwWindowShouldClose(this->window))
+		{
+            engine->Stop();
+		}
 		glfwPollEvents();
 	}
 
@@ -458,6 +462,7 @@ namespace emp {
 
         glfwPollEvents();
 	}
+
 
     void GraphicManager::Swap()
     {

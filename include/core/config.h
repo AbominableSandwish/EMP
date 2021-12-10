@@ -14,7 +14,7 @@ namespace emp
 
 	enum Mode
 	{
-		Console,
+		Empty,
 		Launcher,
 		Editor,
 		Game

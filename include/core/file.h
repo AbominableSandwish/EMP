@@ -54,9 +54,18 @@
 //
 #include <core/system.h>
 #include <queue>
+#include "json.hpp"
 
 namespace emp
 {
+	using json = nlohmann::json;
+        
+	enum FormatFile
+	{
+		TXT = 0,
+		JSON = 1
+	};
+
 	struct Data
 	{
 	public:
@@ -64,13 +73,27 @@ namespace emp
 		Data(string name, int action)
 		{
 			this->name = name;
-			this->action = action;
-			
+			this->action = action;	
 		}
 		string name; //data.txt
 		int action; //read, write, append
 	};
-	
+
+	struct Data2V
+	{
+	public:
+		Data2V() = default;
+		Data2V(string name, int action)
+		{
+			this->name = name;
+			this->action = action;
+
+		}
+		string name; //data.txt
+		int action; //read, write, append
+	};
+
+
 	class FileManager : public System
 	{
 	public:
@@ -79,9 +102,9 @@ namespace emp
 		void Update(float) override;
 		void Destroy() override;
 
-		Data ReadFile(string);
-		void WriteFile(Data);
-		void AppendFile(Data);
+		Data ReadFile(string, FormatFile);
+		void WriteFile(Data, FormatFile);
+		void AppendFile(Data, FormatFile);
 		void RemoveFile(string);
 	private:
 		// QueueData
