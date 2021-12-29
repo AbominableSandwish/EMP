@@ -1,8 +1,6 @@
 #include <string>
 #include <vector>
-
 #include "system.h"
-#include "glm/gtx/range.hpp"
 
 namespace emp
 {
@@ -10,24 +8,33 @@ namespace emp
 	struct Entity
 	{
 	public:
-		int id;
-		std::string name;
-
+		int id = -1;
+	
 		Entity();
 		Entity(int);
 		Entity(int, std::string);
-		Entity operator= (Entity entity);
+		~Entity();
+		
+		//void operator= (Entity entity);
 
 		void SetName(char[]);
 		void SetName(std::string);
+		std::string GetName();
 		void SetParent(int);
+		int GetParent();
+		
+		//Todo
+		std::vector<Component*> components;
+		void AddComponent(Component* c);
+
 
 		//void AddComponent(Component);
 		//void RemoveComponent(Component);
 
 	private:
 		//std::vector<Component> components;
-		int parent;
+		std::string name = "";
+		int parent = -1;
 	};
 
 	class EntityManager : public System
@@ -42,15 +49,12 @@ namespace emp
 		void Init() override;
 		void Update(float) override;
 		void Destroy() override;
-
 		
-		
-		Entity& GetEntity();
-		std::vector<Entity>* GetEntities();
-		
-		
+		Entity* GetEntity(int);
+		std::vector<Entity*> GetEntities();
+			
 	private:
-		std::vector<Entity>* entities;
+		std::vector<Entity*> entities;
 	};
 
         

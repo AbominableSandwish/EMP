@@ -6,7 +6,7 @@
 #include <iostream>
 #include "core/log.h"
 #include "core/engine.h"
-
+#include <core/entity.h>
 
 namespace emp {
     namespace Shader
@@ -180,9 +180,43 @@ namespace emp {
         speedRotate *= 2.0f;
     }
 
+    void SpriteGraphic::Draw()
+    {
+            // bind Texture
+            glBindTexture(GL_TEXTURE_2D, texture);
+            emp::Transform transform;
+            // create transformations
+            for (emp::Component* component : entity->components)
+            {
+                if (component->name == "Transform") {
+                    transform = static_cast<emp::Transform&>(*component);
+                }
+            }
+            glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+            transf = glm::translate(transf, glm::vec3(transform.x, transform.y, 0.0f));
+            // transf = glm::rotate(transf, (float)glfwGetTime() / speedRotate, glm::vec3(0.0f, 0.0f, 1.0));
+
+
+             //render container
+            glUseProgram(shaderProgram);
+
+            // get matrix's uniform location and set matrix
+            unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
+
+            glBindVertexArray(VAO);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
   
 
 
+    TextGraphic::TextGraphic(Entity& entity, string text, string name) : GraphicComponent(entity, name)
+    {
+        this->text = text;
+        entity.AddComponent(this);
+    }
+	
     void TextGraphic::Init() {
         // OpenGL state
             // ------------
@@ -379,12 +413,20 @@ namespace emp {
         glBindVertexArray(0);
     }
 
-    Transform obj_1 = Transform(1, 0);
-    Transform obj_2 = Transform(-1, 0);
-    GraphicComponent* component2 = new SpriteGraphic("./data/NewLogoPixelColoredx192v2.jpg", obj_1);
-	GraphicComponent* component = new SpriteGraphic("./data/NewLogoPixelColoredx192v2.jpg", obj_2);
-    GraphicComponent* component3 = new TextGraphic();
-
+    void TextGraphic::Draw()
+    {
+        emp::Transform transform;
+        // create transformations
+        for (emp::Component* component : entity->components)
+        {
+            if (component->name == "Transform") {
+                transform = static_cast<emp::Transform&>(*component);
+            }
+        }
+    	
+        RenderText(shaderProgram, text, transform.x * 100, transform.y * 100, 1.0f, glm::vec3(0.8, 0.0f, 0.9f));
+    }
+	
     GraphicManager::GraphicManager(Engine& engine, string name, ConfigGraphic& config) : System(engine, name)
     {
         this->config = &config;
@@ -429,11 +471,10 @@ namespace emp {
         glfwMakeContextCurrent(this->window);
         GLenum err = glewInit();
 
-        component->Init();
-        component2->Init();
-
-        component3->Init();
-
+        for (auto component : components)
+        {
+            component->Init();
+        }
     }
 	
 	float timer = 0.0f;
@@ -455,10 +496,10 @@ namespace emp {
 
         // uncomment this call to draw in wireframe polygons.
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        component2->Draw();
-        component->Draw();
-        component3->Draw();
-       
+         for (auto component : components)
+         {
+             component->Draw();
+         }
 
         glfwPollEvents();
 	}
@@ -477,7 +518,12 @@ namespace emp {
 		glfwTerminate();
 	}
 
-	GLFWwindow* GraphicManager::GetWindow()
+    void GraphicManager::AddComponent(Component* component)
+    {
+        components.push_back(static_cast<GraphicComponent*>(component));
+    }
+
+    GLFWwindow* GraphicManager::GetWindow()
 	{
 		return this->window;
 	}
@@ -499,4 +545,15 @@ namespace emp {
         int x, y;
         int size_x, size_y;
     };
+	
+    GraphicComponent::GraphicComponent(Entity& entity, string name) : Component(name)
+    {
+        this->entity = &entity;
+    }
+
+    GraphicComponent::GraphicComponent(string path, Entity& entity, string name) : Component(name)
+    {
+        this->path = path;
+        this->entity = &entity;
+    }
 }

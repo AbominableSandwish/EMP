@@ -17,14 +17,18 @@ namespace emp
         {
             this->m_engine = &engine;
             this->name = name;
+
+            this->is_open = true;
         }
         virtual void Init() = 0;
         virtual void Update(float) = 0;
         virtual void Draw() = 0;
         virtual void Destroy() = 0;
+        std::string name;
+        bool is_open;
     protected:
         virtual ~Tool() {};
-        std::string name;
+       
         Engine* m_engine = nullptr;
     };
 	

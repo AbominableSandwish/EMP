@@ -16,6 +16,8 @@
 
 #include <ft2build.h>
 #include <map>
+#include <vector>
+
 
 #include FT_FREETYPE_H  
 #include "core/component.h"
@@ -108,11 +110,11 @@ namespace emp {
     };
 
  
-
+    class Entity;
 	class GraphicComponent : public Component
 	{
 	public :
-        Transform* transform;
+        Entity* entity;
         
         unsigned int shaderProgram;
         unsigned int VBO, VAO, EBO;
@@ -123,16 +125,10 @@ namespace emp {
 
         string path;
 		
-        GraphicComponent()
-		{
+        GraphicComponent(Entity& entity, string name = "");
+
 		
-		}
-		
-        GraphicComponent(string path, Transform& transform)
-        {
-            this->path = path;
-            this->transform = &transform;
-        }
+        GraphicComponent(string path, Entity& entity, string name = "");
 
         virtual void Init() = 0;
         virtual void Draw() = 0;
@@ -144,12 +140,12 @@ namespace emp {
     public:
         float speedRotate = 1.0f;
 
-        SpriteGraphic() : GraphicComponent()
+        SpriteGraphic(Entity& entity) : GraphicComponent(entity)
         {
 
         }
 
-        SpriteGraphic(string path, Transform& transform) : GraphicComponent(path, transform)
+        SpriteGraphic(Entity& entity, string path) : GraphicComponent(path, entity)
         {
 
         }
@@ -157,27 +153,8 @@ namespace emp {
         void Init() override;
 
 
-        void Draw() override
-        {
-            // bind Texture
-            glBindTexture(GL_TEXTURE_2D, texture);
-
-            // create transformations
-            glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            transf = glm::translate(transf, glm::vec3(this->transform->x, this->transform->y, 0.0f));
-           // transf = glm::rotate(transf, (float)glfwGetTime() / speedRotate, glm::vec3(0.0f, 0.0f, 1.0));
-
-
-            //render container
-            glUseProgram(shaderProgram);
-
-            // get matrix's uniform location and set matrix
-            unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
-
-            glBindVertexArray(VAO);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        }
+        void Draw() override;
+        
 
     };
 
@@ -185,17 +162,13 @@ namespace emp {
     {
     public:
         map<GLchar, Character> Characters;
-
+        std::string text = "";
     	
-        TextGraphic() : GraphicComponent()
+        TextGraphic(Entity& entity, string name = "TextGraphic") : GraphicComponent(entity, name)
         {
-
         }
 
-        TextGraphic(string path, Transform& transform) : GraphicComponent(path, transform)
-        {
-
-        }
+        TextGraphic(Entity& entity, string text, string name = "TextGraphic");
 
         void Init() override;
 
@@ -245,12 +218,7 @@ namespace emp {
             glBindTexture(GL_TEXTURE_2D, 0);
         }
 
-    	void Draw() override
-        {
-
-            RenderText(shaderProgram, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
-            RenderText(shaderProgram, "(C) AbominableScience.com", 1600.0f, 25.0f, 0.5f, glm::vec3(0.8, 0.0f, 0.9f));
-        }
+        void Draw() override;
 
     };
 	
@@ -266,12 +234,18 @@ namespace emp {
         void Swap();
 		void Destroy() override;
 
+        void AddComponent(Component* component);
+        void RemoveComponent(Component component){};
+
 		GLFWwindow* GetWindow();
 
 	protected:
 		GLFWwindow* window = nullptr;
 		ConfigGraphic* config = nullptr;
+        std::vector<GraphicComponent*> components;
 
+
+		
 		Screen screen;
 
 		int width = 64;

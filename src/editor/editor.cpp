@@ -6,6 +6,7 @@
 #include "graphic/graphic.h"
 #include "tool/hierarchy.h"
 #include "core/entity.h"
+#include "tool/inspector.h"
 
 namespace emp
 {
@@ -71,8 +72,7 @@ namespace emp
 			{
 				if (ImGui::MenuItem("New Spore"))
 				{
-					Entity& entity = this->m_engine->GetEntityManager()->CreateEntity();
-					LOG::Info("New Spore { name: " + entity.name + " }");
+					//auto entity = this->m_engine->GetEntityManager()->CreateEntity();
 				}
 				ImGui::EndMenu();
 			}
@@ -91,13 +91,16 @@ namespace emp
 				{
 					Newtool(ToolType::CONSOLE);
 				}
-				if (ImGui::MenuItem("Empty"))
+				if (ImGui::MenuItem("Inspector"))
+				{
+					Newtool(ToolType::INSPECTOR);
+				}
+				if (ImGui::MenuItem("Demo"))
 				{
 					Newtool(ToolType::EMPTY);
 				}
 				ImGui::EndMenu();
 			}
-
 			ImGui::EndMainMenuBar();
 		}
 		ImGui::End();
@@ -108,26 +111,42 @@ namespace emp
 		x++;
 		if (x > 100)
 			x = 0;
-		int average = 0;
+		int total = 0;
 		for (int element : list_fps)
 		{
-			average += element;
+			total += element;
 		}
-		average / 100;
+		total / 100;
 		// render your GUI
 		ImGui::Begin("Editor");
-		string text = "FPS : " + to_string(average/60);
-		ImGui::Text(text.c_str());
-		
-		if(ImGui::Button("Mushroom Editor say Hello!"))
-		{
-			ImGui::Text("Hello...");
-		}
+		string average = "FPS : " + to_string(total /60);
+		ImGui::Text(average.c_str());
 		ImGui::End();
 
-		for (Tool* tool : tools)
-		{
-			tool->Draw();
+		bool to_remove = false;
+		int i = 0;
+		int it;
+		if (this->tools.size() != 0) {
+			for (Tool* tool : tools)
+			{
+				if (tool->is_open) {
+					// render your GUI
+					ImGui::Begin(tool->name.c_str(), &(tool->is_open), ImGuiWindowFlags_MenuBar);
+					tool->Draw();
+					ImGui::End();
+
+				}
+				else
+				{
+					to_remove = true;
+					tool = nullptr;
+					it = i;
+				}
+
+				i++;
+			}
+			if (to_remove)
+				tools.erase(tools.begin() + it);
 		}
 
 		// Render dear imgui into screen
@@ -160,8 +179,23 @@ namespace emp
 			tool = new Hierarchy(*(this->m_engine), "Hierarchy");
 			tool->Init();
 			break;
+		case ToolType::INSPECTOR:
+
+			tool = new Inspector(*(this->m_engine), "Inspector");
+			tool->Init();
+			break;
 		}
-		if (tool != nullptr)
-			tools.push_back(tool);
+		if (tool != nullptr) {
+			bool is_exist = false;
+			for (Tool* element : tools)
+			{
+				if(element->name == tool->name)
+				{
+					is_exist = true;
+				}
+			}
+			if(!is_exist)
+				tools.push_back(tool);
+		}
 	}
 }

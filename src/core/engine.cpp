@@ -56,12 +56,30 @@ namespace emp
     	
         this->file_ = new FileManager(*this, "File Manager");
         this->logger_ = LogManager::GetInstance();
-        this->entity_ = new EntityManager(*this, "Entity Manager");
+        this->m_entity = new EntityManager(*this, "Entity Manager");
         this->graphic_ = new GraphicManager(*this, "Graphic Manager", *configGraphic);
     	
         this->file_->Init();
         this->logger_->Init();
-        this->entity_->Init();
+        this->m_entity->Init();
+
+        for (int i = 10 - 1; i >= 0; --i)
+        {
+            this->m_entity->CreateEntity();
+        }
+        this->m_entity->MoveEntity(this->m_entity->GetEntities().size() - 1, 0);
+        this->m_entity->MoveEntity(0, 5);
+    	//Warning : Object
+    	//todo component_manager missing
+        this->m_entity->GetEntity(1)->AddComponent(new Transform(-1, 0));
+        this->m_entity->GetEntity(2)->AddComponent(new Transform(1, 0));
+        this->m_entity->GetEntity(3)->AddComponent(new Transform(0, 0));
+        this->m_entity->GetEntity(4)->AddComponent(new Transform(64, 64));
+
+    	this->graphic_->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(1)), "./data/NewLogoPixelColoredx192v2.jpg"));
+        this->graphic_->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(2)),"./data/NewLogoPixelColoredx192v2.jpg"));
+        this->graphic_->AddComponent(new TextGraphic(*(m_entity->GetEntity(3)), "Abominable Science", "TextGraphic"));
+        //todo system_manager missing
         this->graphic_->Init();
 
         end = 0;
@@ -75,8 +93,8 @@ namespace emp
         LOG::Info(this->config_->GetName() + " is ready");
 	}
 
-        float counter = 0.0f;
-        clock_t oldTime;
+    float counter = 0.0f;
+    clock_t oldTime;
 
     void Engine::Start()
 	{
@@ -110,17 +128,15 @@ namespace emp
         this->Destroy();
     }
 
-
     void Engine::Destroy()
 	{
         this->is_running = false;
         this->logger_ = nullptr;
         this->graphic_->Destroy();
         this->graphic_ = nullptr;
-        this->entity_->Destroy();
-        this->entity_ = nullptr;
+        this->m_entity->Destroy();
+        this->m_entity = nullptr;
         this->file_ = nullptr;
-        
 	}
 
     GLFWwindow* Engine::GetWindow()
@@ -138,8 +154,8 @@ namespace emp
 
     EntityManager* Engine::GetEntityManager()
     {
-        if (this->entity_ != nullptr)
-            return this->entity_;
+        if (this->m_entity != nullptr)
+            return this->m_entity;
         return nullptr;
 
     }

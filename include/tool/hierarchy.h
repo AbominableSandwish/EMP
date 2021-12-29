@@ -5,7 +5,6 @@ class EntityManager;
 }
 class Hierarchy : public emp::Tool
 {
-	
 public:
 	Hierarchy(emp::Engine&, std::string);
 	void Init() override;

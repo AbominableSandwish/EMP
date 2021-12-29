@@ -1,32 +1,41 @@
 #include <core/entity.h>
+#include <core/log.h>
 #include <core/component.h>
 
 namespace emp
 {
 	Entity::Entity()
 	{
+		this->name = "";
+		this->id = -1;
+		this->parent = -1;
 	}
+
+	Entity::~Entity()
+	{
+		components = std::vector<Component*>();
+	}
+	
 	Entity::Entity(int id)
 	{
 		this->id = id;
 		this->name = "Spore_" + std::to_string(id);
-		//components = std::vector<Component>();
+		components = std::vector<Component*>();
 	}
 
 	Entity::Entity(int id, std::string name)
 	{
 		this->id = id;
 		this->name = name;
-		//components = std::vector<Component>();
+		this->components = std::vector<Component*>();
 	}
 
-	Entity Entity::operator=(Entity entity)
+	/*void Entity::operator=(Entity entity)
 	{
 		this->id = entity.id;
 		this->name = entity.name;
 		this->parent = entity.parent;
-		return *this;
-	}
+	}*/
 
 	void Entity::SetName(char name[])
 	{
@@ -38,64 +47,44 @@ namespace emp
 		this->name = name;
 	}
 
+	std::string Entity::GetName()
+	{
+		return this->name;
+	}
+
 	void Entity::SetParent(int parent)
 	{
 		this->parent = parent;
 	}
 
+	void Entity::AddComponent(Component* c)
+	{
+			components.push_back(c);
+	}
+
 	void EntityManager::MoveEntity(int from_to, int move_to)
 	{
 		//Get from_to
-		std::vector<Entity>* buffer = new std::vector<Entity>();
-		Entity entity = (*entities)[from_to];
+		std::vector<Entity*> buffer = std::vector<Entity*>();
+		Entity* entity = entities[from_to];
 		
-		entities->erase(entities->begin() + from_to);
+		entities.erase(entities.begin() + from_to);
 		
-		for (int i = 0; i < entities->size(); ++i)
+		for (int i = 0; i < entities.size(); ++i)
 		{
-				buffer->push_back((*entities)[i]);
+				buffer.push_back(entities[i]);
 		}
 
 		if(from_to < move_to)
 		{
-			buffer->insert((*buffer).begin() + move_to, entity);
+			buffer.insert(buffer.begin() + move_to, entity);
 		}
 		if (from_to > move_to)
 		{
-			buffer->insert((*buffer).begin() + move_to, entity);
+			buffer.insert(buffer.begin() + move_to, entity);
 		}
-		
 
-		
-	   //std::move(entities->end() - 4, entities->end(), new_list->begin() + 1);
-		
-	    /*
-	 	if(move_to == entities->size())
-		{
-			entities->insert(entities->begin() + move_to, (*this->entities)[from_to]);
-		}
-		else
-		{
-			entities->insert(entities->begin() + move_to, (*this->entities)[from_to]);
-		}
-		
-		
-		if(from_to - move_to > 0)
-			entities->erase(entities->begin() + from_to + 1);
-		if (from_to - move_to < 0)
-			entities->erase(entities->begin() + from_to);
-		*/
-
-		
-		
-		
-
-		//int dir = 
-		// std :: move function
-		// move first 4 element from vec1 to starting position of vec2
-
-		//std::move(entities->end()-4, entities->end(), new_list->begin() + 1);
-		entities = std::move(buffer);
+		entities = buffer;
 	}
 
 	EntityManager::EntityManager(): System()
@@ -108,24 +97,20 @@ namespace emp
 
 	Entity& EntityManager::CreateEntity()
 	{
-		entities->push_back(Entity(entities->size() + 1));
-		return (*entities)[entities->size() - 1];
+		entities.push_back(new Entity(entities.size() + 1));
+		LOG::Info("New Entity: \"" + entities.back()->GetName() + "\"");
+		return *entities[entities.size() - 1];	
 	}
 
 	void EntityManager::RemoveEntity(int id)
 	{
-		this->entities->erase(this->entities->begin() + id);
+		LOG::Info("Entity Removed: \"" + this->entities[id]->GetName() + "\"");
+		this->entities.erase(this->entities.begin() + id);
 	}
 
 	void EntityManager::Init()
 	{
-		this->entities = new std::vector<Entity>();
-		for (int i = 10 - 1; i >= 0; --i)
-		{
-			CreateEntity();
-		}
-		MoveEntity( entities->size() - 1, 0);
-		MoveEntity( 0, 5);
+		this->entities = std::vector<Entity*>();
 	}
 
 	void EntityManager::Update(float)
@@ -137,7 +122,17 @@ namespace emp
 	{
 	}
 
-	std::vector<Entity>* EntityManager::GetEntities() {
-		return this->entities;
+	Entity* EntityManager::GetEntity(int id)
+	{
+		for (Entity* element : entities)
+		{
+			if (element->id == id)
+				return element;
+		}
+	}
+
+
+	std::vector<Entity*> EntityManager::GetEntities() {
+		return entities;
 	}
 }

@@ -43,7 +43,7 @@ namespace emp
         ConfigEngine* config_ = nullptr;
         LogManager* logger_ = nullptr;
         FileManager* file_ = nullptr;
-        EntityManager* entity_ = nullptr;
+        EntityManager* m_entity = nullptr;
         GraphicManager* graphic_ = nullptr;
 	private:
         double fps = 0.0;

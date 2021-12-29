@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "editor/tool.h"
 
 namespace emp
@@ -14,6 +16,6 @@ namespace emp
     private:
         Engine* m_engine = nullptr;
         GraphicManager* graphic = nullptr;
-        std::list<Tool*> tools;
+        std::vector<Tool*> tools;
     };
 }

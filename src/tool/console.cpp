@@ -22,7 +22,6 @@ namespace emp
 	
 	void Console::Draw()
 	{
-		ImGui::Begin("Logger", &is_open, ImGuiWindowFlags_MenuBar);
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::Checkbox("Collapse: ", collapse))
@@ -117,8 +116,6 @@ namespace emp
 		{
 			
 		}
-
-		ImGui::End();
 	}
 
 	void Console::Destroy()

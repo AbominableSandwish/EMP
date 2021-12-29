@@ -12,17 +12,21 @@ int main() {
     emp::ConfigEngine* config = new emp::ConfigEngine("Mushroom Engine", mode);
     emp::Engine* engine = new emp::Engine();
     engine->Init(config);
-	
+
 	class emp::Editor* editor = nullptr; // todo GET OUT!
-	editor = new class emp::Editor(*engine);
-	editor->Init();
+	if (mode == emp::Mode::Editor)
+	{		
+		editor = new class emp::Editor(*engine);
+		editor->Init();
+	}
 	
     engine->Start();
     
 	while (engine->is_running)
 	{
 		editor->Draw();
-		engine->Update();
+		if(editor == nullptr)
+			engine->Update();
 	}
 
     if (editor != nullptr) {
