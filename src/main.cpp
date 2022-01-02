@@ -25,7 +25,7 @@ int main() {
 	while (engine->is_running)
 	{
 		editor->Draw();
-		if(editor == nullptr)
+		if(editor != nullptr)
 			engine->Update();
 	}
 

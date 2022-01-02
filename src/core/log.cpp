@@ -4,7 +4,7 @@
 
 namespace emp
 {
-	LogManager::LogManager() : System() {}
+	LogManager::LogManager() : System() { instance = this; }
 
 	LogManager::LogManager(Engine& engine, string name) : System(engine, name) { instance = this; }
 

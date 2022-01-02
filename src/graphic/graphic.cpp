@@ -70,6 +70,15 @@ namespace emp {
         }
     }
 
+    SpriteGraphic::SpriteGraphic(Entity& entity) : GraphicComponent(entity)
+    {
+    	
+    }
+
+    SpriteGraphic::SpriteGraphic(Entity& entity, string path) : GraphicComponent(path, entity)
+    {
+    }
+
     void SpriteGraphic::Init() {
         this->vs = "#version 330 core\n"
             "layout(location = 0) in vec3 aPos;\n"
@@ -208,8 +217,10 @@ namespace emp {
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
-  
 
+    TextGraphic::TextGraphic(Entity& entity, string name) : GraphicComponent(entity, name)
+    {
+    }
 
     TextGraphic::TextGraphic(Entity& entity, string text, string name) : GraphicComponent(entity, name)
     {
@@ -413,6 +424,51 @@ namespace emp {
         glBindVertexArray(0);
     }
 
+    void TextGraphic::RenderText(unsigned& shader, std::string text, float x, float y, float scale, glm::vec3 color)
+    {
+        // activate corresponding render state	
+        glUseProgram(shader);
+        glUniform3f(glGetUniformLocation(shader, "textColor"), color.x, color.y, color.z);
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(VAO);
+
+        // iterate through all characters
+        std::string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++)
+        {
+            Character ch = Characters[*c];
+
+            float xpos = x + ch.Bearing.x * scale;
+            float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+            float w = ch.Size.x * scale;
+            float h = ch.Size.y * scale;
+            // update VBO for each character
+            float vertices[6][4] = {
+                { xpos,     ypos + h,   0.0f, 0.0f },
+                { xpos,     ypos,       0.0f, 1.0f },
+                { xpos + w, ypos,       1.0f, 1.0f },
+
+                { xpos,     ypos + h,   0.0f, 0.0f },
+                { xpos + w, ypos,       1.0f, 1.0f },
+                { xpos + w, ypos + h,   1.0f, 0.0f }
+            };
+            // render glyph texture over quad
+            glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+            // update content of VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            // render quad
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        }
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     void TextGraphic::Draw()
     {
         emp::Transform transform;
@@ -426,18 +482,16 @@ namespace emp {
     	
         RenderText(shaderProgram, text, transform.x * 100, transform.y * 100, 1.0f, glm::vec3(0.8, 0.0f, 0.9f));
     }
-	
-    GraphicManager::GraphicManager(Engine& engine, string name, ConfigGraphic& config) : System(engine, name)
-    {
-        this->config = &config;
-    }
-
-    GraphicManager::GraphicManager(Engine& engine, string name) : System(engine, name)
-    {
-    }
 
     void GraphicManager::Init()
     {
+    }
+
+    void GraphicManager::Init(Engine& engine, string name, ConfigGraphic& config)
+    {
+        this->engine = &engine;
+        this->name = name;
+        this->config = &config;
         //Get Info Screen Resolution
         int horizontal = 0;
         int vertical = 0;
@@ -451,14 +505,14 @@ namespace emp {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        this->window = glfwCreateWindow(config->width, config->height, "Engine Mushroom Portuaire", NULL, NULL);
+        this->window = glfwCreateWindow(this->config->width, this->config->height, "Engine Mushroom Portuaire", NULL, NULL);
 
         this->screen._backgroundColor = ColorRGB(0.14f, 0.14f, 0.14f);
     	
-        glfwSetWindowAttrib(window, GLFW_DECORATED, config->decorated);
-        glfwSetWindowPos(this->window, config->x, config->y);
-        glfwSetWindowSize(this->window, config->window_width, config->window_height);
-        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, config->transparent);
+        glfwSetWindowAttrib(window, GLFW_DECORATED, this->config->decorated);
+        glfwSetWindowPos(this->window, this->config->x, this->config->y);
+        glfwSetWindowSize(this->window, this->config->window_width, this->config->window_height);
+        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, this->config->transparent);
 
     	
         if (window == NULL)
@@ -490,7 +544,6 @@ namespace emp {
 
 	void GraphicManager::Draw()
 	{
-        
          //glClearColor(screen._backgroundColor.r, screen._backgroundColor.g, screen._backgroundColor.b, screen._backgroundColor.a);
 		 //glClear(GL_COLOR_BUFFER_BIT);
 

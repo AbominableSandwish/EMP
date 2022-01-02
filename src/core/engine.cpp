@@ -48,39 +48,45 @@ namespace emp
 	Engine::Engine() = default;
 
     void Engine::Init(ConfigEngine* config)
-	{
-        LOG::Info("Loading configuration");
-    	
-        this->config_ = config;
+	{	
+        m_config = config;
         emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
-    	
-        this->file_ = new FileManager(*this, "File Manager");
-        this->logger_ = LogManager::GetInstance();
-        this->m_entity = new EntityManager(*this, "Entity Manager");
-        this->graphic_ = new GraphicManager(*this, "Graphic Manager", *configGraphic);
-    	
-        this->file_->Init();
-        this->logger_->Init();
-        this->m_entity->Init();
+    	  
+        m_systems = new SystemManager();
 
-        for (int i = 10 - 1; i >= 0; --i)
+    	//File
+        m_file = this->m_systems->RegisterSystem <FileManager>(*this, "File Manager");
+        m_file->Init();
+
+        //Log
+        m_log = this->m_systems->RegisterSystem<LogManager>();
+        m_log->Init();
+
+    	//Entity
+        m_entity = this->m_systems->RegisterSystem<EntityManager>(*this, "Entity Manager");
+        m_entity->Init();
+
+    	for (int i = 10 - 1; i >= 0; --i)
         {
             this->m_entity->CreateEntity();
         }
-        this->m_entity->MoveEntity(this->m_entity->GetEntities().size() - 1, 0);
-        this->m_entity->MoveEntity(0, 5);
-    	//Warning : Object
-    	//todo component_manager missing
         this->m_entity->GetEntity(1)->AddComponent(new Transform(-1, 0));
         this->m_entity->GetEntity(2)->AddComponent(new Transform(1, 0));
         this->m_entity->GetEntity(3)->AddComponent(new Transform(0, 0));
         this->m_entity->GetEntity(4)->AddComponent(new Transform(64, 64));
 
-    	this->graphic_->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(1)), "./data/NewLogoPixelColoredx192v2.jpg"));
-        this->graphic_->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(2)),"./data/NewLogoPixelColoredx192v2.jpg"));
-        this->graphic_->AddComponent(new TextGraphic(*(m_entity->GetEntity(3)), "Abominable Science", "TextGraphic"));
-        //todo system_manager missing
-        this->graphic_->Init();
+        this->m_entity->MoveEntity(this->m_entity->GetEntities().size() - 1, 0);
+        this->m_entity->MoveEntity(0, 5);
+    	//Warning : Object
+    	//todo component_manager missing
+
+    	//Graphic
+        m_graphic = this->m_systems->RegisterSystem<GraphicManager>();
+    	this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(1)), "./data/NewLogoPixelColoredx192v2.jpg"));
+        this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(2)),"./data/NewLogoPixelColoredx192v2.jpg"));
+        this->m_graphic->AddComponent(new TextGraphic(*(m_entity->GetEntity(3)), "Abominable Science", "TextGraphic"));
+
+        this->m_graphic->Init(*this, "Graphic Manager", *configGraphic);
 
         end = 0;
         int max;
@@ -90,7 +96,7 @@ namespace emp
             arr[i] = std::rand();
         }
 
-        LOG::Info(this->config_->GetName() + " is ready");
+        LOG::Info(this->m_config->GetName() + " is ready");
 	}
 
     float counter = 0.0f;
@@ -112,12 +118,14 @@ namespace emp
             start = clock();
             float dt = float(start - end);
             counter += dt;
-
-            this->logger_->Update(dt); 
-            this->file_->Update(dt);
-            this->graphic_->Update(dt);
-
-             this->graphic_->Draw();
+            if(this->m_log != nullptr)
+				this->m_log->Update(dt); 
+            this->m_file->Update(dt);
+        	
+            //this->m_graphic->Update(dt);
+        	
+            if(this->m_graphic != nullptr)
+				this->m_graphic->Draw();
 
             end = clock();
         }
@@ -131,23 +139,23 @@ namespace emp
     void Engine::Destroy()
 	{
         this->is_running = false;
-        this->logger_ = nullptr;
-        this->graphic_->Destroy();
-        this->graphic_ = nullptr;
+        this->m_log = nullptr;
+        this->m_graphic->Destroy();
+        this->m_graphic = nullptr;
         this->m_entity->Destroy();
         this->m_entity = nullptr;
-        this->file_ = nullptr;
+        this->m_file = nullptr;
 	}
 
     GLFWwindow* Engine::GetWindow()
     {
-        return this->graphic_->GetWindow();
+        return this->m_graphic->GetWindow();
     }
 
     LogManager* Engine::GetLogManager()
     {
-    	if(this->logger_ != nullptr)
-	    return this->logger_;
+    	if(this->m_log != nullptr)
+	    return this->m_log.get();
         return nullptr;
 	
     }
@@ -155,15 +163,15 @@ namespace emp
     EntityManager* Engine::GetEntityManager()
     {
         if (this->m_entity != nullptr)
-            return this->m_entity;
+            return this->m_entity.get();
         return nullptr;
 
     }
 
     GraphicManager* Engine::GetGraphicManager()
     {
-        if (this->graphic_ != nullptr)
-            return  this->graphic_;
+        if (this->m_graphic != nullptr)
+            return  this->m_graphic.get();
         return nullptr;
     }
 }

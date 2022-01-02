@@ -1,4 +1,5 @@
 #include <ctime>
+#include <memory>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -10,6 +11,7 @@ namespace emp
     class LogManager;
     class FileManager;
     class EntityManager;
+    class SystemManager;
 
 	class Engine
 	{
@@ -20,7 +22,7 @@ namespace emp
         Engine(Engine&&) = default;
         Engine(const Engine&) = delete;
 
-        void Init(ConfigEngine* config);
+        void Init(ConfigEngine* m_config);
         void Start();
         void Update();
         void Stop();
@@ -34,17 +36,18 @@ namespace emp
         GraphicManager* GetGraphicManager();
 		
 
-        double GetFPS()
+    double GetFPS()
 	{
-               return this->fps;
+        return this->fps;
 	}
 
     protected:
-        ConfigEngine* config_ = nullptr;
-        LogManager* logger_ = nullptr;
-        FileManager* file_ = nullptr;
-        EntityManager* m_entity = nullptr;
-        GraphicManager* graphic_ = nullptr;
+        ConfigEngine* m_config = nullptr;
+        std::shared_ptr<LogManager> m_log;
+        std::shared_ptr<FileManager> m_file;
+        std::shared_ptr<EntityManager> m_entity;
+        std::shared_ptr<GraphicManager> m_graphic;
+        SystemManager* m_systems = nullptr;
 	private:
         double fps = 0.0;
         clock_t start, end;
