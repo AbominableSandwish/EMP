@@ -6,7 +6,7 @@
 
 void Inspector::Init()
 	{
-		this->manager = m_engine->GetEntityManager();
+		//this->manager = m_engine->GetEntityManager();
 		
 	}
 
@@ -25,21 +25,21 @@ void Inspector::Init()
 			int bufSize = 32;
 			char buffer[32] = {};
 			int c = 0;
-			emp::Entity* entity = manager->GetEntity(Target);
-			for (auto character : entity->GetName())
-			{
-				buffer[c] = character;
-				c++;
-			}
-			ImGui::Text("Name: ");
-			ImGui::SameLine();
-			if(ImGui::InputText("##name", buffer, bufSize, ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				emp::LOG::Debug("Setting attributes Spore");
-				entity->SetName(buffer);
-			}
+			//emp::Entity* entity = manager->GetEntity(Target);
+			//for (auto character : entity->GetName())
+			//{
+			//	buffer[c] = character;
+			//	c++;
+			//}
+			//ImGui::Text("Name: ");
+			//ImGui::SameLine();
+			//if(ImGui::InputText("##name", buffer, bufSize, ImGuiInputTextFlags_EnterReturnsTrue))
+			//{
+			//	emp::LOG::Debug("Setting attributes Spore");
+			//	entity->SetName(buffer);
+			//}
 
-			if(entity->components.size() != 0)
+		/*	if(entity->components.size() != 0)
 			{
 				for (emp::Component* component : entity->components)
 				{
@@ -84,7 +84,7 @@ void Inspector::Init()
 						}
 					}
 				}
-			}
+			}*/
 		}
 	}
 

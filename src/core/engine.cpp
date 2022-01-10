@@ -6,7 +6,7 @@
 #include <editor/editor.h>
 #include <core/file.h>
 #include <core/entity.h>
-
+#include <core/component.h>
 
 namespace emp
 {
@@ -48,7 +48,10 @@ namespace emp
 	Engine::Engine() = default;
 
     void Engine::Init(ConfigEngine* config)
-	{	
+	{
+        m_component = std::make_unique<ComponentManager>();
+        m_component->RegisterComponent<Transform>();
+        m_component->AddComponent(0 ,Transform());
         m_config = config;
         emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
     	  
@@ -70,21 +73,14 @@ namespace emp
         {
             this->m_entity->CreateEntity();
         }
-        this->m_entity->GetEntity(1)->AddComponent(new Transform(-1, 0));
-        this->m_entity->GetEntity(2)->AddComponent(new Transform(1, 0));
-        this->m_entity->GetEntity(3)->AddComponent(new Transform(0, 0));
-        this->m_entity->GetEntity(4)->AddComponent(new Transform(64, 64));
-
-        this->m_entity->MoveEntity(this->m_entity->GetEntities().size() - 1, 0);
-        this->m_entity->MoveEntity(0, 5);
     	//Warning : Object
     	//todo component_manager missing
 
     	//Graphic
         m_graphic = this->m_systems->RegisterSystem<GraphicManager>();
-    	this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(1)), "./data/NewLogoPixelColoredx192v2.jpg"));
+    	/*this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(1)), "./data/NewLogoPixelColoredx192v2.jpg"));
         this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(2)),"./data/NewLogoPixelColoredx192v2.jpg"));
-        this->m_graphic->AddComponent(new TextGraphic(*(m_entity->GetEntity(3)), "Abominable Science", "TextGraphic"));
+        this->m_graphic->AddComponent(new TextGraphic(*(m_entity->GetEntity(3)), "Abominable Science", "TextGraphic"));*/
 
         this->m_graphic->Init(*this, "Graphic Manager", *configGraphic);
 
@@ -122,7 +118,7 @@ namespace emp
 				this->m_log->Update(dt); 
             this->m_file->Update(dt);
         	
-            //this->m_graphic->Update(dt);
+            this->m_graphic->Update(dt);
         	
             if(this->m_graphic != nullptr)
 				this->m_graphic->Draw();
@@ -174,6 +170,14 @@ namespace emp
             return  this->m_graphic.get();
         return nullptr;
     }
+
+	ComponentManager* Engine::GetComponentManager()
+	{
+        if (this->m_graphic != nullptr)
+            return  this->m_component.get();
+        return nullptr;
+	}
+
 }
 
 /*include  datetime import datetime

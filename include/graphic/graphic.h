@@ -19,12 +19,8 @@
 #include <vector>
 
 
-#include FT_FREETYPE_H  
-#include "core/component.h"
+#include FT_FREETYPE_H
 #include "graphic/texture.h"
-#include "common/transform.h"
-
-
 
 
 namespace emp {
@@ -110,53 +106,163 @@ namespace emp {
     };
 
  
-    class Entity;
-	class GraphicComponent : public Component
-	{
-	public :
-        Entity* entity;
-        
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
-        unsigned int texture;
-        const char* vs;
-        const char* frag;
+ //   class Entity;
+	//class GraphicComponent
+	//{
+	//public :
+ //       Entity* entity;
+ //       
+ //       unsigned int shaderProgram;
+ //       unsigned int VBO, VAO, EBO;
+ //       unsigned int texture;
+ //       const char* vs;
+ //       const char* frag;
 
-        string path;
-		
-        GraphicComponent(Entity& entity, string name = "");
-        GraphicComponent(string path, Entity& entity, string name = "");
+ //       string path;
+	//	
+ //       GraphicComponent(Entity& entity, string name = "");
+ //       GraphicComponent(string path, Entity& entity, string name = "");
 
-        virtual void Init() = 0;
-        virtual void Draw() = 0;
-	};
+ //       virtual void Init() = 0;
+ //       virtual void Draw() = 0;
+	//};
 
-    class SpriteGraphic : public GraphicComponent
+class SpriteRenderer
+{
+public:
+    SpriteRenderer(int entity)
     {
-    public:
-        float speedRotate = 1.0f;
+        this->entity = entity;
 
-        SpriteGraphic(Entity& entity);       
-        SpriteGraphic(Entity& entity, string path);
+    	this->vs = "#version 330 core\n"
+            "layout(location = 0) in vec3 aPos;\n"
+            "layout(location = 1) in vec3 aColor;\n"
+            "layout(location = 2) in vec2 aTexCoord;\n"
+    		"layout(location = 3) in vec2 aresolution;\n"
 
-        void Init() override;
-        void Draw() override;
-    };
+            "out vec3 ourColor;\n"
+            "out vec2 TexCoord;\n"
+            "uniform mat4 transform;"
 
-    class TextGraphic : public GraphicComponent
-    {
-    public:
-        map<GLchar, Character> Characters;
-        std::string text = "";
+            "void main()\n"
+            "{\n"
+
+            "gl_Position = transform * vec4(aPos, 1.0);\n"
+            "ourColor = aColor;\n"
+            "TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
+            "}\0";
+
+        this->frag = "#version 330 core\n"
+            "out vec4 FragColor;\n"
+
+            "in vec3 ourColor;\n"
+            "in vec2 TexCoord;\n"
+
+            // texture sampler
+            "uniform sampler2D texture1;\n"
+
+            "void main()\n"
+            "{\n"
+            
+            "FragColor = texture2D(texture1, TexCoord);\n"
+            "}\0";
+
+        // set up vertex data (and buffer(s)) and configure vertex attributes
+       // ------------------------------------------------------------------
+        float vertices[] = {
+            // positions            // colors           // texture coords
+            1.0f,  1.0f, 0.0f,      1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+            1.0f, -1.0f, 0.0f,       0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+            -1.0f, -1.0, 0.0f,      0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+            -1.0f,  1.0f, 0.0f,     1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+        };
+
+        unsigned int indices[] = {
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
+        };
+    }
     	
-        TextGraphic(Entity& entity, string name = "TextGraphic");
-        TextGraphic(Entity& entity, string text, string name = "TextGraphic");
+    SpriteRenderer(int entity, string path)
+    {
+        this->entity = entity;
+        this->path = path;
 
-        void Init() override;
-        // render line of text
-        void RenderText(unsigned int& shader, std::string text, float x, float y, float scale, glm::vec3 color);
-        void Draw() override;
-    };
+        this->vs = "#version 330 core\n"
+            "layout(location = 0) in vec3 aPos;\n"
+            "layout(location = 1) in vec3 aColor;\n"
+            "layout(location = 2) in vec2 aTexCoord;\n"
+            "layout(location = 3) in vec2 aresolution;\n"
+
+            "out vec3 ourColor;\n"
+            "out vec2 TexCoord;\n"
+            "uniform mat4 transform;"
+
+            "void main()\n"
+            "{\n"
+
+            "gl_Position = transform * vec4(aPos, 1.0);\n"
+            "ourColor = aColor;\n"
+            "TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
+            "}\0";
+
+        this->frag = "#version 330 core\n"
+            "out vec4 FragColor;\n"
+
+            "in vec3 ourColor;\n"
+            "in vec2 TexCoord;\n"
+
+            // texture sampler
+            "uniform sampler2D texture1;\n"
+
+            "void main()\n"
+            "{\n"
+
+            "FragColor = texture2D(texture1, TexCoord);\n"
+            "}\0";
+
+    }
+
+    void Init();
+
+    int entity;
+    string path;
+	
+    unsigned int shaderProgram;
+    unsigned int VBO, VAO, EBO;
+    unsigned int texture;
+
+    const char* vs;
+    const char* frag;
+};
+
+class SpriteManager : public System
+{
+	SpriteManager() : System()
+	{
+		
+	}
+	
+	void Init() override;
+	void Update(float) override;
+    void Draw(Engine& engine);
+	void Destroy() override;
+};
+
+    //class TextGraphic : public GraphicComponent
+    //{
+    //public:
+    //    map<GLchar, Character> Characters;
+    //    std::string text = "";
+    //	
+    //    TextGraphic(Entity& entity, string name = "TextGraphic");
+    //    TextGraphic(Entity& entity, string text, string name = "TextGraphic");
+
+    //    void Init() override;
+    //    // render line of text
+    //    void RenderText(unsigned int& shader, std::string text, float x, float y, float scale, glm::vec3 color);
+    //    void Draw() override;
+    //};
 	
 	class GraphicManager : public System
 	{
@@ -165,6 +271,7 @@ namespace emp {
         {
 	        
         }
+		
         void Init() override;
 		void Init(Engine&, string, ConfigGraphic&);
 		void Update(float) override;
@@ -173,16 +280,14 @@ namespace emp {
         void Swap();
 		void Destroy() override;
 
-        void AddComponent(Component* component);
-        void RemoveComponent(Component component){};
-
 		GLFWwindow* GetWindow();
 
 	protected:
 		GLFWwindow* window = nullptr;
 		ConfigGraphic* config = nullptr;
-        std::vector<GraphicComponent*> components;
+        //std::vector<GraphicComponent*> components;
 		Screen screen;
+        SpriteManager* m_sprite;
 
 		int width = 64;
 		int height = 64;

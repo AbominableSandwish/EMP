@@ -12,6 +12,7 @@ namespace emp
     class FileManager;
     class EntityManager;
     class SystemManager;
+    class ComponentManager;
 
 	class Engine
 	{
@@ -34,8 +35,7 @@ namespace emp
         LogManager* GetLogManager();
         EntityManager* GetEntityManager();
         GraphicManager* GetGraphicManager();
-		
-
+        ComponentManager* GetComponentManager();
     double GetFPS()
 	{
         return this->fps;
@@ -47,6 +47,7 @@ namespace emp
         std::shared_ptr<FileManager> m_file;
         std::shared_ptr<EntityManager> m_entity;
         std::shared_ptr<GraphicManager> m_graphic;
+        std::unique_ptr<ComponentManager> m_component;
         SystemManager* m_systems = nullptr;
 	private:
         double fps = 0.0;
