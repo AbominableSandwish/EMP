@@ -78,6 +78,8 @@ namespace emp
 
     	//Graphic
         m_graphic = this->m_systems->RegisterSystem<GraphicManager>();
+        this->m_component->RegisterComponent<SpriteRenderer>();
+        this->m_component->AddComponent(0, SpriteRenderer(0, "./data/NewLogoPixelColoredx192v2.jpg"));
     	/*this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(1)), "./data/NewLogoPixelColoredx192v2.jpg"));
         this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(2)),"./data/NewLogoPixelColoredx192v2.jpg"));
         this->m_graphic->AddComponent(new TextGraphic(*(m_entity->GetEntity(3)), "Abominable Science", "TextGraphic"));*/

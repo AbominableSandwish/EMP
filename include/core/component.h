@@ -8,23 +8,34 @@ namespace emp {
 	{
 	public:
 		float x, y;
+		float scale_x, scale_y;
 		
 		Transform()
 		{
 			this->x = 0.0f;
 			this->y = 0.0f;
+			this->scale_x = 1;
+			this->scale_y = 1;
 		}
 
 		Transform(float x, float y)
 		{
 			this->x = x;
 			this->y = y;
+			this->scale_x = 1;
+			this->scale_y = 1;
 		}
 
 		void SetPosition(float x, float y)
 		{
 			this->x = x;
 			this->y = y;
+		}
+
+		void SetScale(float x, float y)
+		{
+			this->scale_x = x;
+			this->scale_y = y;
 		}
 	};
 

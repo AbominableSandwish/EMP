@@ -83,17 +83,25 @@ namespace emp {
        
     }
 
+    void SpriteManager::Update(float)
+    {
+    }
+
     void SpriteManager::Draw(Engine& engine)
     {
         auto components =  engine.GetComponentManager()->GetComponents<SpriteRenderer>();
         for (auto element : components)
         {
-
+            if(element.texture == 0)
+            {
+                element.Init();
+            }
             // bind Texture
             glBindTexture(GL_TEXTURE_2D, element.texture);
             auto position = engine.GetComponentManager()->GetComponent<Transform>(element.entity);
             glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
             transf = glm::translate(transf, glm::vec3(position.x, position.y, 0.0f));
+            transf = glm::scale(transf, glm::vec3(position.scale_x, position.scale_y, 0.0f));
             // transf = glm::rotate(transf, (float)glfwGetTime() / speedRotate, glm::vec3(0.0f, 0.0f, 1.0));
 
 
@@ -106,8 +114,11 @@ namespace emp {
 
             glBindVertexArray(element.VAO);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
         }
+    }
+
+    void SpriteManager::Destroy()
+    {
     }
 
 
@@ -427,7 +438,7 @@ namespace emp {
     	{
             engine->Stop();
     	}
-    	
+        m_sprite->Update(dt);
     	glfwPollEvents();
     }
 
@@ -435,7 +446,7 @@ namespace emp {
     {
         //glClearColor(screen._backgroundColor.r, screen._backgroundColor.g, screen._backgroundColor.b, screen._backgroundColor.a);
         //glClear(GL_COLOR_BUFFER_BIT);
-
+        m_sprite->Draw(*engine);
        // uncomment this call to draw in wireframe polygons.
        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glfwPollEvents();
@@ -489,10 +500,52 @@ namespace emp {
     //       this->entity = &entity;
     //   }
 
+    SpriteRenderer::SpriteRenderer(int entity, string path)
+    {
+        this->entity = entity;
+        this->path = path;
+    }
+	
+
        void SpriteRenderer::Init()
        {
+
+
+			this->vs = "#version 330 core\n"
+               "layout(location = 0) in vec3 aPos;\n"
+               "layout(location = 1) in vec3 aColor;\n"
+               "layout(location = 2) in vec2 aTexCoord;\n"
+               "layout(location = 3) in vec2 aresolution;\n"
+
+               "out vec3 ourColor;\n"
+               "out vec2 TexCoord;\n"
+               "uniform mat4 transform;"
+
+               "void main()\n"
+               "{\n"
+
+               "gl_Position = transform * vec4(aPos, 1.0);\n"
+               "ourColor = aColor;\n"
+               "TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
+               "}\0";
+
+           this->frag = "#version 330 core\n"
+               "out vec4 FragColor;\n"
+
+               "in vec3 ourColor;\n"
+               "in vec2 TexCoord;\n"
+
+               // texture sampler
+               "uniform sampler2D texture1;\n"
+
+               "void main()\n"
+               "{\n"
+
+               "FragColor = texture2D(texture1, TexCoord);\n"
+               "}\0";
+
            // set up vertex data (and buffer(s)) and configure vertex attributes
-			 // ------------------------------------------------------------------
+     // ------------------------------------------------------------------
            float vertices[] = {
                // positions            // colors           // texture coords
                1.0f,  1.0f, 0.0f,      1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
@@ -560,6 +613,8 @@ namespace emp {
            Texture::loadTexture(file, width, height, texture, path.c_str(), level);
            glGenerateMipmap(GL_TEXTURE_2D);
            stbi_image_free(file);
+
        }
+
 
 }
