@@ -3,8 +3,12 @@
 //	Transform = 0,
 //	Sprite2D = 1
 //};
-namespace emp {
-	class Transform
+namespace emp{
+	class Component {
+public:
+	Component() = default;
+};
+	class Transform: public Component
 	{
 	public:
 		float x, y;
@@ -26,6 +30,14 @@ namespace emp {
 			this->scale_y = 1;
 		}
 
+		Transform(float x, float y, float s_x, float s_y)
+		{
+			this->x = x;
+			this->y = y;
+			this->scale_x = s_x;
+			this->scale_y = s_y;
+		}
+
 		void SetPosition(float x, float y)
 		{
 			this->x = x;
@@ -36,6 +48,11 @@ namespace emp {
 		{
 			this->scale_x = x;
 			this->scale_y = y;
+		}
+
+		void Init()
+		{
+			
 		}
 	};
 
@@ -52,17 +69,22 @@ namespace emp {
 		ComponentArray()
 		{
 			components = std::vector<T>();
+			mSize = 0;
 		}
 		
 		void InsertData(int entity, T component)
 		{
+			// Put new entry at end and update the maps
+			size_t newIndex = mSize;
+			mEntityToIndexMap[entity] = newIndex;
+			mIndexToEntityMap[newIndex] = entity;
 			components.push_back(component);
+			++mSize;
 		}
 
 		T& GetComponent(int entity)
 		{
-			//todo 
-			return components[0];
+			return components[mEntityToIndexMap[entity]];
 		}
 
 		std::vector<T>& GetComponents()
@@ -73,6 +95,14 @@ namespace emp {
 
 	protected:
 		std::vector<T> components;
+		// Map from an entity ID to an array index.
+		std::unordered_map<int, size_t> mEntityToIndexMap;
+
+		// Map from an array index to an entity ID.
+		std::unordered_map<size_t, int> mIndexToEntityMap;
+
+		// Total size of valid entries in the array.
+		size_t mSize;
 	};
 	
 	class ComponentManager : public System
@@ -104,7 +134,9 @@ namespace emp {
 		template<typename T>
 		void AddComponent(int entity,  T component)
 		{
+			component.Init();
 			GetComponentArray<T>()->InsertData(entity, component);
+			
 		}
 
 		template<typename T>
@@ -133,10 +165,3 @@ namespace emp {
 	};
 	
 }
-
-
-//
-//class Sprite2D : Component
-//{
-//
-//};

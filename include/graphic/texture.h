@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-
 #include <iostream>
+#include "GL/glew.h"
 
 
 namespace emp

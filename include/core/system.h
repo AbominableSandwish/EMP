@@ -13,6 +13,7 @@
 namespace emp
 {
     class Engine;
+    class ConfigGraphic;
     using namespace std;
     class System
     {
@@ -40,6 +41,30 @@ namespace emp
             //assert(systems.find(typeName) == systems.end() && "Registering system more than once.");
         	
             auto system = std::make_shared<T>();
+            systems.insert({ typeName, system });
+            return system;
+        }
+
+        template<typename T>
+        std::shared_ptr<T> RegisterSystem(Engine& engine)
+        {
+            const char* typeName = typeid(T).name();
+
+            //assert(systems.find(typeName) == systems.end() && "Registering system more than once.");
+
+            auto system = std::make_shared<T>(engine);
+            systems.insert({ typeName, system });
+            return system;
+        }
+
+        template<typename T>
+        std::shared_ptr<T> RegisterSystem(Engine& engine, ConfigGraphic& config)
+        {
+            const char* typeName = typeid(T).name();
+
+            //assert(systems.find(typeName) == systems.end() && "Registering system more than once.");
+
+            auto system = std::make_shared<T>(engine, config);
             systems.insert({ typeName, system });
             return system;
         }

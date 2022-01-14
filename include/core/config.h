@@ -46,6 +46,7 @@ namespace emp
 			vertical = desktop.bottom;
 		}
 
+		int PixelSize = 100;
 		//Resolution texture
 		int width, height;
 		//Size Window;

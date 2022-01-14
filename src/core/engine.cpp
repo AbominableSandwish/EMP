@@ -7,6 +7,8 @@
 #include <core/file.h>
 #include <core/entity.h>
 #include <core/component.h>
+#include <core/config.h>
+#include "graphic/sprite.h"
 
 namespace emp
 {
@@ -48,13 +50,10 @@ namespace emp
 	Engine::Engine() = default;
 
     void Engine::Init(ConfigEngine* config)
-	{
-        m_component = std::make_unique<ComponentManager>();
-        m_component->RegisterComponent<Transform>();
-        m_component->AddComponent(0 ,Transform());
+	{    
         m_config = config;
-        emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
-    	  
+
+    	m_component = std::make_unique<ComponentManager>();
         m_systems = new SystemManager();
 
     	//File
@@ -69,22 +68,13 @@ namespace emp
         m_entity = this->m_systems->RegisterSystem<EntityManager>(*this, "Entity Manager");
         m_entity->Init();
 
-    	for (int i = 10 - 1; i >= 0; --i)
-        {
-            this->m_entity->CreateEntity();
-        }
-    	//Warning : Object
-    	//todo component_manager missing
-
     	//Graphic
-        m_graphic = this->m_systems->RegisterSystem<GraphicManager>();
-        this->m_component->RegisterComponent<SpriteRenderer>();
-        this->m_component->AddComponent(0, SpriteRenderer(0, "./data/NewLogoPixelColoredx192v2.jpg"));
-    	/*this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(1)), "./data/NewLogoPixelColoredx192v2.jpg"));
-        this->m_graphic->AddComponent(new SpriteGraphic(*(m_entity->GetEntity(2)),"./data/NewLogoPixelColoredx192v2.jpg"));
-        this->m_graphic->AddComponent(new TextGraphic(*(m_entity->GetEntity(3)), "Abominable Science", "TextGraphic"));*/
+        emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
+        m_graphic = this->m_systems->RegisterSystem<GraphicManager>(*this, *configGraphic);
 
-        this->m_graphic->Init(*this, "Graphic Manager", *configGraphic);
+        this->m_component->RegisterComponent<Transform>();
+        this->m_component->RegisterComponent<SpriteRenderer>();
+        this->m_graphic->Init();
 
         end = 0;
         int max;
@@ -102,6 +92,14 @@ namespace emp
 
     void Engine::Start()
 	{
+        for (int i = 0; i <= 100; ++i)
+        {
+            this->m_entity->CreateEntity();
+            this->m_component->AddComponent(i, Transform(-80 + 3 * i, -10, 0.015f, 0.02f));
+            this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
+        }
+    	
+      
         this->is_running = true;
 	}
 
@@ -153,9 +151,8 @@ namespace emp
     LogManager* Engine::GetLogManager()
     {
     	if(this->m_log != nullptr)
-	    return this->m_log.get();
+			return this->m_log.get();
         return nullptr;
-	
     }
 
     EntityManager* Engine::GetEntityManager()
@@ -163,7 +160,6 @@ namespace emp
         if (this->m_entity != nullptr)
             return this->m_entity.get();
         return nullptr;
-
     }
 
     GraphicManager* Engine::GetGraphicManager()
