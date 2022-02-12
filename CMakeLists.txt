@@ -78,7 +78,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS On)
 SET_SOURCE_FILES_PROPERTIES( ${MUSHROOM_SRC} PROPERTIES
                 FOLDER "${CMAKE_SOURCE_DIR}/src" )
 				
-file(GLOB_RECURSE CORE_HEAD	src/core/*.cpp include/core/*.h)
+file(GLOB_RECURSE CORE_HEAD	src/core/*.cpp include/core/*.h include/core/*.tpp)
 source_group("Core" FILES ${CORE_HEAD})
 file(GLOB_RECURSE COMMON_HEAD src/common/*.cpp include/common/*.h)
 source_group("Common" FILES ${COMMON_HEAD})
@@ -88,8 +88,14 @@ file(GLOB_RECURSE TOOL_HEAD	src/tool/*.cpp include/tool/*.h)
 source_group("Tool" FILES ${TOOL_HEAD})
 file(GLOB_RECURSE GRAPHIC_HEAD	src/graphic/*.cpp include/graphic/*.h)
 source_group("Graphic" FILES ${GRAPHIC_HEAD})
+file(GLOB_RECURSE COMPONENT_HEAD src/components/*.cpp include/components/*.h)
+source_group("Components" FILES ${COMPONENT_HEAD})
+file(GLOB_RECURSE PHYSIC_HEAD src/physic/*.cpp include/physic/*.h)
+source_group("Physic" FILES ${PHYSIC_HEAD})
+file(GLOB_RECURSE MATH_HEAD src/math/*.cpp include/math/*.h)
+source_group("Math" FILES ${MATH_HEAD})
 
-List(APPEND MUSHROOM_SRC  ${CORE_HEAD} ${COMMON_HEAD} ${EDITOR_HEAD} ${TOOL_HEAD} ${GRAPHIC_HEAD})
+List(APPEND MUSHROOM_SRC  ${CORE_HEAD} ${COMMON_HEAD} ${EDITOR_HEAD} ${TOOL_HEAD} ${GRAPHIC_HEAD} ${COMPONENT_HEAD} ${PHYSIC_HEAD} ${MATH_HEAD})
 
 if(NOT WIN32)
 LIST(APPEND MUSHROOM_LIBRARIES

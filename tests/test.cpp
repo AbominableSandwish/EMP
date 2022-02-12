@@ -6,32 +6,12 @@
 #include <core/log.h>
 #include <editor/editor.h>
 #include <core/file.h>
-
-
+#include "core/config.h"
+#include <core/component.h>
 
 
 class EngineCustom: public emp::Engine
 {
-public:	
-	void Start()
-	{
-		
-	}
-
-	void Update(float dt)
-	{
-        this->logger_->Update(dt);
-        this->graphic_->Update(dt);
-        this->file_->Update(dt);
-
-        if (this->editor_ != nullptr) {
-            this->editor_->Draw(this->graphic_);
-        }
-        else
-        {
-            this->graphic_->Draw();
-        }
-	}
 };
 
 float timer = 0.0f;
@@ -187,15 +167,6 @@ int main()
     tests.push_back(new TestConsole());
     tests.push_back(new TestLauncher());
     tests.push_back(new TestEditor());
-    tests.push_back(new TestConsole());
-    tests.push_back(new TestLauncher());
-    tests.push_back(new TestEditor());
-    tests.push_back(new TestConsole());
-    tests.push_back(new TestLauncher());
-    tests.push_back(new TestEditor());
-    tests.push_back(new TestConsole());
-    tests.push_back(new TestLauncher());
-    tests.push_back(new TestEditor());
     tests.push_back(new TestLogger());
 	
 	std::cout << "Launching of the test manager\n";
@@ -219,13 +190,14 @@ int main()
 
         EngineCustom engine = EngineCustom();
         engine.Init(test->config);
+        engine.Start();
         while (engine.is_running && !test->success && !test->fail)
         {
             start = clock();
             end = clock();
             float dt = float(start - end);
 
-            engine.Update(dt);
+            engine.Update();
 
             test->Check(engine);
 
