@@ -9,6 +9,7 @@
 #include <core/component.h>
 #include <core/config.h>
 #include "graphic/sprite.h"
+#include <components/renderer2D.h>
 
 namespace emp
 {
@@ -74,6 +75,8 @@ namespace emp
 
         this->m_component->RegisterComponent<Transform>();
         this->m_component->RegisterComponent<SpriteRenderer>();
+        this->m_component->RegisterComponent<Square>();
+        this->m_component->RegisterComponent<Circle>();
         this->m_graphic->Init();
 
         end = 0;
@@ -92,13 +95,26 @@ namespace emp
 
     void Engine::Start()
 	{
-        for (int i = 0; i <= 100; ++i)
+        LOG::Info("Loading Entities:");
+        int i;
+        float dt = 0.0f;
+        this->m_graphic->Update(dt);
+        for (i = 0; i <= 0; ++i)
         {
-            this->m_entity->CreateEntity();
-            this->m_component->AddComponent(i, Transform(-80 + 3 * i, -10, 0.015f, 0.02f));
+            this->m_entity->CreateEntity("Sprite_"+ std::to_string(i));
+            this->m_component->AddComponent(i, Transform(10*i, 10* i, 0.12f, 0.2f));
             this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
         }
-    	
+        for (int j= i; j <= i + 15; ++j)
+        {
+            int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
+            this->m_component->AddComponent(entity, Transform(-5 * j, 5 * j, 0.12f, 0.2f));
+            this->m_component->AddComponent(entity, Square(entity));
+        }
+
+       /* int entity = this->m_entity->CreateEntity("Circle").id;
+        this->m_component->AddComponent(entity, Transform(0, -50, 0.12f, 0.2f));
+        this->m_component->AddComponent(entity, Circle(entity));*/
       
         this->is_running = true;
 	}

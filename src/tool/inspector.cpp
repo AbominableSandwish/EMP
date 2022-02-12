@@ -44,55 +44,30 @@ void Inspector::Init()
 			}
 			emp::Transform& tranform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
 			
-			ImGui::Text("   Position:");
-			ImGui::Text("\tX : ");
-			ImGui::SameLine();
-			float f_x = tranform.x;
-			ImGui::InputFloat("##X", &f_x, 0.5f, 1.0f, "%.3f");
-			tranform.SetPosition(f_x, tranform.y);
+			
+			Math::Vector2 position = tranform.GetPosition();
+			Math::Vector2 scale = tranform.GetScale();
+			Math::Vector2 rotation = tranform.GetRotation();
 
-			ImGui::Text("\tY : ");
+			ImGui::Text("Matrice: ");
+			float input_rotation[2] = { rotation.x, rotation.y };
+			float input_position[2] = { position.x, position.y };
+			float input_scale[2] = { scale.x, scale.y };
+			ImGui::Text("   Position: ");
 			ImGui::SameLine();
-			float f_y = tranform.y;
-			ImGui::InputFloat("##Y", &f_y, 0.5f, 1.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-			{
-				emp::LOG::Debug("Setting attributes Spore");
-				tranform.SetPosition(tranform.x, f_y);
-			}
-
-			ImGui::Text("   Scale:");
-			ImGui::Text("\tX : ");
+			ImGui::InputFloat2("##Position", input_position, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+			tranform.SetPosition(input_position[0], input_position[1]);
+			
+			ImGui::Text("   Rotation: ");
 			ImGui::SameLine();
-			float s_x = tranform.scale_x;
-			ImGui::InputFloat("##sX", &s_x, 0.5f, 1.0f, "%.3f");
-			tranform.SetScale(s_x, tranform.scale_y);
+			ImGui::InputFloat2("##Rotation", input_rotation, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+			tranform.SetRotation(input_rotation[0], input_rotation[1]);
 
-			ImGui::Text("\tY : ");
+			ImGui::Text("   Scale:    ");
 			ImGui::SameLine();
-			float s_y = tranform.scale_y;
-			ImGui::InputFloat("##sY", &s_y, 0.5f, 1.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-			{
-				emp::LOG::Debug("Setting attributes Spore");
-				tranform.SetScale(tranform.scale_x, s_y);
-			}
+			ImGui::InputFloat2("##Scale", input_scale, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+			tranform.SetScale(input_scale[0], input_scale[1]);
 
-			//emp::TextGraphic& textGraphic = static_cast<emp::TextGraphic&>(*component);
-			//int bufSize_text = 256;
-			//char buffer_text[256] = {};
-			//int c = 0;
-			//std::string text = textGraphic.text;
-			//for (auto character : text)
-			//{
-			//	buffer_text[c] = character;
-			//	c++;
-			//}
-			//ImGui::Text("\tText: ");
-			//ImGui::SameLine();
-			//if (ImGui::InputText("##text", buffer_text, bufSize_text, ImGuiInputTextFlags_EnterReturnsTrue))
-			//{
-			//	emp::LOG::Debug("Setting attributes Spore");
-			//	textGraphic.text = buffer_text;
-			//}
 		}
 	}
 

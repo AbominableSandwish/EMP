@@ -49,6 +49,55 @@ namespace Math {
     	//scalaire
     };
 
+    struct Vector3
+    {
+    public:
+        float x;
+        float y;
+        float z;
+
+        Vector3() = default;
+        Vector3(float x, float y, float z)
+        {
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        }
+
+        void operator=(Vector3& v)
+        {
+            this->x = v.x;
+            this->y = v.y;
+            this->z = v.z;
+        }
+
+        Vector3 operator+(Vector3& v)
+        {
+            return Vector3(this->x + v.x, this->y + v.y, this->z + v.z);
+        }
+
+        Vector3 operator-(Vector3& v)
+        {
+            return Vector3(this->x - v.x, this->y - v.y, this->z + v.z);
+        }
+
+        static Vector3 Normalize()
+        {
+
+        }
+
+        static Vector3 Reflect()
+        {
+
+        }
+
+        static float Dot()
+        {
+
+        }
+
+        //scalaire
+    };
     struct iVector2
     {
         int x;

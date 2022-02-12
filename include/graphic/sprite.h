@@ -22,7 +22,7 @@ namespace emp
 
                 "out vec3 ourColor;\n"
                 "out vec2 TexCoord;\n"
-                "uniform mat4 transform;"
+                "uniform mat4 transform;\n"
 
                 "void main()\n"
                 "{\n"

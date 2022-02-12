@@ -43,6 +43,7 @@ namespace emp
 		EntityManager();
 		EntityManager(Engine&, string);
 		Entity& CreateEntity();
+		Entity& CreateEntity(std::string);
 		void RemoveEntity(int);
 		void MoveEntity(int, int);
 

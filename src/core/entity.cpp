@@ -59,7 +59,7 @@ namespace emp
 
 	void Entity::AddComponent(Component* c)
 	{
-			components.push_back(c);
+		components.push_back(c);
 	}
 
 	void EntityManager::MoveEntity(int from_to, int move_to)
@@ -101,6 +101,13 @@ namespace emp
 		LOG::Info("New Entity: \"" + entities.back()->GetName() + "\"");
 		return *entities[entities.size() - 1];	
 	}
+	
+	Entity& EntityManager::CreateEntity(std::string name)
+	{
+		entities.push_back(new Entity(entities.size() + 1, name));
+		LOG::Info("New Entity: \"" + entities.back()->GetName() + "\"");
+		return *entities[entities.size() - 1];
+	}
 
 	void EntityManager::RemoveEntity(int id)
 	{
@@ -131,8 +138,8 @@ namespace emp
 		}
 	}
 
-
-	std::vector<Entity*> EntityManager::GetEntities() {
+	std::vector<Entity*> EntityManager::GetEntities()
+	{
 		return entities;
 	}
 }

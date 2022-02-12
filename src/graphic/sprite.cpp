@@ -145,11 +145,13 @@ namespace emp
 		{
 			// bind Texture
 			glBindTexture(GL_TEXTURE_2D, element.texture);
-			auto position = m_component->GetComponent<Transform>(element.entity);
+			auto transform = m_component->GetComponent<Transform>(element.entity);
+			Math::Vector2 position = transform.GetPosition();
+			Math::Vector2 scale = transform.GetScale();
 			glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 			transf = glm::translate(transf, glm::vec3(position.x / config->PixelSize, position.y / config->PixelSize, 0.0f));
-			transf = glm::scale(transf, glm::vec3(position.scale_x, position.scale_y, 0.0f));
-			// transf = glm::rotate(transf, (float)glfwGetTime() / speedRotate, glm::vec3(0.0f, 0.0f, 1.0));
+			transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));
+			transf = glm::rotate(transf, (float)transform.GetRotation().x / 57.28f, glm::vec3(0.0f, 0.0f, 1.0));
 
 			//render container
 			glUseProgram(element.shaderProgram);

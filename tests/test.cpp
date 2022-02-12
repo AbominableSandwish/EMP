@@ -193,13 +193,12 @@ int main()
         engine.Start();
         while (engine.is_running && !test->success && !test->fail)
         {
+            test->Check(engine);
             start = clock();
             end = clock();
             float dt = float(start - end);
 
-            engine.Update();
-
-            test->Check(engine);
+            engine.Update();  
 
             start = clock();
             max = max_value(arr, WIDTH);

@@ -72,6 +72,9 @@ namespace emp {
 	
 	class SpriteManager;
 	class ComponentManager;
+	class SquareManager;
+	class CircleManager;
+	class Renderer2D;
 
 	/// Holds all state information relevant to a character as loaded using FreeType
     struct Character {
@@ -93,6 +96,36 @@ namespace emp {
         void Swap();
 		void Destroy() override;
 
+		template<typename T>
+		void AddGraphic()
+		{
+			const char* typeName = typeid(T).name();
+
+			if (typeName == "Renderer2D")
+			{
+
+			}
+			if (typeName == "Square")
+			{
+
+			}
+			if (typeName == "Circle")
+			{
+
+			}
+			if (typeName == "Line")
+			{
+
+			}
+			if (typeName == "Sprite")
+			{
+
+			}
+		}
+
+		void AddGraphic(int entity);
+		void RemoveGraphic();
+
 		GLFWwindow* GetWindow();
 
 	protected:
@@ -100,7 +133,10 @@ namespace emp {
 		ConfigGraphic* config = nullptr;
         //std::vector<GraphicComponent*> components;
 		Screen screen;
+
         SpriteManager* m_sprite;
+		SquareManager* m_square;
+		CircleManager* m_circle;
 
 		int width = 64;
 		int height = 64;

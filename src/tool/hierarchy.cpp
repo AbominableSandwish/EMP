@@ -28,33 +28,38 @@
 			from = -1;
 			to_move = -1;
 		}
+		
 		is_select = false;
 		auto entities = m_manager->GetEntities();
+		
 		if (entities.size() != 0) {
 			int i = 0;
 			for (auto entity : entities)
 			{
 				i++;
-				std::string name = "##" + std::to_string(entity->id);
+				std::string name = "##Entity" + std::to_string(entity->id);
 				ImGui::SetCursorPos(ImVec2(10, i * 18 + 24));
 				if (ImGui::TreeNode(name.c_str()))
 				{
+					
 					ImGui::SameLine();
 					if (ImGui::Selectable(entity->GetName().c_str()))
 					{
 						emp::LOG::Debug("Click");
 					}
+					
 					ImGuiDragDropFlags src_flags = 0;
 					src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
 					src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
 					//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
+					
 					if (ImGui::BeginDragDropSource(src_flags))
 					{
 						ImGui::SetDragDropPayload("spore", entity->GetName().c_str(), sizeof(const char*));
 						ImGui::TextUnformatted(entity->GetName().c_str());
 						ImGui::EndDragDropSource();
-
 					}
+					
 					if (ImGui::BeginDragDropTarget())
 					{
 						ImGuiDragDropFlags target_flags = 0;
@@ -96,8 +101,7 @@
 							c++;
 						}
 
-
-						if (ImGui::InputText("##text1", buffer, bufSize, ImGuiInputTextFlags_EnterReturnsTrue))
+						if (ImGui::InputText('##' + name.c_str(), buffer, bufSize, ImGuiInputTextFlags_EnterReturnsTrue))
 						{
 							emp::Entity* entity = entities[i - 1];
 							entity->SetName(buffer);
