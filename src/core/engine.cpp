@@ -1,6 +1,7 @@
 #include "core/engine.h"
 #include <iostream>
 #include <ctime>
+#include <core/input.h>
 #include <graphic/graphic.h>
 #include <core/log.h>
 #include <editor/editor.h>
@@ -62,12 +63,14 @@ namespace emp
         m_file->Init();
 
         //Log
-        m_log = this->m_systems->RegisterSystem<LogManager>();
+        m_log = this->m_systems->RegisterSystem<LogManager>(*this, "Log Manager");
         m_log->Init();
 
     	//Entity
         m_entity = this->m_systems->RegisterSystem<EntityManager>(*this, "Entity Manager");
         m_entity->Init();
+
+       
 
     	//Graphic
         emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
@@ -78,6 +81,9 @@ namespace emp
         this->m_component->RegisterComponent<Square>();
         this->m_component->RegisterComponent<Circle>();
         this->m_graphic->Init();
+
+        m_input = this->m_systems->RegisterSystem<InputSystem>(*this, "Input System");
+        m_input->Init();
 
         end = 0;
         int max;
@@ -133,6 +139,8 @@ namespace emp
             if(this->m_log != nullptr)
 				this->m_log->Update(dt); 
             this->m_file->Update(dt);
+
+            this->m_input->Update(dt);
         	
             this->m_graphic->Update(dt);
         	

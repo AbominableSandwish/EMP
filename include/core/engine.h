@@ -13,6 +13,7 @@ namespace emp
     class EntityManager;
     class SystemManager;
     class ComponentManager;
+    class InputSystem;
 
 	class Engine
 	{
@@ -48,6 +49,7 @@ namespace emp
         std::shared_ptr<EntityManager> m_entity;
         std::shared_ptr<GraphicManager> m_graphic;
         std::unique_ptr<ComponentManager> m_component;
+        std::shared_ptr<InputSystem> m_input;
         SystemManager* m_systems = nullptr;
 	private:
         double fps = 0.0;
