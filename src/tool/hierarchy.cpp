@@ -4,6 +4,7 @@
 #include <core/log.h>l
 #include <tool/inspector.h>
 
+
 	void Hierarchy::Init()
 	{
 		m_manager = this->m_engine->GetEntityManager();

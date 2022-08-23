@@ -1,6 +1,6 @@
 #include <vector>
 
-namespace Math {
+namespace emp {
 
     struct Vector2
     {

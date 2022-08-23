@@ -122,8 +122,8 @@ namespace emp
         for (auto element : arrayElement)
         {
             auto transform = m_component->GetComponent<Transform>(element.entity);
-            Math::Vector2 position = transform.GetPosition();
-            Math::Vector2 scale = transform.GetScale();
+            Vector2 position = transform.GetPosition();
+            Vector2 scale = transform.GetScale();
             glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
             transf = glm::translate(transf, glm::vec3(position.x / 100, position.y / 100, 0.0f));
             transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));

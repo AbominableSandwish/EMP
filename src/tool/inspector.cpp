@@ -45,9 +45,9 @@ void Inspector::Init()
 			emp::Transform& tranform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
 			
 			
-			Math::Vector2 position = tranform.GetPosition();
-			Math::Vector2 scale = tranform.GetScale();
-			Math::Vector2 rotation = tranform.GetRotation();
+			emp::Vector2 position = tranform.GetPosition();
+			emp::Vector2 scale = tranform.GetScale();
+			emp::Vector2 rotation = tranform.GetRotation();
 
 			ImGui::Text("Matrice: ");
 			float input_rotation[2] = { rotation.x, rotation.y };

@@ -4,7 +4,7 @@
 //	Sprite2D = 1
 //};
 
-#include <math/matrice.h>
+
 namespace emp{
 	class Component {
 public:
@@ -14,76 +14,27 @@ public:
 	{
 	public:
 		float scale_x, scale_y;
-		Math::Matrice3 matrice;
+		Matrice3 matrice;
 
-		Math::Vector2 GetPosition()
-		{
-			return matrice.GetPosition();
-		}
+		Transform();
 
+		Transform(float x, float y);
 
-		Math::Vector2 GetRotation()
-		{
-			return matrice.GetRotation();
-		}
+		Transform(float x, float y, float w, float l);
 
-		void SetPosition(Math::Vector2 position)
-		{
-			matrice.SetScale(position);
-		}
+		void Init();
 
-		Math::Vector2 GetScale()
-		{
-			return matrice.GetScale();
-		}
-		
-		Transform()
-		{
-			matrice = Math::Matrice3();
-			
-			this->scale_x = 1;
-			this->scale_y = 1;
-		}
+		Vector2 GetPosition();
 
-		Transform(float x, float y)
-		{
-			matrice = Math::Matrice3(x, y);
-			this->scale_x = 1;
-			this->scale_y = 1;
-		}
+		void SetPosition(Vector2 position);
+		void SetPosition(float x, float y);
 
-		Transform(float x, float y, float w, float l)
-		{
-			matrice = Math::Matrice3(x, y, w, l);
-			
-			this->scale_x = w;
-			this->scale_y = l;
-		}
+		Vector2 GetRotation();
+		void SetRotation(float axis_x, float axis_y);
 
-		void SetPosition(float x, float y)
-		{
-			this->matrice.SetPosition(Math::Vector2(x, y));
-		}
+		Vector2 GetScale();
 
-		void SetRotation(float axis_x, float axis_y)
-		{
-			this->matrice.SetRotation(Math::Vector2(axis_x, axis_y));
-		}
-
-		
-
-		void SetScale(float w, float l)
-		{
-			this->matrice.SetScale(Math::Vector2(w, l));
-
-		}
-
-		void Init()
-		{
-			
-		}
-
-		
+		void SetScale(float w, float l);
 	};
 
 	class IComponent

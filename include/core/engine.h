@@ -14,6 +14,7 @@ namespace emp
     class SystemManager;
     class ComponentManager;
     class InputSystem;
+    class RigidBody2DManager;
 
 	class Engine
 	{
@@ -47,6 +48,7 @@ namespace emp
         std::shared_ptr<LogManager> m_log;
         std::shared_ptr<FileManager> m_file;
         std::shared_ptr<EntityManager> m_entity;
+        std::shared_ptr<RigidBody2DManager> m_rigidbody;
         std::shared_ptr<GraphicManager> m_graphic;
         std::unique_ptr<ComponentManager> m_component;
         std::shared_ptr<InputSystem> m_input;

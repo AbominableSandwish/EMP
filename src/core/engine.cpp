@@ -11,6 +11,7 @@
 #include <core/config.h>
 #include "graphic/sprite.h"
 #include <components/renderer2D.h>
+#include <components/rigidbody.h>
 
 namespace emp
 {
@@ -70,6 +71,10 @@ namespace emp
         m_entity = this->m_systems->RegisterSystem<EntityManager>(*this, "Entity Manager");
         m_entity->Init();
 
+        //Entity
+        m_rigidbody= this->m_systems->RegisterSystem<RigidBody2DManager>(*this, "Rigid Manager");
+        
+
        
 
     	//Graphic
@@ -80,10 +85,12 @@ namespace emp
         this->m_component->RegisterComponent<SpriteRenderer>();
         this->m_component->RegisterComponent<Square>();
         this->m_component->RegisterComponent<Circle>();
+        this->m_component->RegisterComponent<RigidBody2D>();
         this->m_graphic->Init();
 
         m_input = this->m_systems->RegisterSystem<InputSystem>(*this, "Input System");
         m_input->Init();
+        m_rigidbody->Init();
 
         end = 0;
         int max;
@@ -111,11 +118,12 @@ namespace emp
             this->m_component->AddComponent(i, Transform(10*i, 10* i, 0.12f, 0.2f));
             this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
         }
-        for (int j= i; j <= i + 15; ++j)
+        for (int j= i; j <= i + 0; ++j)
         {
             int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
             this->m_component->AddComponent(entity, Transform(-5 * j, 5 * j, 0.12f, 0.2f));
             this->m_component->AddComponent(entity, Square(entity));
+            this->m_component->AddComponent(entity, RigidBody2D(entity));
         }
 
        /* int entity = this->m_entity->CreateEntity("Circle").id;
@@ -141,7 +149,7 @@ namespace emp
             this->m_file->Update(dt);
 
             this->m_input->Update(dt);
-        	
+            this->m_rigidbody->Update(dt);
             this->m_graphic->Update(dt);
         	
             if(this->m_graphic != nullptr)
@@ -160,6 +168,8 @@ namespace emp
 	{
         this->is_running = false;
         this->m_log = nullptr;
+        this->m_rigidbody->Destroy();
+        this->m_rigidbody = nullptr;
         this->m_graphic->Destroy();
         this->m_graphic = nullptr;
         this->m_entity->Destroy();
@@ -195,7 +205,7 @@ namespace emp
 
 	ComponentManager* Engine::GetComponentManager()
 	{
-        if (this->m_graphic != nullptr)
+        if (this->m_component != nullptr)
             return  this->m_component.get();
         return nullptr;
 	}

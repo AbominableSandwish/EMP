@@ -1,6 +1,6 @@
 #include <math/vector.h>
 
-namespace  Math
+namespace emp
 {
 	
 	struct Matrice4
@@ -116,6 +116,9 @@ namespace  Math
 		float matrice[3][3] = { {0,0,0},
 								{0,0,0},
 								{0,0,0} };
+
+		float x = 0;
+		float y = 0;
 		int dimension = 3;
 	public:
 
@@ -125,6 +128,9 @@ namespace  Math
 		
 		Matrice3(float x, float y)
 		{
+			this->x = x;
+			this->y = y;
+
 			this->matrice[0][2] = x;
 			this->matrice[1][2] = y;
 
@@ -134,6 +140,10 @@ namespace  Math
 		
 		Matrice3(Vector2 position)
 		{	
+
+			this->x = position.x;
+			this->y = position.y;
+
 			this->matrice[0][2] = position.x;
 			this->matrice[1][2] = position.y;
 
@@ -143,6 +153,9 @@ namespace  Math
 
 		Matrice3(float x, float y, float w, float l)
 		{
+			this->x = x;
+			this->y = y;
+
 			this->matrice[0][2] = x;
 			this->matrice[1][2] = y;
 
@@ -150,18 +163,22 @@ namespace  Math
 			this->matrice[2][1] = l;
 		}
 
-		float& x()
+		float& Posx()
 		{
 			return this->matrice[0][2];
 		}
 
-		float& y()
+		float& Posy()
 		{
 			return this->matrice[1][2];
 		}
 		
 		Matrice3(float x, float y, float axis_x, float axis_y, float w, float l)
 		{
+
+			this->x = x;
+			this->y = y;
+
 			this->matrice[0][0] = axis_x;
 			this->matrice[1][1] = axis_y;
 			
@@ -174,6 +191,9 @@ namespace  Math
 
 		Matrice3(Vector2 position, Vector2 scale)
 		{
+			this->x = position.x;
+			this->y = position.y;
+
 			this->matrice[0][2] = position.x;
 			this->matrice[1][2] = position.y;
 
@@ -183,10 +203,10 @@ namespace  Math
 
 		Vector2 GetPosition()
 		{
-			return Vector2(matrice[0][2], matrice[1][2]);
+			return Vector2(x, y);
 		}
 
-		Vector2 GetRotation()
+		Vector2 GetMatriceRotation()
 		{
 			return Vector2(matrice[0][0], matrice[1][1]);
 		}
@@ -195,6 +215,9 @@ namespace  Math
 		{
 			matrice[0][2] = position.x;
 			matrice[1][2] = position.y;
+
+			this->x = position.x;
+			this->y = position.y;
 		}
 
 		void SetRotation(Vector2 rotation)
