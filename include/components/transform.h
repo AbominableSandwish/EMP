@@ -1,10 +1,11 @@
 
 namespace emp {
 	class Matrice3;
-	class Vector2;
+	class Vector3;
 	class Transform
 	{
 	public:
+		float angle_x;
 		float scale_x, scale_y;
 		Matrice3* matrice;
 
@@ -15,16 +16,16 @@ namespace emp {
 		Transform(float x, float y, float w, float l);
 
 		void Init();
+		
+		Vector3 GetPosition();
 
-		Vector2 GetPosition();
-
-		void SetPosition(Vector2 position);
+		void SetPosition(Vector3 position);
 		void SetPosition(float x, float y);
 
-		Vector2 GetRotation();
-		void SetRotation(float axis_x, float axis_y);
+		Vector3 GetRotation();
+		void SetRotation(float angle, Vector3 axis);
 
-		Vector2 GetScale();
+		Vector3 GetScale();
 
 		void SetScale(float w, float l);
 	};

@@ -28,39 +28,43 @@ namespace emp {
 
 	}
 
-	Vector2 Transform::GetPosition()
+	Vector3 Transform::GetPosition()
 	{
 		return matrice->GetPosition();
 	}
 
-	void Transform::SetPosition(Vector2 position)
+	void Transform::SetPosition(Vector3 position)
 	{
 		this->matrice->SetPosition(position);
 	}
 
 	void Transform::SetPosition(float x, float y)
 	{
-		this->matrice->SetPosition(Vector2(x, y));
+		this->matrice->SetPosition(Vector3(x, y, 0));
 	}
 
-	Vector2 Transform::GetRotation()
+	Vector3 Transform::GetRotation()
 	{
-		return this->matrice->GetMatriceRotation();
+		return Vector3(0,0,0);
 	}
 
-	void Transform::SetRotation(float axis_x, float axis_y)
+	void Transform::SetRotation(float radiant, Vector3 axis)
 	{
-		this->matrice->SetRotation(Vector2(axis_x, axis_y));
+		if (axis.x == 1)
+			this->angle_x = radiant;
+		Matrice3 rotation = this->matrice->RotationMatrixFrom(radiant, axis);
+		Matrice3 matrice = this->matrice->matrice3_;
+		this->matrice->SetMatrice(matrice * rotation);
 	}
 
-	Vector2 Transform::GetScale()
+	Vector3 Transform::GetScale()
 	{
 		return matrice->GetScale();
 	}
 
 	void Transform::SetScale(float w, float l)
 	{
-		this->matrice->SetScale(Vector2(w, l));
+		///this->matrice->SetScale(Vector2(w, l));
 
 	}
 }

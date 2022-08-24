@@ -3,7 +3,7 @@
 #include "core/component.h"
 #include <graphic/graphic.h>
 #include <components/transform.h>
-#include <math/vector.h>
+#include <math/matrice.h>
 
 namespace emp
 {
@@ -124,12 +124,17 @@ namespace emp
         for (auto element : arrayElement)
         {
             auto transform = m_component->GetComponent<Transform>(element.entity);
-            Vector2 position = transform.GetPosition();
-            Vector2 scale = transform.GetScale();
-            glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            transf = glm::translate(transf, glm::vec3(position.x / 100, position.y / 100, 0.0f));
+            Vector3 position = transform.GetPosition();
+            Vector3 scale = transform.GetScale();
+            std::vector<Vector3> matrice = transform.matrice->matrice3_;
+            glm::mat4 transf = glm::mat4(0.3f, matrice[0].y, matrice[0].z, 0,
+                                    matrice[1].x, 0.3f, matrice[1].z, 0,
+                                    matrice[2].x, matrice[2].y, 0.3f, 0,
+                                    0,0,0,1); // make sure to initialize matrix to identity matrix first
+            /*transf = glm::translate(transf, glm::vec3(position.x / 100, position.y / 100, 0.0f));
             transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));
-            transf = glm::rotate(transf, (float)transform.GetRotation().x / 57.28f, glm::vec3(0.0f, 0.0f, 1.0));
+            transf = glm::rotate(transf, 0.8f, glm::vec3(0.0f, 0.0f, 1.0));*/
+            
 
             // draw our first triangle
             glUseProgram(element.shaderProgram);

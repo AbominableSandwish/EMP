@@ -46,24 +46,28 @@ void Inspector::Init()
 			}
 			emp::Transform& tranform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
 			
-			
-			emp::Vector2 position = tranform.GetPosition();
-			emp::Vector2 scale = tranform.GetScale();
-			emp::Vector2 rotation = tranform.GetRotation();
+			float angle_x = tranform.angle_x;
+			emp::Vector3 position = tranform.GetPosition();
+			emp::Vector3 scale = tranform.GetScale();
+			emp::Vector3 rotation = tranform.GetRotation();
 
 			ImGui::Text("Matrice: ");
-			float input_rotation[2] = { rotation.x, rotation.y };
+			float input_rotation_x = angle_x;
+			float input_rotation_y = rotation.y;
 			float input_position[2] = { position.x, position.y };
 			float input_scale[2] = { scale.x, scale.y };
 			ImGui::Text("   Position: ");
 			ImGui::SameLine();
-			ImGui::InputFloat2("##Position", input_position, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-			tranform.SetPosition(input_position[0], input_position[1]);
+			if(ImGui::InputFloat2("##Position", input_position, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+				tranform.SetPosition(input_position[0], input_position[1]);
 			
 			ImGui::Text("   Rotation: ");
 			ImGui::SameLine();
-			ImGui::InputFloat2("##Rotation", input_rotation, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-			tranform.SetRotation(input_rotation[0], input_rotation[1]);
+			if(ImGui::InputFloat("##RotationAxeX", &input_rotation_x, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
+				tranform.SetRotation(input_rotation_x, emp::Vector3(1, 0, 0));
+			ImGui::SameLine();
+			if(ImGui::InputFloat("##RotationAxeY", &input_rotation_y, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
+				tranform.SetRotation(input_rotation_y, emp::Vector3(0,1,0));
 
 			ImGui::Text("   Scale:    ");
 			ImGui::SameLine();

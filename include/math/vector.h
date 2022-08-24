@@ -52,9 +52,9 @@ namespace emp {
     struct Vector3
     {
     public:
-        float x;
-        float y;
-        float z;
+        float x =0;
+        float y =0;
+        float z =0;
 
         Vector3() = default;
         Vector3(float x, float y, float z)
@@ -81,10 +81,33 @@ namespace emp {
             return Vector3(this->x - v.x, this->y - v.y, this->z + v.z);
         }
 
+        Vector3 operator/(float f) {
+            float xp = x / f;
+            float yp = y / f;
+            float zp = z / f;
+            return Vector3(xp, yp, zp);
+        }
+
         static Vector3 Normalize()
         {
-
+         
         }
+
+        float Magnitude()
+        {
+            return sqrt(x * x + y * y);
+        }
+
+
+        Vector3 Normalized()
+        {
+            float magnitude = (*this).Magnitude();
+            this->x = x / magnitude;
+            this->y = y / magnitude;
+            this->z = z / magnitude;
+            return *this;
+        }
+
 
         static Vector3 Reflect()
         {
@@ -95,6 +118,8 @@ namespace emp {
         {
 
         }
+
+
 
         //scalaire
     };

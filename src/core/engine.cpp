@@ -122,7 +122,7 @@ namespace emp
         for (int j= i; j <= i + 0; ++j)
         {
             int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
-            this->m_component->AddComponent(entity, Transform(-5 * j, 5 * j, 0.12f, 0.2f));
+            this->m_component->AddComponent(entity, Transform(-5 * j, 0.15f * j - 100, 0.12f, 0.2f));
             this->m_component->AddComponent(entity, Square(entity));
             this->m_component->AddComponent(entity, RigidBody2D(entity));
         }
