@@ -1,4 +1,5 @@
 #include <components/rigidbody.h>
+#include <components/transform.h>
 #include <core/component.h>
 #include <core/engine.h>
 #include <math/vector.h>

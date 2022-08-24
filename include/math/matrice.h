@@ -113,9 +113,7 @@ namespace emp
 	
 	struct Matrice3
 	{
-		float matrice[3][3] = { {0,0,0},
-								{0,0,0},
-								{0,0,0} };
+		float matrice[3][3];
 
 		float x = 0;
 		float y = 0;

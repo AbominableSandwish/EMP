@@ -4,6 +4,8 @@
 #include <core/entity.h>
 #include "graphic/graphic.h"
 #include <core/component.h>
+#include <math/vector.h>
+#include <components/transform.h>
 
 namespace emp {
 	class Transform;

@@ -12,6 +12,7 @@
 #include "graphic/sprite.h"
 #include <components/renderer2D.h>
 #include <components/rigidbody.h>
+#include <components/transform.h>
 
 namespace emp
 {

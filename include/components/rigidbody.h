@@ -1,6 +1,7 @@
 #include "core/system.h"
 
 namespace emp {
+    class Vector2;
     class ComponentManager;
 	class RigidBody2DManager : public System {
 	public:

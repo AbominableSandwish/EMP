@@ -1,8 +1,7 @@
 #include <math/matrice.h>
 
-namespace Math
+namespace emp
 {
-
 	Matrice4::Matrice4(float x, float y, float z)
 	{
 		matrice[0][0] = 1;

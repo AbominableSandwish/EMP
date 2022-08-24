@@ -2,6 +2,8 @@
 #include <core/engine.h>
 #include "core/component.h"
 #include <graphic/graphic.h>
+#include <components/transform.h>
+#include <math/vector.h>
 
 namespace emp
 {
