@@ -116,13 +116,13 @@ namespace emp
         for (i = 0; i <= 0; ++i)
         {
             this->m_entity->CreateEntity("Sprite_"+ std::to_string(i));
-            this->m_component->AddComponent(i, Transform(10*i, 10* i, 0.12f, 0.2f));
+            this->m_component->AddComponent(i, Transform(10*i, 10* i, 0));
             this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
         }
-        for (int j= i; j <= i + 0; ++j)
+        for (int j= i; j <= i + 1000; ++j)
         {
             int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
-            this->m_component->AddComponent(entity, Transform(-5 * j, 0.15f * j - 100, 0.12f, 0.2f));
+            this->m_component->AddComponent(entity, Transform(-5 * j, 0.15f * j - 100, 0, 0.1f, 0.1f));
             this->m_component->AddComponent(entity, Square(entity));
             this->m_component->AddComponent(entity, RigidBody2D(entity));
         }

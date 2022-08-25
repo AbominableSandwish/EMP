@@ -95,7 +95,7 @@ namespace emp {
 
         float Magnitude()
         {
-            return sqrt(x * x + y * y);
+            return sqrt(x * x + y * y + z * z);
         }
 
 
@@ -127,5 +127,60 @@ namespace emp {
     {
         int x;
         int y;
+    };
+
+
+    struct Vector4
+    {
+    public:
+        float r = 0;
+        float g = 0;
+        float b = 0;
+        float a = 0;
+
+        Vector4(): r(0), g(0), b(0), a(0) {}
+
+        Vector4(float x, float y, float z, float a)
+        {
+            this->r = x;
+            this->g = y;
+            this->b = z;
+            this->a = 0;
+        }
+
+        float Magnitude()
+        {
+            return sqrt(r * r + g * g + b * b + a * a);
+        }
+
+        Vector4 Normalized()
+        {
+            float magnitude = (*this).Magnitude();
+            this->r = r / magnitude;
+            this->g = g / magnitude;
+            this->b = b / magnitude;
+            this->a = a / magnitude;
+            return *this;
+        }
+
+        Vector4 operator+(Vector4 v) {
+            Vector4 result = Vector4(
+                this->r + v.r,
+                this->g + v.g,
+                this->b + v.b,
+                this->a + v.a
+            );
+            return result;
+        }
+
+        Vector4 operator*(float f) {
+            Vector4 result = Vector4(
+                this->r * f,
+                this->g * f,
+                this->b * f,
+                this->a * f
+            );
+            return result;
+        }
     };
 }

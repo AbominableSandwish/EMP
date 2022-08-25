@@ -115,7 +115,8 @@ namespace emp
     void SquareManager::Update(float)
     {
     }
-
+    
+    const int PixelPerSize = 100;
 
     void SquareManager::Draw()
     {
@@ -126,14 +127,14 @@ namespace emp
             auto transform = m_component->GetComponent<Transform>(element.entity);
             Vector3 position = transform.GetPosition();
             Vector3 scale = transform.GetScale();
-            std::vector<Vector3> matrice = transform.matrice->matrice3_;
-            glm::mat4 transf = glm::mat4(0.3f, matrice[0].y, matrice[0].z, 0,
-                                    matrice[1].x, 0.3f, matrice[1].z, 0,
-                                    matrice[2].x, matrice[2].y, 0.3f, 0,
-                                    0,0,0,1); // make sure to initialize matrix to identity matrix first
-            /*transf = glm::translate(transf, glm::vec3(position.x / 100, position.y / 100, 0.0f));
-            transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));
-            transf = glm::rotate(transf, 0.8f, glm::vec3(0.0f, 0.0f, 1.0));*/
+            std::vector<Vector4> matrice = transform.matrice->matrice4;
+            glm::mat4 transf = glm::mat4(matrice[0].r, matrice[0].g, matrice[0].b, matrice[0].a,
+                                         matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
+                                         matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
+                                         position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a); // make sure to initialize matrix to identity matrix first
+            //transf = glm::translate(transf, glm::vec3(position.x / 100, position.y / 100, 0.0f));
+            //transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));
+            //transf = glm::rotate(transf, transform.angle_z, glm::vec3(0.0f, 0.0f, 1.0));
             
 
             // draw our first triangle

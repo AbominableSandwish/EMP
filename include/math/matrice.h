@@ -5,98 +5,114 @@ namespace emp
 	
 	struct Matrice4
 	{
-		float matrice[4][4];
+		std::vector<Vector4> matrice4 = std::vector<Vector4>(4);
+
+
 
 	public:
-		Matrice4() = default;
-		Matrice4(float x, float y, float z);
+		Matrice4() {
+			matrice4 = std::vector<Vector4>(4);
+			matrice4[0].r = 1;
+			matrice4[1].g = 1;
+			matrice4[2].b = 1;
+			matrice4[3].a = 1;
+		}
+		Matrice4(float x, float y, float z) {
+			SetPosition(Vector3(x, y, z));
+		}
 		Matrice4(Vector3 position);
+		Matrice4(std::vector<Vector4> matrice) : matrice4(matrice) {};
+
+		void Zero() {
+			matrice4 = std::vector<Vector4>(4);
+		}
 
 		Vector3 GetPosition()
 		{
-			return Vector3(matrice[3][0], matrice[3][1], matrice[3][2]);
+			return Vector3(matrice4[3].r, matrice4[3].g, matrice4[3].b);
+		}
+		void SetPosition(Vector3 position)
+		{
+			this->matrice4[3].r = position.x;
+			this->matrice4[3].g = position.y;
+			this->matrice4[3].b = position.z;
 		}
 
-		Vector3 GetScale();
-
-		void operator=(Matrice4& m)
+		Vector3 GetScale()
 		{
-			this->matrice[0][0] = m.matrice[0][0];
-			this->matrice[0][1] = m.matrice[0][1];
-			this->matrice[0][2] = m.matrice[0][2];
-			this->matrice[0][3] = m.matrice[0][3];
-			
-			this->matrice[1][0] = m.matrice[1][0];
-			this->matrice[1][1] = m.matrice[1][1];
-			this->matrice[1][2] = m.matrice[1][2];
-			this->matrice[1][3] = m.matrice[1][3];
-			
-			this->matrice[2][0] = m.matrice[2][0];
-			this->matrice[2][1] = m.matrice[2][1];
-			this->matrice[2][2] = m.matrice[2][2];
-			this->matrice[2][3] = m.matrice[2][3];
-			
-			this->matrice[3][0] = m.matrice[3][0];
-			this->matrice[3][1] = m.matrice[3][1];
-			this->matrice[3][2] = m.matrice[3][2];
-			this->matrice[3][3] = m.matrice[3][3];
+			return Vector3(this->matrice4[0].r, this->matrice4[1].g, this->matrice4[2].b);
+		}
+		void SetScale(Vector3 scale)
+		{
+			//this->matrice4[0].r = scale.x;
+			//this->matrice4[1].g = scale.y;
+			//this->matrice4[2].b = scale.z;
 		}
 
-		Matrice4 operator+(Matrice4& m)
+
+		void operator=(Matrice4 m)
 		{
-			this->matrice[0][0] = this->matrice[0][0] + m.matrice[0][0];
-			this->matrice[0][1] = this->matrice[0][1] + m.matrice[0][1];
-			this->matrice[0][2] = this->matrice[0][2] + m.matrice[0][2];
-			this->matrice[0][3] = this->matrice[0][3] + m.matrice[0][3];
-			
-			this->matrice[1][0] = this->matrice[1][0] + m.matrice[1][0];
-			this->matrice[1][1] = this->matrice[1][1] + m.matrice[1][1];
-			this->matrice[1][2] = this->matrice[1][2] + m.matrice[1][2];
-			this->matrice[1][3] = this->matrice[1][3] + m.matrice[1][3];
-			
-			this->matrice[2][0] = this->matrice[2][0] + m.matrice[2][0];
-			this->matrice[2][1] = this->matrice[2][1] + m.matrice[2][1];
-			this->matrice[2][2] = this->matrice[2][2] + m.matrice[2][2];
-			this->matrice[2][3] = this->matrice[2][3] + m.matrice[2][3];
-			
-			this->matrice[3][0] = this->matrice[3][0] + m.matrice[3][0];
-			this->matrice[3][1] = this->matrice[3][1] + m.matrice[3][1];
-			this->matrice[3][2] = this->matrice[3][2] + m.matrice[3][2];
-			this->matrice[3][3] = this->matrice[3][3] + m.matrice[3][3];
-			
-			return *this;
+			this->matrice4[0] = m.matrice4[0];
+			this->matrice4[1] = m.matrice4[1];
+			this->matrice4[2] = m.matrice4[2];
+			this->matrice4[3] = m.matrice4[3];
 		}
 
-		Matrice4 operator-(Matrice4& m)
+		void SetMatrice(Matrice4 m)
 		{
-			this->matrice[0][0] = this->matrice[0][0] - m.matrice[0][0];
-			this->matrice[0][1] = this->matrice[0][1] - m.matrice[0][1];
-			this->matrice[0][2] = this->matrice[0][2] - m.matrice[0][2];
-			this->matrice[0][3] = this->matrice[0][3] - m.matrice[0][3];
-			
-			this->matrice[1][0] = this->matrice[1][0] - m.matrice[1][0];
-			this->matrice[1][1] = this->matrice[1][1] - m.matrice[1][1];
-			this->matrice[1][2] = this->matrice[1][2] - m.matrice[1][2];
-			this->matrice[1][3] = this->matrice[1][3] - m.matrice[1][3];
-			
-			this->matrice[2][0] = this->matrice[2][0] - m.matrice[2][0];
-			this->matrice[2][1] = this->matrice[2][1] - m.matrice[2][1];
-			this->matrice[2][2] = this->matrice[2][2] - m.matrice[2][2];
-			this->matrice[2][3] = this->matrice[2][3] - m.matrice[2][3];
-			
-			this->matrice[3][0] = this->matrice[3][0] - m.matrice[3][0];
-			this->matrice[3][1] = this->matrice[3][1] - m.matrice[3][1];
-			this->matrice[3][2] = this->matrice[3][2] - m.matrice[3][2];
-			this->matrice[3][3] = this->matrice[3][3] - m.matrice[3][3];
-			return *this;
+			this->matrice4[0] = m.matrice4[0];
+			this->matrice4[1] = m.matrice4[1];
+			this->matrice4[2] = m.matrice4[2];
+			this->matrice4[3] = m.matrice4[3];
 		}
 
 		Matrice4 operator*(Matrice4& m)
 		{
-			//todo
+			this->matrice4[0].r = this->matrice4[0].r * m.matrice4[0].r + this->matrice4[0].r * m.matrice4[1].r + this->matrice4[0].r * m.matrice4[2].r + this->matrice4[0].r * m.matrice4[3].r;
+			this->matrice4[0].g = this->matrice4[0].g * m.matrice4[0].r + this->matrice4[0].g * m.matrice4[1].r + this->matrice4[0].g * m.matrice4[2].r + this->matrice4[0].g * m.matrice4[3].r;
+			this->matrice4[0].b = this->matrice4[0].b * m.matrice4[0].r + this->matrice4[0].b * m.matrice4[1].r + this->matrice4[0].b * m.matrice4[2].r + this->matrice4[0].b * m.matrice4[3].r;
+			this->matrice4[0].a = this->matrice4[0].a * m.matrice4[0].r + this->matrice4[0].a * m.matrice4[1].r + this->matrice4[0].a * m.matrice4[2].r + this->matrice4[0].a * m.matrice4[3].r;
+
+			this->matrice4[1].r = this->matrice4[1].r * m.matrice4[0].g + this->matrice4[1].r * m.matrice4[1].g + this->matrice4[1].r * m.matrice4[2].g + this->matrice4[1].r * m.matrice4[3].g;
+			this->matrice4[1].g = this->matrice4[1].g * m.matrice4[0].g + this->matrice4[1].g * m.matrice4[1].g + this->matrice4[1].g * m.matrice4[2].g + this->matrice4[1].g * m.matrice4[3].g;
+			this->matrice4[1].b = this->matrice4[1].b * m.matrice4[0].g + this->matrice4[1].b * m.matrice4[1].g + this->matrice4[1].b * m.matrice4[2].g + this->matrice4[1].b * m.matrice4[3].g;
+			this->matrice4[1].a = this->matrice4[1].a * m.matrice4[0].g + this->matrice4[1].a * m.matrice4[1].g + this->matrice4[1].a * m.matrice4[2].g + this->matrice4[1].a * m.matrice4[3].g;
+
+			this->matrice4[2].r = this->matrice4[2].r * m.matrice4[0].b + this->matrice4[2].r * m.matrice4[1].b + this->matrice4[2].r * m.matrice4[2].b + this->matrice4[2].r * m.matrice4[3].b;
+			this->matrice4[2].g = this->matrice4[2].g * m.matrice4[0].b + this->matrice4[2].g * m.matrice4[1].b + this->matrice4[2].g * m.matrice4[2].b + this->matrice4[2].g * m.matrice4[3].b;
+			this->matrice4[2].b = this->matrice4[2].b * m.matrice4[0].b + this->matrice4[2].b * m.matrice4[1].b + this->matrice4[2].b * m.matrice4[2].b + this->matrice4[2].b * m.matrice4[3].b;
+			this->matrice4[2].a = this->matrice4[2].a * m.matrice4[0].b + this->matrice4[2].a * m.matrice4[1].b + this->matrice4[2].a * m.matrice4[2].b + this->matrice4[2].a * m.matrice4[3].b;
+		
+			this->matrice4[3].r = this->matrice4[3].r * m.matrice4[0].a + this->matrice4[3].r * m.matrice4[1].a + this->matrice4[3].r * m.matrice4[2].a + this->matrice4[3].r * m.matrice4[3].a;
+			this->matrice4[3].g = this->matrice4[3].g * m.matrice4[0].a + this->matrice4[3].g * m.matrice4[1].a + this->matrice4[3].g * m.matrice4[2].a + this->matrice4[3].g * m.matrice4[3].a;
+			this->matrice4[3].b = this->matrice4[3].b * m.matrice4[0].a + this->matrice4[3].b * m.matrice4[1].a + this->matrice4[3].b * m.matrice4[2].a + this->matrice4[3].b * m.matrice4[3].a;
+			this->matrice4[3].a = this->matrice4[3].a * m.matrice4[0].a + this->matrice4[3].a * m.matrice4[1].a + this->matrice4[3].a * m.matrice4[2].a + this->matrice4[3].a * m.matrice4[3].a;
 			return *this;
+
+			/*for (int i = 0; i < 4; i++) {
+					this->matrice4[i].r = this->matrice4[i].r * m.matrice4[0].r + this->matrice4[i].r * m.matrice4[1].r + this->matrice4[i].r * m.matrice4[2].r + this->matrice4[i].r * m.matrice4[3].r;
+				}
+			}*/
 		}
 
+		Vector4 operator*(Vector4& v) {
+			Vector4 result = Vector4(
+				v.r * this->matrice4[0].r + v.g * this->matrice4[0].g + v.b * this->matrice4[0].b + v.a * this->matrice4[0].a,
+				v.r * this->matrice4[1].r + v.g * this->matrice4[1].g + v.b * this->matrice4[1].b + v.a * this->matrice4[1].a,
+				v.r * this->matrice4[2].r + v.g * this->matrice4[2].g + v.b * this->matrice4[2].b + v.a * this->matrice4[2].a,
+				v.r * this->matrice4[3].r + v.g * this->matrice4[3].g + v.b * this->matrice4[3].b + v.a * this->matrice4[3].a
+			);
+			return result;
+		}
+
+		Matrice4 operator+(Matrice4& m)
+		{
+			Matrice4 result = Matrice4();
+			for (int i = 0; i < 4; i++) {
+				result.matrice4[i] = this->matrice4[i] + m.matrice4[i];
+			}
+			return result;
+		}
 
 		void Translate(Vector3 direction)
 		{
@@ -119,7 +135,15 @@ namespace emp
 		std::vector<Vector3> matrice3_;
 
 		
-		Matrice3() = default;
+		Matrice3() {
+			this->matrice3_ = std::vector<Vector3>(3);
+			for (size_t i = 0; i < 3; i++)
+			{
+				this->matrice3_[i].x = 0.0f; 
+				this->matrice3_[i].y = 0.0f;
+				this->matrice3_[i].z = 0.0f;
+			}
+		}
 
 		Matrice3(std::vector<Vector3> matrice) {
 			this->matrice3_ = matrice;
@@ -146,8 +170,8 @@ namespace emp
 			this->matrice3_[0].x = x;
 			this->matrice3_[1].y = y;
 
-			this->matrice3_[2].x = w;
-			this->matrice3_[2].y = l;
+			this->matrice3_[0].x = w;
+			this->matrice3_[1].y = l;
 		}
 		
 		Matrice3(float x, float y, float axis_x, float axis_y, float w, float l)
@@ -159,8 +183,8 @@ namespace emp
 			//this->matrice[0][2] = x;
 			//this->matrice[1][2] = y;
 
-			this->matrice3_[2].x = w;
-			this->matrice3_[2].y = l;
+			this->matrice3_[0].x = w;
+			this->matrice3_[1].y = l;
 		}
 
 		Matrice3(Vector3 position, Vector3 scale)
@@ -169,19 +193,24 @@ namespace emp
 			this->matrice3_[0].x = position.x;
 			this->matrice3_[1].y = position.y;
 
-			this->matrice3_[2].x = scale.x;
-			this->matrice3_[2].y = scale.y;
+			this->matrice3_[0].x = scale.x;
+			this->matrice3_[1].y = scale.y;
+			this->matrice3_[2].z = scale.z;
 		}
 
 		Vector3 GetPosition()
 		{
-			return Vector3(0, 0, 0);
+			return Vector3(this->matrice3_[2].x , this->matrice3_[2].y , 0);
 		}
 
 		void SetPosition(Vector3 position)
 		{
-			//this->matrice3_[0].x = position.x;
-			//this->matrice3_[1].y = position.y;
+
+			this->matrice3_[2].x = position.x;
+			this->matrice3_[2].y = position.y;
+			this->matrice3_[2].z = position.z;
+
+			
 		}
 
 		//void SetRotation(Vector2 rotation)
@@ -190,33 +219,10 @@ namespace emp
 		//	matrice[1][2] = sin(90) * matrice[0][2] + cos(90) * matrice[1][2];*/
 		//}
 
-		Matrice3 RotationMatrixFrom(const float angle, Vector3 axis)
-		{
-			const Vector3 normalizedAxis = axis.Normalized();
-
-			const float x = normalizedAxis.x;
-			const float y = normalizedAxis.y;
-			const float c = cos(angle);
-			const float s = sin(angle);
-			const float t = 1.0f - c;
-			const float txx = t * x * x;
-			const float tyy = t * y * y;
-			const float txy = t * x * y;
-			const float sx = s * x;
-			const float sy = s * y;
-
-
-			return Matrice3(
-				std::vector<Vector3>
-			{
-					Vector3(txx + c, txy, 0),
-					Vector3(txy, tyy + c, 0),
-					Vector3(sy, sx, 1)});
-		}
 		
 		Vector3 GetScale()
 		{
-			return this->matrice3_[2];
+			return Vector3(this->matrice3_[0].x, this->matrice3_[1].y , this->matrice3_[2].z);
 		}
 
 		//void operator=(Matrice3& m)
@@ -328,12 +334,12 @@ namespace emp
 		//	return  new_position;
 		//}
 
-		Vector2 Rotate();
 
-		void SetScale(Vector2 scale)
+		void SetScale(Vector3 scale)
 		{
-			//this->matrice3_[2].x = scale.x;
-			//this->matrice3_[2].y = scale.y;
+			this->matrice3_[0].x = scale.x;
+			this->matrice3_[1].y = scale.y;
+			this->matrice3_[2].z = scale.z;
 		}
 	};
 }
