@@ -126,7 +126,6 @@ namespace emp {
 		
 		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		this->window = glfwCreateWindow(this->config->width, this->config->height, "Engine Mushroom Portuaire", NULL, NULL);
-
 		this->screen._backgroundColor = ColorRGB(0.14f, 0.14f, 0.14f);
 
 		glfwSetWindowAttrib(window, GLFW_DECORATED, this->config->decorated);
@@ -176,6 +175,15 @@ namespace emp {
 	{
 		//glClearColor(screen._backgroundColor.r, screen._backgroundColor.g, screen._backgroundColor.b, screen._backgroundColor.a);
 		//glClear(GL_COLOR_BUFFER_BIT);
+		if (WireframeView) {
+			// Turn on wireframe mode
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else {
+
+		// Turn off wireframe 
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 
 		m_sprite->Draw();
 		m_square->Draw();

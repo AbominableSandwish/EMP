@@ -87,6 +87,7 @@ namespace emp {
 	class GraphicManager : public System
 	{
 	public:
+		bool WireframeView = false;
         GraphicManager(Engine& engine, ConfigGraphic& config);
 		
         void Init() override;

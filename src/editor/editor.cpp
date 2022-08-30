@@ -101,6 +101,20 @@ namespace emp
 				}
 				ImGui::EndMenu();
 			}
+
+				if (ImGui::BeginMenu("View"))
+				{
+					if (ImGui::MenuItem("Classic View"))
+					{
+						this->m_engine->GetGraphicManager()->WireframeView = false;
+					}
+					if (ImGui::MenuItem("Wireframe View"))
+					{
+						this->m_engine->GetGraphicManager()->WireframeView = true;
+					}
+					ImGui::EndMenu();
+				}
+			
 			ImGui::EndMainMenuBar();
 		}
 		ImGui::End();
