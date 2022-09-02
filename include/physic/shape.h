@@ -24,10 +24,10 @@ namespace emp {
 		Transform* transform = nullptr;
 	};
 
-	class ColliderManager {
+	class ColliderManager:  {
 
 
-
+		
 	};
 
 	

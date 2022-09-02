@@ -148,6 +148,7 @@ namespace emp {
 		m_square->Init();
 		m_circle->Init();
 
+
 		lineX = new Line(glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
 		lineY = new Line(glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
 
@@ -195,12 +196,12 @@ namespace emp {
 			element->Draw();
 		}
 		
-		lineX->setMVP(transf);
-		lineX->setColor(glm::vec3(0, 0, 1));
-		lineX->Draw();
-		lineY->setMVP(transf);
-		lineY->setColor(glm::vec3(0, 1, 0));
-		lineY->Draw();
+		//lineX->setMVP(transf);
+		//lineX->setColor(glm::vec3(0, 0, 1));
+		//lineX->Draw();
+		//lineY->setMVP(transf);
+		//lineY->setColor(glm::vec3(0, 1, 0));
+		//lineY->Draw();
 		// uncomment this call to draw in wireframe polygons.
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		

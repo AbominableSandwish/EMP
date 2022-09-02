@@ -98,6 +98,8 @@ public:
         int entity;
         glm::vec4 color;
         float radius;
+        int ammountTriangle = 40;
+
         void SetColor(glm::vec4 color)
         {
             color = color;
