@@ -14,6 +14,7 @@ namespace emp {
 		m_sprite = new SpriteManager(engine, config);
 		m_square = new SquareManager(engine);
 		m_circle = new CircleManager(engine);
+		m_triangle = new TriangleManager(engine);
 	}
 	
 	Line* lineX;
@@ -147,6 +148,7 @@ namespace emp {
 		m_sprite->Init();
 		m_square->Init();
 		m_circle->Init();
+		m_triangle->Init();
 
 
 		lineX = new Line(glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
@@ -189,6 +191,7 @@ namespace emp {
 		m_sprite->Draw();
 		m_square->Draw();
 		m_circle->Draw();
+		m_triangle->Draw();
 		
 
 		for (auto element : grid_line)

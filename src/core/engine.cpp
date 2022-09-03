@@ -86,6 +86,7 @@ namespace emp
         this->m_component->RegisterComponent<SpriteRenderer>();
         this->m_component->RegisterComponent<Square>();
         this->m_component->RegisterComponent<Circle>();
+        this->m_component->RegisterComponent<Triangle>();
         this->m_component->RegisterComponent<RigidBody2D>();
         this->m_graphic->Init();
 
@@ -122,7 +123,7 @@ namespace emp
         for (int j= i; j < i + 1; ++j)
         {
             int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
-            this->m_component->AddComponent(entity, Transform(-0 * j,  j - 0, 0, 0.5f, 0.5f));
+            this->m_component->AddComponent(entity, Transform(0, 0, 0, 0.5f, 0.5f));
             this->m_component->AddComponent(entity, Square(entity));
             this->m_component->AddComponent(entity, RigidBody2D(entity));
         }
@@ -130,6 +131,10 @@ namespace emp
         int entity = this->m_entity->CreateEntity("Circle").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 0));
         this->m_component->AddComponent(entity, Circle(entity));
+
+        entity = this->m_entity->CreateEntity("Triangle").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0.5f, 0.5f));
+        this->m_component->AddComponent(entity, Triangle(entity));
       
         this->is_running = true;
 	}

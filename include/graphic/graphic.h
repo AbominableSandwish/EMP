@@ -74,6 +74,7 @@ namespace emp {
 	class ComponentManager;
 	class SquareManager;
 	class CircleManager;
+	class TriangleManager;
 	class Renderer2D;
 
 	/// Holds all state information relevant to a character as loaded using FreeType
@@ -138,6 +139,7 @@ namespace emp {
         SpriteManager* m_sprite;
 		SquareManager* m_square;
 		CircleManager* m_circle;
+		TriangleManager* m_triangle;
 
 		int width = 64;
 		int height = 64;

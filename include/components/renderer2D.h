@@ -35,6 +35,49 @@ namespace emp {
         ~Line();
     };
 
+    class Triangle {
+    public:
+        Triangle(int entity)
+        {
+            this->entity = entity;
+        }
+        void Init();
+
+
+        const char* vertexShaderSource;
+        const char* fragmentShaderSource;
+        unsigned int vertexShader;
+        unsigned int fragmentShader;
+        unsigned int shaderProgram;
+        unsigned int VBO, VAO, EBO;
+
+        int entity;
+        glm::vec4 color;
+        void SetColor(glm::vec4 color)
+        {
+            color = color;
+        }
+    };
+
+    class ComponentManager;
+    class TriangleManager : public Renderer2D
+    {
+    public:
+        TriangleManager(Engine& engine);
+
+        void Init();
+
+        void Destroy() override;
+
+        void Update(float) override;
+
+        void Draw();
+
+
+    private:
+        ComponentManager* m_component = nullptr;
+    };
+
 class Square {
 public:
 		Square(int entity)
