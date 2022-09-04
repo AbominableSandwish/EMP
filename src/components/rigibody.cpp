@@ -16,13 +16,7 @@ namespace emp {
 		auto ptr = reinterpret_cast<RigidBody2D*>(std::malloc(size * sizeof(RigidBody2D)));
 	}
 
-	
-	float anlgeTime = 0.0f;
-
 	void RigidBody2DManager::Update(float dt) {
-		anlgeTime += dt / 1000.0f;
-		if (anlgeTime == 80)
-			anlgeTime = 0.0f;
 		auto& arrayElement = this->m_component->GetComponents<RigidBody2D>();
 		for (auto& element : arrayElement)
 		{
@@ -36,9 +30,9 @@ namespace emp {
 				element.direction = new Vector2(-1.0f, 1.0f);
 			if (position.x <= -100)
 				element.direction =new Vector2(1.0f, 1.0f);
-			element.transform->SetPosition(position + move);
+			//element.transform->SetPosition(position + move);
 
-			element.transform->SetRotation(anlgeTime, Vector3(0, 0, 1));
+			element.transform->SetRotation(dt, Vector3(0, 0, 1));
 		}
 	}
 

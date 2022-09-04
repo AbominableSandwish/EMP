@@ -123,18 +123,24 @@ namespace emp
         for (int j= i; j < i + 1; ++j)
         {
             int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
-            this->m_component->AddComponent(entity, Transform(0, 0, 0, 0.5f, 0.5f));
+            this->m_component->AddComponent(entity, Transform(0, 30, 0, 0, 0, 1 ,1.0f, 0.1f));
             this->m_component->AddComponent(entity, Square(entity));
-            this->m_component->AddComponent(entity, RigidBody2D(entity));
         }
 
         int entity = this->m_entity->CreateEntity("Circle").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 0));
+        this->m_component->AddComponent(entity, Transform(-60, 0, 0));
         this->m_component->AddComponent(entity, Circle(entity));
+        this->m_component->AddComponent(entity, RigidBody2D(entity));
 
-        entity = this->m_entity->CreateEntity("Triangle").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0.5f, 0.5f));
-        this->m_component->AddComponent(entity, Triangle(entity));
+        entity = this->m_entity->CreateEntity("Circle2").id;
+        this->m_component->AddComponent(entity, Transform(60, 0, 0));
+        this->m_component->AddComponent(entity, Circle(entity));
+        this->m_component->AddComponent(entity, RigidBody2D(entity));
+
+        int entity_c = this->m_entity->CreateEntity("Triangle").id;
+        this->m_component->AddComponent(entity_c, Transform(60, 0, 0, 0.5f, 0.5f));
+        this->m_component->AddComponent(entity_c, Triangle(entity_c));
+        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
       
         this->is_running = true;
 	}
@@ -162,6 +168,8 @@ namespace emp
 				this->m_graphic->Draw();
 
             end = clock();
+
+            LOG::Debug(std::to_string(dt));
         }
     }
 

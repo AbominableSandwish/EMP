@@ -270,7 +270,7 @@ namespace emp
                 vertices[ii * 3 + 2] = 0;
             }
             else {
-                vertices[ii * 3] = (r * cosf(theta))/1.5f;
+                vertices[ii * 3] = (r * cosf(theta));///1.5f
                 vertices[ii * 3 + 1] = r * sinf(theta);
                 vertices[ii * 3 + 2] = 0;
             }
@@ -393,12 +393,12 @@ namespace emp
         {
             auto transform = m_component->GetComponent<Transform>(element.entity);
             Vector3 position = transform.GetPosition();
-            //DrawCircle(position.x, position.x, element.radius, 40);
-            glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            //transf = glm::translate(transf, glm::vec3(position.x / 100, position.y / 100, 0.0f));
-            //transf = glm::scale(transf, glm::vec3(position.scale_x, position.scale_y, 0.0f));
-            //transf = glm::rotate(transf, (float)glfwGetTime() / speedRotate, glm::vec3(0.0f, 0.0f, 1.0));
-
+            Vector3 scale = transform.GetScale();
+            std::vector<Vector4> matrice = transform.matrice->matrice4;
+            glm::mat4 transf = glm::mat4(matrice[0].r, matrice[0].g, matrice[0].b, matrice[0].a,
+                matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
+                matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
+                position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
             // draw our first triangle
             glUseProgram(element.shaderProgram);
             glBindVertexArray(element.VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
@@ -465,9 +465,9 @@ namespace emp
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
-                 0.0f,  0.5f, 0.0f,  // middle top
-                 0.5f, -0.5f, 0.0f,  // bottom right
-                -0.5f, -0.5f, 0.0f,  // bottom left
+                 cos(60) * 0.5f,  sin(60)*0.5f, 0.0f,  // middle top
+                 0.0f, 0.5f, 0.0f,  // bottom right
+                -cos(60)*0.5f, sin(60) * 0.5f, 0.0f,  // bottom left
             };
             unsigned int indices[] = {  // note that we start from 0!
                 0, 1, 2,  // first Triangle

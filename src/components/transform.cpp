@@ -25,6 +25,16 @@ namespace emp {
 		scale_y = l;
 		this->SetScale(w, l);
 	}
+	Transform::Transform(float x, float y, float z, float angle_x, float angle_y, float angle_z,float w, float l)
+	{
+		matrice = new Matrice4();
+		position = new Vector4(x, y, z, 1);
+		this->SetPosition(Vector3(x, y, z));
+		SetRotation(angle_x, Vector3(1, 0, 0));
+		SetRotation(angle_y, Vector3(0, 1, 0));
+		SetRotation(angle_z, Vector3(0, 0, 1));
+		this->SetScale(w, l);
+	}
 
 	void Transform::Init() {
 
@@ -119,8 +129,8 @@ namespace emp {
 
 	Matrice4  Transform::RotationMatrixFrom(const float angle, Vector3 axis)
 	{
-		float c = cos(angle);
-		float s = sin(angle);
+		float c = cos(angle / 1000);
+		float s = sin(angle / 1000);
 		const Vector3 normalizedAxis = axis.Normalized();
 	
 		Vector3 temp((1.0f - c) * axis.x, (1.0f - c) * axis.y, (1.0f - c) * axis.z);

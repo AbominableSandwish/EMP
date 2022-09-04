@@ -14,6 +14,7 @@ namespace emp {
 		Transform();
 		Transform(float x, float y, float z);
 		Transform(float x, float y, float z, float w, float l);
+		Transform(float x, float y, float z, float angle_x, float angle_y, float angle_z, float w, float l);
 
 		void Init();
 		void Reset();
