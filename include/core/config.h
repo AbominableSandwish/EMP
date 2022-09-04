@@ -26,11 +26,6 @@ namespace emp
 		ConfigGraphic(string name);
 		ConfigGraphic(string name, Mode& mode);
 
-		int GetWidth()
-		{
-			return this->width;
-		}
-
 		// Get the horizontal and vertical screen sizes in pixel
 		void GetDesktopWindowResolution(int& horizontal, int& vertical)
 		{
@@ -46,9 +41,9 @@ namespace emp
 			vertical = desktop.bottom;
 		}
 
-		int PixelSize = 100;
-		//Resolution texture
-		int width, height;
+		
+		//Resolution Screen (pixel)
+		int horizontal, vertical;
 		//Size Window;
 		int window_width, window_height;
 		//position Window
@@ -56,6 +51,10 @@ namespace emp
 		//other config window
 		bool decorated;
 		bool transparent;
+
+		float offset_scaling = 0.0f;
+
+		int PixelSize = 100;
 	};
 	
 

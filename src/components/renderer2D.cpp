@@ -1,9 +1,12 @@
 #include <components/renderer2D.h>
 #include <core/engine.h>
+#include <core/config.h>
 #include "core/component.h"
 #include <graphic/graphic.h>
 #include <components/transform.h>
 #include <math/matrice.h>
+#include "glm/gtx/transform.hpp"
+
 
 namespace emp
 {
@@ -12,12 +15,14 @@ namespace emp
 
     }
 
-	Line::Line(glm::vec3 start, glm::vec3 end)
+	Line::Line(ConfigGraphic& config, glm::vec3 start, glm::vec3 end)
     {
+        this->config = &config;
         startPoint = start;
         endPoint = end;
         lineColor = glm::vec3(1, 1, 1);
         MVP = glm::mat4(1.0f);
+        MVP = glm::scale(MVP, glm::vec3(1 / this->config->offset_scaling, 1, 1));
 
         const char* vertexShaderSource = "#version 330 core\n"
             "layout (location = 0) in vec3 aPos;\n"
@@ -97,8 +102,9 @@ namespace emp
         glDeleteProgram(shaderProgram);
     }
     //
-    TriangleManager::TriangleManager(Engine& engine) : Renderer2D(engine, "")
+    TriangleManager::TriangleManager(Engine& engine, ConfigGraphic& config) : Renderer2D(engine, "")
     {
+        this->config = &config;
         m_component = engine.GetComponentManager();
     }
 
@@ -132,10 +138,6 @@ namespace emp
                 matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
                 matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
                 position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a); // make sure to initialize matrix to identity matrix first
-            //transf = glm::translate(transf, glm::vec3(position.x / 100, position.y / 100, 0.0f));
-            //transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));
-            //transf = glm::rotate(transf, transform.angle_z, glm::vec3(0.0f, 0.0f, 1.0));
-
 
             // draw our first triangle
             glUseProgram(element.shaderProgram);
@@ -155,8 +157,9 @@ namespace emp
     }
 
     //
-	SquareManager::SquareManager(Engine& engine) : Renderer2D(engine, "")
+	SquareManager::SquareManager(Engine& engine, ConfigGraphic& config) : Renderer2D(engine, "")
     {
+        this->config = &config;
         m_component = engine.GetComponentManager();
     }
 
@@ -259,19 +262,20 @@ namespace emp
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         float pi = 3.141569265f;
-        float r = 0.25f;
-        float vertices[22 * 3] = { 0.0f };
-        for (int ii = 0; ii < 22; ii++)
+        float r = 0.5f;
+        float theta = (2 * pi) / 80;
+        float vertices[80 * 3] = { 0.0f };
+        for (int ii = 0; ii < 80; ii++)
+            
         {
-            float theta = (4.0f * pi) * float(ii) / float(40);//get the current angle
             if (ii == 0) {
                 vertices[ii * 3] = 0;
                 vertices[ii * 3 + 1] = 0;
                 vertices[ii * 3 + 2] = 0;
             }
             else {
-                vertices[ii * 3] = (r * cosf(theta));///1.5f
-                vertices[ii * 3 + 1] = r * sinf(theta);
+                vertices[ii * 3] = (r * cosf(theta * (ii+1)));///1.5f
+                vertices[ii * 3 + 1] = r * sinf(theta* (ii + 1));
                 vertices[ii * 3 + 2] = 0;
             }
             
@@ -285,30 +289,20 @@ namespace emp
         //    indices[ii*3 + 2] = ii + 2;
 
         //}
-
-        unsigned int indices[] = {  // note that we start from 0!
-             0, 1, 2,  // first Triangle
-             0, 2, 3,   // second Triangle
-             0, 3, 4,
-             0, 4, 5,
-             0, 5, 6,
-             0, 6, 7,
-             0, 7, 8,
-             0, 8, 9,
-             0, 9, 10,
-             0, 10, 11,
-             0, 11, 12,
-             0, 12, 13,
-             0, 13, 14,
-             0, 14, 15,
-             0, 15, 16,
-             0, 16, 17,
-             0, 17, 18,
-             0, 18, 19,
-             0, 19, 20,
-             0, 20, 21,
-             0, 21, 22
-        };
+        unsigned int indices[80 * 3] = { 0 };
+        for (size_t i = 0; i < 80; i++)
+        {
+            if (i == 0) {
+                indices[0] = 0;
+                indices[1] = 0;
+                indices[2] = 0;
+            }
+            else {
+                indices[i * 3] = 0;
+                indices[i * 3 + 1] = i;
+                indices[i * 3 + 2] = i + 1;
+            }
+        }
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -336,9 +330,9 @@ namespace emp
         glBindVertexArray(0);
 	}
 
-	CircleManager::CircleManager(Engine& engine) : Renderer2D(engine, "")
+	CircleManager::CircleManager(Engine& engine, ConfigGraphic& config) : Renderer2D(engine, "")
     {
-      
+        this->config = &config;
     }
 
 	void CircleManager::Init()
@@ -355,26 +349,26 @@ namespace emp
 	}
 
     float pi = 3.1415926f;
-    void DrawCircle(float cx, float cy, float r, int amm_triangles)
-    {
-        glBegin(GL_TRIANGLE_FAN);
-        glColor3b(255, 0, 0);
-        glVertex2f(cx, cy);
-        float vertices2[20*3] = {0.0f};
-        for (int ii = 0; ii < amm_triangles; ii++)
-        {
-            float theta = (2.0f * pi) * float(ii) / float(amm_triangles);//get the current angle
+    //void DrawCircle(float cx, float cy, float r, int amm_triangles)
+    //{
+    //    glBegin(GL_TRIANGLE_FAN);
+    //    glColor3b(255, 0, 0);
+    //    glVertex2f(cx, cy);
+    //    float vertices2[20*3] = {0.0f};
+    //    for (int ii = 0; ii < amm_triangles; ii++)
+    //    {
+    //        float theta = (2.0f * pi) * float(ii) / float(amm_triangles);//get the current angle
 
-            float x = r * cosf(theta);//calculate the x component
-            float y = r * sinf(theta);//calculate the y component
-            vertices2[ii] = r * cosf(theta);
-            vertices2[ii+1] = r * sinf(theta);
-            vertices2[ii+2] = 0;
-            glVertex2f(x + cx, y + cy);//output vertex
+    //        float x = r * cosf(theta);//calculate the x component
+    //        float y = r * sinf(theta);//calculate the y component
+    //        vertices2[ii] = r * cosf(theta);
+    //        vertices2[ii+1] = r * sinf(theta);
+    //        vertices2[ii+2] = 0;
+    //        glVertex2f(x + cx, y + cy);//output vertex
 
-        }
-        glEnd();
-    }
+    //    }
+    //    glEnd();
+    //}
     //void CircleManager::Draw()
     //{
     //    auto arrayElement = engine->GetComponentManager()->GetComponents<Circle>();
@@ -410,7 +404,7 @@ namespace emp
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
             glUniform4f(colorLoc, element.color.r, element.color.g, element.color.b, element.color.a);
             //glDrawArrays(GL_TRIANGLES, 0, 6);
-            glDrawElements(GL_TRIANGLES, 20*3, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, 80, GL_UNSIGNED_INT, 0);
             // glBindVertexArray(0); // no need to unbind it every time
         }
 	}

@@ -17,13 +17,9 @@ namespace emp {
         glm::vec3 endPoint;
         glm::mat4 MVP;
         glm::vec3 lineColor;
+        ConfigGraphic* config = nullptr;
     public:
-        Line(glm::vec3 start, glm::vec3 end);
-
-        int setMVP(glm::mat4 mvp) {
-            MVP = mvp;
-            return 1;
-        }
+        Line(ConfigGraphic& config, glm::vec3 start, glm::vec3 end);
 
         int setColor(glm::vec3 color) {
             lineColor = color;
@@ -58,12 +54,12 @@ namespace emp {
             color = color;
         }
     };
-
+    class ConfigGraphic;
     class ComponentManager;
     class TriangleManager : public Renderer2D
     {
     public:
-        TriangleManager(Engine& engine);
+        TriangleManager(Engine& engine, ConfigGraphic& config );
 
         void Init();
 
@@ -76,6 +72,7 @@ namespace emp {
 
     private:
         ComponentManager* m_component = nullptr;
+        ConfigGraphic* config = nullptr;
     };
 
 class Square {
@@ -107,7 +104,7 @@ public:
     class SquareManager : public Renderer2D
     {
     public:
-        SquareManager(Engine& engine);
+        SquareManager(Engine& engine, ConfigGraphic& config);
     	
         void Init();
 
@@ -120,6 +117,7 @@ public:
 
     private:
         ComponentManager* m_component = nullptr;
+        ConfigGraphic* config = nullptr;
     };
 
     class Circle {
@@ -157,7 +155,7 @@ public:
     class CircleManager : public Renderer2D
     {
     public:
-        CircleManager(Engine& engine);
+        CircleManager(Engine& engine, ConfigGraphic& config);
 
         void Init();
 
@@ -169,5 +167,6 @@ public:
 
     private:
         ComponentManager* m_component = nullptr;
+        ConfigGraphic* config = nullptr;
     };
 }

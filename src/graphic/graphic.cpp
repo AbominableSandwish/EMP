@@ -12,9 +12,9 @@ namespace emp {
 	{
 		this->config = &config;
 		m_sprite = new SpriteManager(engine, config);
-		m_square = new SquareManager(engine);
-		m_circle = new CircleManager(engine);
-		m_triangle = new TriangleManager(engine);
+		m_square = new SquareManager(engine, config);
+		m_circle = new CircleManager(engine, config);
+		m_triangle = new TriangleManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -36,43 +36,34 @@ namespace emp {
 
 				glm::mat4 transf_line = glm::mat4(1.0f);
 
-				grid_line.push_back(new Line(glm::vec3(0, position.y, 0), glm::vec3(-1, position.y, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(0, position.y, 0), glm::vec3(-1, position.y, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
-				grid_line.push_back(new Line(glm::vec3(0, position.y, 0), glm::vec3(1, position.y, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(0, position.y, 0), glm::vec3(1, position.y, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
 				transf_line = glm::mat4(1.0f);
-				grid_line.push_back(new Line(glm::vec3(position.x, 0, 0), glm::vec3(position.x, -1, 0)));
-
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(position.x, 0, 0), glm::vec3(position.x, -1, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
-				grid_line.push_back(new Line(glm::vec3(position.x, 0, 0), glm::vec3(position.x, 1, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(position.x, 0, 0), glm::vec3(position.x, 1, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
 
 
 				//
-				grid_line.push_back(new Line(glm::vec3(0, -position.y, 0), glm::vec3(-1, -position.y, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(0, -position.y, 0), glm::vec3(-1, -position.y, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
-				grid_line.push_back(new Line(glm::vec3(0, -position.y, 0), glm::vec3(1, -position.y, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(0, -position.y, 0), glm::vec3(1, -position.y, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
 				transf_line = glm::mat4(1.0f);
-				grid_line.push_back(new Line(glm::vec3(-position.x, 0, 0), glm::vec3(-position.x, -1, 0)));
+				grid_line.push_back(new Line(config, glm::vec3(-position.x, 0, 0), glm::vec3(-position.x, -1, 0)));
 
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
-				grid_line.push_back(new Line(glm::vec3(-position.x, 0, 0), glm::vec3(-position.x, 1, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(-position.x, 0, 0), glm::vec3(-position.x, 1, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 			}
 			else
@@ -81,22 +72,18 @@ namespace emp {
 				
 				glm::mat4 transf_line = glm::mat4(1.0f);
 
-				grid_line.push_back(new Line(glm::vec3(0, 0, 0), glm::vec3(-1, 0, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(0, 0, 0), glm::vec3(-1, 0, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
-				grid_line.push_back(new Line(glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
 				transf_line = glm::mat4(1.0f);
-				grid_line.push_back(new Line(glm::vec3(position.x, 0, 0), glm::vec3(position.x, -1, 0)));
+				grid_line.push_back(new Line(config, glm::vec3(position.x, 0, 0), glm::vec3(position.x, -1, 0)));
 
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 
-				grid_line.push_back(new Line(glm::vec3(position.x, 0, 0), glm::vec3(position.x, 1, 0)));
-				grid_line[grid_line.size() - 1]->setMVP(transf_line);
+				grid_line.push_back(new Line(config, glm::vec3(position.x, 0, 0), glm::vec3(position.x, 1, 0)));
 				grid_line[grid_line.size() - 1]->setColor(glm::vec3(0.25f, 0.25f, 0.25f));
 			}
 			
@@ -126,8 +113,12 @@ namespace emp {
 
 		
 		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		this->window = glfwCreateWindow(this->config->width, this->config->height, "Engine Mushroom Portuaire", NULL, NULL);
+		this->window = glfwCreateWindow(1000, 1000, "Engine Mushroom Portuaire", NULL, NULL);
 		this->screen._backgroundColor = ColorRGB(0.14f, 0.14f, 0.14f);
+		if (this->config->horizontal > this->config->vertical)			
+			this->config->offset_scaling = this->config->horizontal / (float)this->config->vertical;
+		if (this->config->horizontal < this->config->vertical)
+			this->config->offset_scaling = this->config->vertical / (float)this->config->horizontal;
 
 		glfwSetWindowAttrib(window, GLFW_DECORATED, this->config->decorated);
 		glfwSetWindowPos(this->window, this->config->x, this->config->y);
@@ -151,8 +142,8 @@ namespace emp {
 		m_triangle->Init();
 
 
-		lineX = new Line(glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
-		lineY = new Line(glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
+		lineX = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
+		lineY = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
 
 		grid(*config);
 	}
