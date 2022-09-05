@@ -22,7 +22,6 @@ namespace emp
         endPoint = end;
         lineColor = glm::vec3(1, 1, 1);
         MVP = glm::mat4(1.0f);
-        MVP = glm::scale(MVP, glm::vec3(1 / this->config->offset_scaling, 1, 1));
 
         const char* vertexShaderSource = "#version 330 core\n"
             "layout (location = 0) in vec3 aPos;\n"
@@ -262,10 +261,10 @@ namespace emp
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         float pi = 3.141569265f;
-        float r = 0.5f;
-        float theta = (2 * pi) / 80;
-        float vertices[80 * 3] = { 0.0f };
-        for (int ii = 0; ii < 80; ii++)
+        float r = 0.25f;
+        float theta = (2 * pi) /359;
+        float vertices[361 * 3] = { 0.0f };
+        for (int ii = 0; ii < 361; ii++)
             
         {
             if (ii == 0) {
@@ -281,16 +280,9 @@ namespace emp
             
 
         }
-        //unsigned int indices[40 * 3] = { 0.0f };
-        //for (int ii = 0; ii < 40 ;ii++)
-        //{
-        //    indices[ii*3] = ii;
-        //    indices[ii*3 + 1] = ii + 1;
-        //    indices[ii*3 + 2] = ii + 2;
-
-        //}
-        unsigned int indices[80 * 3] = { 0 };
-        for (size_t i = 0; i < 80; i++)
+       
+        unsigned int indices[360 * 3*3+1] = { 0 };
+        for (size_t i = 0; i < 360*3; i++)
         {
             if (i == 0) {
                 indices[0] = 0;
@@ -300,7 +292,7 @@ namespace emp
             else {
                 indices[i * 3] = 0;
                 indices[i * 3 + 1] = i;
-                indices[i * 3 + 2] = i + 1;
+                indices[i * 3 + 2] = i+ 1;
             }
         }
 
@@ -404,7 +396,7 @@ namespace emp
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
             glUniform4f(colorLoc, element.color.r, element.color.g, element.color.b, element.color.a);
             //glDrawArrays(GL_TRIANGLES, 0, 6);
-            glDrawElements(GL_TRIANGLES, 80, GL_UNSIGNED_INT, 0);
+            glDrawElements(GL_TRIANGLES, 360*3, GL_UNSIGNED_INT, 0);
             // glBindVertexArray(0); // no need to unbind it every time
         }
 	}
@@ -459,9 +451,9 @@ namespace emp
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
-                 cos(60) * 0.5f,  sin(60)*0.5f, 0.0f,  // middle top
                  0.0f, 0.5f, 0.0f,  // bottom right
-                -cos(60)*0.5f, sin(60) * 0.5f, 0.0f,  // bottom left
+                 cos(pi/6) * 0.5f, -sin(pi / 6) * 0.5f, 0.0f,  // middle top
+                -cos(pi/6) * 0.5f, -sin(pi / 6) * 0.5f, 0.0f,  // bottom left
             };
             unsigned int indices[] = {  // note that we start from 0!
                 0, 1, 2,  // first Triangle

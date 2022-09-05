@@ -75,9 +75,6 @@ namespace emp
         //Entity
         m_rigidbody= this->m_systems->RegisterSystem<RigidBody2DManager>(*this, "Rigid Manager");
         
-
-       
-
     	//Graphic
         emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
         m_graphic = this->m_systems->RegisterSystem<GraphicManager>(*this, *configGraphic);
@@ -119,26 +116,55 @@ namespace emp
             this->m_entity->CreateEntity("Sprite_"+ std::to_string(i));
             this->m_component->AddComponent(i, Transform(10*i, 10* i, 0));
             this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
+            
         }
-        for (int j= i; j < i + 1; ++j)
+        for (int j= i; j < i + 0; ++j)
         {
             int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
-            this->m_component->AddComponent(entity, Transform(0, 30, 0, 0, 0, 1 ,1.0f, 0.1f));
+            this->m_component->AddComponent(entity, Transform(-40, 0, 0, 0, 0, -45*115 ,0.5f, 0.1f));
             this->m_component->AddComponent(entity, Square(entity));
         }
 
-        int entity = this->m_entity->CreateEntity("Circle").id;
-        this->m_component->AddComponent(entity, Transform(-60, 0, 0));
+        int entity = this->m_entity->CreateEntity("Square_").id;
+        this->m_component->AddComponent(entity, Transform(-40, 0, 0, 0, 0, -45 * 115, 0.5f, 0.1f));
+        this->m_component->AddComponent(entity, Square(entity));
+
+         entity = this->m_entity->CreateEntity("Square_").id;
+        this->m_component->AddComponent(entity, Transform(-12, 38, 0, 0, 0, -48 * 115, 0.5f, 0.1f));
+        this->m_component->AddComponent(entity, Square(entity));
+        entity = this->m_entity->CreateEntity("Square_").id;
+        this->m_component->AddComponent(entity, Transform(32, 55, 0, 0, 0, 0, 0.55f, 0.1f));
+        this->m_component->AddComponent(entity, Square(entity));
+
+         entity = this->m_entity->CreateEntity("Circle").id;
+        this->m_component->AddComponent(entity, Transform(40, 0, 0,2,2));
         this->m_component->AddComponent(entity, Circle(entity));
         this->m_component->AddComponent(entity, RigidBody2D(entity));
 
-        entity = this->m_entity->CreateEntity("Circle2").id;
-        this->m_component->AddComponent(entity, Transform(60, 0, 0));
-        this->m_component->AddComponent(entity, Circle(entity));
-        this->m_component->AddComponent(entity, RigidBody2D(entity));
 
         int entity_c = this->m_entity->CreateEntity("Triangle").id;
-        this->m_component->AddComponent(entity_c, Transform(60, 0, 0, 0.5f, 0.5f));
+        this->m_component->AddComponent(entity_c, Transform(40, 0, 0, 0.5f, 0.5f));
+        this->m_component->AddComponent(entity_c, Triangle(entity_c));
+        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
+
+         entity_c = this->m_entity->CreateEntity("Triangle").id;
+        this->m_component->AddComponent(entity_c, Transform(40, 0, 0,0,0,45*115, 1, 1));
+        this->m_component->AddComponent(entity_c, Triangle(entity_c));
+        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
+
+         entity = this->m_entity->CreateEntity("Circle").id;
+        this->m_component->AddComponent(entity, Transform(-50, -25, 0,1,1));
+        this->m_component->AddComponent(entity, Circle(entity));
+        this->m_component->AddComponent(entity, RigidBody2D(entity));
+
+
+         entity_c = this->m_entity->CreateEntity("Triangle").id;
+        this->m_component->AddComponent(entity_c, Transform(-50, -25, 0, 0.5f, 0.5f));
+        this->m_component->AddComponent(entity_c, Triangle(entity_c));
+        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
+
+        entity_c = this->m_entity->CreateEntity("Triangle").id;
+        this->m_component->AddComponent(entity_c, Transform(-50, -25, 0, 0, 0, 45 * 115, 0.5f, 0.5f));
         this->m_component->AddComponent(entity_c, Triangle(entity_c));
         this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
       
