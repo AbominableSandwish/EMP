@@ -8,6 +8,7 @@
 #include "components/circle.h"
 #include "components/cube.h"
 #include "components/line.h"
+#include "components/light.h"
 #include "glm/gtx/transform.hpp"
 
 
@@ -21,6 +22,7 @@ namespace emp {
 		m_circle = new CircleManager(engine, config);
 		m_triangle = new TriangleManager(engine, config);
 		m_cube = new CubeManager(engine, config);
+		m_light = new LightManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -150,6 +152,7 @@ namespace emp {
 		m_circle->Init();
 		m_triangle->Init();
 		m_cube->Init();
+		m_light->Init();
 
 
 		lineX = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
@@ -167,7 +170,9 @@ namespace emp {
 			engine->Stop();
 		}
 		m_cube->Update(dt);
+		m_light->Update(dt);
 		m_sprite->Update(dt);
+
 		glfwPollEvents();
 	}
 
@@ -189,6 +194,8 @@ namespace emp {
 		// Turn off wireframe 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
+
+		m_light->Draw();
 
 		m_sprite->Draw();
 		m_square->Draw();

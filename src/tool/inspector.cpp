@@ -6,6 +6,7 @@
 #include <core/component.h>
 #include <math/matrice.h>
 #include <components/transform.h>
+#include <components/light.h>
 
 namespace emp {
 	class Transform;
@@ -90,6 +91,29 @@ void Inspector::Init()
 				tranform.SetRotation(input_rotation_y, emp::Vector3(0, 1, 0));
 				tranform.SetRotation(input_rotation_z, emp::Vector3(0, 0, 1));
 				tranform.SetScale(input_scale[0], input_scale[1]);
+			}
+
+			emp::Light& light = m_engine->GetComponentManager()->GetComponent<emp::Light>(Target);
+			ismodif = false;
+
+			float red = light.color.r;
+			float green = light.color.g;
+			float blue = light.color.b;
+
+			float input_red = red;
+			float input_green = green;
+			float input_blue = blue;
+
+			ImGui::Text("   Color: ");
+			if (ImGui::InputFloat("##RED", &input_red, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
+				ismodif = true;
+			if (ImGui::InputFloat("##GREEN", &input_green, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
+				ismodif = true;
+			if (ImGui::InputFloat("##BLUE", &input_blue, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
+				ismodif = true;
+
+			if (ismodif) {
+				light.SetColor(glm::vec4(input_red, input_green, input_blue, 1.0f));
 			}
 		}
 	}

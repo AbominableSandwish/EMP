@@ -13,12 +13,12 @@
 // Physic
 #include <components/rigidbody.h>
 #include <components/transform.h>
-// Renderer 2D;
+// Component;
 #include <components/triangle.h>
 #include <components/square.h>
 #include <components/circle.h>
-//Renderer 3D
 #include <components/cube.h>
+#include <components/light.h>
 // External
 #include <iostream>
 #include <ctime>
@@ -95,6 +95,7 @@ namespace emp
         this->m_component->RegisterComponent<Triangle>();
 
         this->m_component->RegisterComponent<Cube>();
+        this->m_component->RegisterComponent<Light>();
 
         this->m_component->RegisterComponent<RigidBody2D>();
         this->m_graphic->Init();
@@ -144,9 +145,23 @@ namespace emp
         //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
         //this->m_component->AddComponent(entity_c, Triangle(entity_c));
 
+       
+
         int entity = this->m_entity->CreateEntity("Cube").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
-        this->m_component->AddComponent(entity, Cube(entity));
+        this->m_component->AddComponent(entity, Transform(-50, 0, 0, 0, 0, 0, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Cube(entity, 1.0f, 1.0f, 1.0f));
+
+        entity = this->m_entity->CreateEntity("Cube").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Cube(entity, 0.66f, 0.66f, 0.66f));
+
+        entity = this->m_entity->CreateEntity("Cube").id;      
+        this->m_component->AddComponent(entity, Transform(+50, 0, 0, 0, 0, 0, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
+
+        entity = this->m_entity->CreateEntity("Light").id;
+        this->m_component->AddComponent(entity, Transform(0, 100, 0, 0, 0, 0, 0.1f, 0.1f));
+        this->m_component->AddComponent(entity, Light(entity, 1.0f, 0, 0));
 
         this->is_running = true;
 	}

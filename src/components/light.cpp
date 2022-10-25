@@ -1,20 +1,19 @@
-#include <components/cube.h>
+#include <components/light.h>
 #include <core/engine.h>
 #include <core/config.h>
 #include "core/component.h"
 #include <graphic/graphic.h>
 #include <components/transform.h>
-#include <components/light.h>
 #include <math/matrice.h>
 
 namespace emp {
-    Cube::Cube(int entity, float r, float g, float b)
+    Light::Light(int entity, float r, float g, float b)
     {
         this->entity = entity;
         this->color = glm::vec4(r, g, b, 1.0f);
     }
     //CUBE
-    void Cube::Init()
+    void Light::Init()
     {
         {
             vertexShaderSource = "#version 330 core\n"
@@ -28,12 +27,11 @@ namespace emp {
                 "}\0";
             fragmentShaderSource = "#version 330 core\n"
                 "uniform vec3 color;\n"
-                "uniform vec3 lightColor;\n"
 
                 "out vec4 FragColor;\n"
                 "void main()\n"
                 "{\n"
-                "   FragColor = vec4(color * lightColor, 1.0);\n"
+                "   FragColor = vec4(color, 1.0);\n"
                 "}\n\0";
             // build and compile our shader program
             // ------------------------------------
@@ -102,31 +100,31 @@ namespace emp {
     }
 
     //CUBEMANAGER
-    CubeManager::CubeManager(Engine& engine, ConfigGraphic& config) : System(engine, "CubeManager")
+    LightManager::LightManager(Engine& engine, ConfigGraphic& config) : System(engine, "LightManager")
     {
         this->config = &config;
         m_component = engine.GetComponentManager();
     }
 
-    void CubeManager::Init()
+    void LightManager::Init()
     {
         m_component = engine->GetComponentManager();
     }
 
 
-    void CubeManager::Destroy()
+    void LightManager::Destroy()
     {
     }
 
-    void CubeManager::Update(float dt)
+    void LightManager::Update(float dt)
     {
         time += dt;
     }
 
-    void CubeManager::Draw()
+    void LightManager::Draw()
     {
 
-        auto arrayElement = engine->GetComponentManager()->GetComponents<Cube>();
+        auto arrayElement = engine->GetComponentManager()->GetComponents<Light>();
         for (auto element : arrayElement)
         {
             int PixelPerSize = config->PixelSize;
@@ -158,14 +156,7 @@ namespace emp {
             glUniformMatrix4fv(glGetUniformLocation(element.shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
             unsigned int colorLoc = glGetUniformLocation(element.shaderProgram, "color");
-            unsigned int lightLoc = glGetUniformLocation(element.shaderProgram, "lightColor");
             glUniform3f(colorLoc, element.color.r, element.color.g, element.color.b);
-           
-            auto arrayLight = engine->GetComponentManager()->GetComponents<Light>();
-
-            Light mainLight = arrayLight[0];
-            glm::vec4 lightcolor = mainLight.color;
-            glUniform3f(lightLoc, lightcolor.r, lightcolor.g, lightcolor.b);
             
             // render container
             glBindVertexArray(element.VAO);

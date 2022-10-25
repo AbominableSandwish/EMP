@@ -4,10 +4,10 @@
 namespace emp {
     class Engine;
     class ConfigGraphic;
-
-    class Cube {
+  
+    class Light {
     public:
-        Cube(int entity)
+        Light(int entity)
         {
             this->entity = entity;
 
@@ -18,8 +18,7 @@ namespace emp {
             this->color = glm::vec4(red, green, blue, 1.0f);
         }
 
-        Cube(int entity, float r, float g, float b);
-
+        Light(int entity, float r, float g, float b);
         void Init();
 
         
@@ -46,10 +45,10 @@ namespace emp {
 
 
     class ComponentManager;
-    class CubeManager : public System
+    class LightManager : public System
     {
     public:
-        CubeManager(Engine& engine, ConfigGraphic& config);
+        LightManager(Engine& engine, ConfigGraphic& config);
 
         void Init();
 
