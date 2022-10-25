@@ -11,7 +11,7 @@ namespace emp {
     void Cube::Init()
     {
         {
-            //float red = 1.0f; // (std::rand() % 10);
+            float red = 1.0f; // (std::rand() % 10);
             float green = 1.0f; // (std::rand() % 10);
             float blue = 1.0f; // (std::rand() % 10);
 
