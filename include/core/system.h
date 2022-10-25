@@ -27,7 +27,6 @@ namespace emp
     protected:
         string name;
         Engine* engine;
-    	
     };
 	
 	class SystemManager

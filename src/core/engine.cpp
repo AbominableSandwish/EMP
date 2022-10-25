@@ -1,6 +1,5 @@
-#include "core/engine.h"
-#include <iostream>
-#include <ctime>
+// Core
+#include <core/engine.h>
 #include <core/input.h>
 #include <graphic/graphic.h>
 #include <core/log.h>
@@ -9,10 +8,20 @@
 #include <core/entity.h>
 #include <core/component.h>
 #include <core/config.h>
-#include "graphic/sprite.h"
-#include <components/renderer2D.h>
+// Graphic
+#include <graphic/sprite.h>
+// Physic
 #include <components/rigidbody.h>
 #include <components/transform.h>
+// Renderer 2D;
+#include <components/triangle.h>
+#include <components/square.h>
+#include <components/circle.h>
+//Renderer 3D
+#include <components/cube.h>
+// External
+#include <iostream>
+#include <ctime>
 
 namespace emp
 {
@@ -84,6 +93,9 @@ namespace emp
         this->m_component->RegisterComponent<Square>();
         this->m_component->RegisterComponent<Circle>();
         this->m_component->RegisterComponent<Triangle>();
+
+        this->m_component->RegisterComponent<Cube>();
+
         this->m_component->RegisterComponent<RigidBody2D>();
         this->m_graphic->Init();
 
@@ -118,56 +130,24 @@ namespace emp
             this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
             
         }
-        for (int j= i; j < i + 0; ++j)
-        {
-            int entity = this->m_entity->CreateEntity("Square_"+ std::to_string(j)).id;
-            this->m_component->AddComponent(entity, Transform(-40, 0, 0, 0, 0, -45*115 ,0.5f, 0.1f));
-            this->m_component->AddComponent(entity, Square(entity));
-        }
 
-        int entity = this->m_entity->CreateEntity("Square_").id;
-        this->m_component->AddComponent(entity, Transform(-40, 0, 0, 0, 0, -45 * 115, 0.5f, 0.1f));
-        this->m_component->AddComponent(entity, Square(entity));
+        //int entity = this->m_entity->CreateEntity("Square_").id;
+        //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
+        //this->m_component->AddComponent(entity, Square(entity));
 
-         entity = this->m_entity->CreateEntity("Square_").id;
-        this->m_component->AddComponent(entity, Transform(-12, 38, 0, 0, 0, -48 * 115, 0.5f, 0.1f));
-        this->m_component->AddComponent(entity, Square(entity));
-        entity = this->m_entity->CreateEntity("Square_").id;
-        this->m_component->AddComponent(entity, Transform(32, 55, 0, 0, 0, 0, 0.55f, 0.1f));
-        this->m_component->AddComponent(entity, Square(entity));
-
-         entity = this->m_entity->CreateEntity("Circle").id;
-        this->m_component->AddComponent(entity, Transform(40, 0, 0,2,2));
-        this->m_component->AddComponent(entity, Circle(entity));
-        this->m_component->AddComponent(entity, RigidBody2D(entity));
+        //entity = this->m_entity->CreateEntity("Circle").id;
+        //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
+        //this->m_component->AddComponent(entity, Circle(entity));
 
 
-        int entity_c = this->m_entity->CreateEntity("Triangle").id;
-        this->m_component->AddComponent(entity_c, Transform(40, 0, 0, 0.5f, 0.5f));
-        this->m_component->AddComponent(entity_c, Triangle(entity_c));
-        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
+        //int entity_c = this->m_entity->CreateEntity("Triangle").id;        
+        //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
+        //this->m_component->AddComponent(entity_c, Triangle(entity_c));
 
-         entity_c = this->m_entity->CreateEntity("Triangle").id;
-        this->m_component->AddComponent(entity_c, Transform(40, 0, 0,0,0,45*115, 1, 1));
-        this->m_component->AddComponent(entity_c, Triangle(entity_c));
-        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
+        int entity = this->m_entity->CreateEntity("Cube").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, Cube(entity));
 
-         entity = this->m_entity->CreateEntity("Circle").id;
-        this->m_component->AddComponent(entity, Transform(-50, -25, 0,1,1));
-        this->m_component->AddComponent(entity, Circle(entity));
-        this->m_component->AddComponent(entity, RigidBody2D(entity));
-
-
-         entity_c = this->m_entity->CreateEntity("Triangle").id;
-        this->m_component->AddComponent(entity_c, Transform(-50, -25, 0, 0.5f, 0.5f));
-        this->m_component->AddComponent(entity_c, Triangle(entity_c));
-        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
-
-        entity_c = this->m_entity->CreateEntity("Triangle").id;
-        this->m_component->AddComponent(entity_c, Transform(-50, -25, 0, 0, 0, 45 * 115, 0.5f, 0.5f));
-        this->m_component->AddComponent(entity_c, Triangle(entity_c));
-        this->m_component->AddComponent(entity_c, RigidBody2D(entity_c));
-      
         this->is_running = true;
 	}
 

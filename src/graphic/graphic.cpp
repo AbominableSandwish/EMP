@@ -3,6 +3,11 @@
 #include <core/config.h>
 #include <graphic/sprite.h>
 #include "components/renderer2D.h"
+#include "components/square.h"
+#include "components/triangle.h"
+#include "components/circle.h"
+#include "components/cube.h"
+#include "components/line.h"
 #include "glm/gtx/transform.hpp"
 
 
@@ -15,6 +20,7 @@ namespace emp {
 		m_square = new SquareManager(engine, config);
 		m_circle = new CircleManager(engine, config);
 		m_triangle = new TriangleManager(engine, config);
+		m_cube = new CubeManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -125,6 +131,9 @@ namespace emp {
 		glfwSetWindowSize(this->window, this->config->window_width, this->config->window_height);
 		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, this->config->transparent);
 
+		// configure global opengl state
+		// -----------------------------
+		glEnable(GL_DEPTH_TEST);
 
 		if (window == NULL)
 		{
@@ -140,6 +149,7 @@ namespace emp {
 		m_square->Init();
 		m_circle->Init();
 		m_triangle->Init();
+		m_cube->Init();
 
 
 		lineX = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
@@ -156,6 +166,7 @@ namespace emp {
 		{
 			engine->Stop();
 		}
+		m_cube->Update(dt);
 		m_sprite->Update(dt);
 		glfwPollEvents();
 	}
@@ -183,6 +194,7 @@ namespace emp {
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();
+		m_cube->Draw();
 		
 
 		for (auto element : grid_line)

@@ -55,6 +55,9 @@ namespace emp
 		float offset_scaling = 0.0f;
 
 		int PixelSize = 100;
+
+		
+		float projetcion = 45.0f;
 	};
 	
 

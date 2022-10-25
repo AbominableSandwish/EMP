@@ -1,172 +1,24 @@
-#include "core/system.h"
-#include "glm/gtx/transform.hpp"
-
-
-namespace emp {
-	class Renderer2D : public System
-	{
-	public:
-        Renderer2D(Engine& engine, string name);
-	};
-	
-    class Line {
-        int shaderProgram;
-        unsigned int VBO, VAO;
-        std::vector<float> vertices;
-        glm::vec3 startPoint;
-        glm::vec3 endPoint;
-        glm::mat4 MVP;
-        glm::vec3 lineColor;
-        ConfigGraphic* config = nullptr;
-    public:
-        Line(ConfigGraphic& config, glm::vec3 start, glm::vec3 end);
-
-        int setColor(glm::vec3 color) {
-            lineColor = color;
-            return 1;
-        }
-
-        int Draw();
-
-        ~Line();
-    };
-
-    class Triangle {
-    public:
-        Triangle(int entity)
-        {
-            this->entity = entity;
-        }
-        void Init();
-
-
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
-
-        int entity;
-        glm::vec4 color;
-        void SetColor(glm::vec4 color)
-        {
-            color = color;
-        }
-    };
-    class ConfigGraphic;
-    class ComponentManager;
-    class TriangleManager : public Renderer2D
-    {
-    public:
-        TriangleManager(Engine& engine, ConfigGraphic& config );
-
-        void Init();
-
-        void Destroy() override;
-
-        void Update(float) override;
-
-        void Draw();
-
-
-    private:
-        ComponentManager* m_component = nullptr;
-        ConfigGraphic* config = nullptr;
-    };
-
-class Square {
-public:
-		Square(int entity)
-		{
-            this->entity = entity;
-		}
-        void Init();
-       
-    	
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
-
-        int entity;
-        glm::vec4 color;
-        void SetColor(glm::vec4 color)
-        {
-            color = color;
-        }
-    };
-
-	
-	class ComponentManager;
-    class SquareManager : public Renderer2D
-    {
-    public:
-        SquareManager(Engine& engine, ConfigGraphic& config);
-    	
-        void Init();
-
-        void Destroy() override;
-
-    	void Update(float) override;
-    	
-        void Draw();
-    	
-
-    private:
-        ComponentManager* m_component = nullptr;
-        ConfigGraphic* config = nullptr;
-    };
-
-    class Circle {
-    public:
-        Circle(int entity)
-        {
-            this->entity = entity;
-        }
-        void Init();
-
-
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
-
-        int entity;
-        glm::vec4 color;
-        float radius;
-        int ammountTriangle = 40;
-
-        void SetColor(glm::vec4 color)
-        {
-            color = color;
-        }
-
-    	void SetRadius(float radius)
-        {
-            this->radius = radius;
-        }
-    };
-	
-    class CircleManager : public Renderer2D
-    {
-    public:
-        CircleManager(Engine& engine, ConfigGraphic& config);
-
-        void Init();
-
-        void Destroy() override;
-
-        void Update(float) override;
-
-        void Draw();
-
-    private:
-        ComponentManager* m_component = nullptr;
-        ConfigGraphic* config = nullptr;
-    };
-}
+//#include "core/system.h"
+//
+//namespace emp {
+//	class RenderManager2D : public System
+//	{
+//	public:
+//		RenderManager2D(Engine& engine);
+//
+//		virtual void Init() override;
+//		virtual void Update(float dt) override;
+//		virtual void Destroy() override;
+//
+//		virtual void Draw() = 0;
+//
+//	protected:
+//
+//
+//		float pi = 3.1415926f;
+//
+//		float projet = 45.0f;
+//		float axis = -0.0f;
+//		const int PixelPerSize = 100;
+//	};
+//}
