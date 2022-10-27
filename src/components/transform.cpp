@@ -25,7 +25,7 @@ namespace emp {
 		scale_y = l;
 		this->SetScale(w, l);
 	}
-	Transform::Transform(float x, float y, float z, float angle_x, float angle_y, float angle_z,float w, float l)
+	Transform::Transform(float x, float y, float z, float angle_x, float angle_y, float angle_z,float w, float h, float p )
 	{
 		matrice = new Matrice4();
 		position = new Vector4(x, y, z, 1);
@@ -33,7 +33,7 @@ namespace emp {
 		SetRotation(angle_x, Vector3(1, 0, 0));
 		SetRotation(angle_y, Vector3(0, 1, 0));
 		SetRotation(angle_z, Vector3(0, 0, 1));
-		this->SetScale(w, l);
+		this->SetScale(w, h, p);
 	}
 
 	void Transform::Init() {
@@ -99,6 +99,15 @@ namespace emp {
 		scale_x = w;
 		scale_y = l;
 		Matrice4 scale = ScalingMatrix(Vector3(w, l, 1));
+		Matrice4 matrice = this->matrice->matrice4;
+		this->matrice->SetMatrice(matrice * scale);
+	}
+	void Transform::SetScale(float w, float h, float p)
+	{
+		scale_x = w;
+		scale_y = h;
+		scale_y = p;
+		Matrice4 scale = ScalingMatrix(Vector3(w, h, p));
 		Matrice4 matrice = this->matrice->matrice4;
 		this->matrice->SetMatrice(matrice * scale);
 	}

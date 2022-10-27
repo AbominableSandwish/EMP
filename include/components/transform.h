@@ -14,7 +14,7 @@ namespace emp {
 		Transform();
 		Transform(float x, float y, float z);
 		Transform(float x, float y, float z, float w, float l);
-		Transform(float x, float y, float z, float angle_x, float angle_y, float angle_z, float w, float l);
+		Transform(float x, float y, float z, float angle_x, float angle_y, float angle_z, float w, float l, float h);
 
 		void Init();
 		void Reset();
@@ -30,6 +30,7 @@ namespace emp {
 		Vector3 GetScale();
 
 		void SetScale(float w, float l);
+		void SetScale(float w, float h, float p);
 
 		Matrice4 TranslationMatrix(Vector3 position);
 		Matrice4 RotationMatrixFrom(const float angle, Vector3 axis);

@@ -183,6 +183,7 @@ namespace emp {
 
 	void GraphicManager::Draw()
 	{
+	
 		//glClearColor(screen._backgroundColor.r, screen._backgroundColor.g, screen._backgroundColor.b, screen._backgroundColor.a);
 		//glClear(GL_COLOR_BUFFER_BIT);
 		if (WireframeView) {
@@ -195,14 +196,15 @@ namespace emp {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		m_light->Draw();
+		glClearColor(0.2f, 0.1f, 0.35f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
 		m_sprite->Draw();
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();
 		m_cube->Draw();
-		
+		m_light->Draw();
 
 		for (auto element : grid_line)
 		{

@@ -24,12 +24,7 @@ namespace emp {
 
         
 
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
+
 
 
         float axis_x = 0.0f;
@@ -59,7 +54,13 @@ namespace emp {
 
         void Draw();
 
-
+        const char* vertexShaderSource;
+        const char* fragmentShaderSource;
+        const char* fragmentShader2Source;
+        unsigned int vertexShader;
+        unsigned int fragmentShader;
+        unsigned int shaderProgram;
+        unsigned int VBO, VAO, EBO;
     private:
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;

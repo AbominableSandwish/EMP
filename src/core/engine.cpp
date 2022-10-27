@@ -132,35 +132,24 @@ namespace emp
             
         }
 
-        //int entity = this->m_entity->CreateEntity("Square_").id;
-        //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
-        //this->m_component->AddComponent(entity, Square(entity));
-
-        //entity = this->m_entity->CreateEntity("Circle").id;
-        //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
-        //this->m_component->AddComponent(entity, Circle(entity));
-
-
-        //int entity_c = this->m_entity->CreateEntity("Triangle").id;        
-        //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f));
-        //this->m_component->AddComponent(entity_c, Triangle(entity_c));
-
-       
-
         int entity = this->m_entity->CreateEntity("Cube").id;
-        this->m_component->AddComponent(entity, Transform(-50, 0, 0, 0, 0, 0, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Transform(-75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
         this->m_component->AddComponent(entity, Cube(entity, 1.0f, 1.0f, 1.0f));
 
         entity = this->m_entity->CreateEntity("Cube").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Transform(-25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
         this->m_component->AddComponent(entity, Cube(entity, 0.66f, 0.66f, 0.66f));
 
         entity = this->m_entity->CreateEntity("Cube").id;      
-        this->m_component->AddComponent(entity, Transform(+50, 0, 0, 0, 0, 0, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Transform(25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
         this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
+        
+        entity = this->m_entity->CreateEntity("Cube").id;
+        this->m_component->AddComponent(entity, Transform(75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Cube(entity, 0.1f, 0.1f, 0.1f));
 
         entity = this->m_entity->CreateEntity("Light").id;
-        this->m_component->AddComponent(entity, Transform(0, 100, 0, 0, 0, 0, 0.1f, 0.1f));
+        this->m_component->AddComponent(entity, Transform(0, 75, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
         this->m_component->AddComponent(entity, Light(entity, 1.0f, 0, 0));
 
         this->is_running = true;
