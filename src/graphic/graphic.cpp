@@ -114,11 +114,6 @@ namespace emp {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-
-		glEnable(GL_POINT_SMOOTH);
-		glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-
 		
 		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		this->window = glfwCreateWindow(1000, 1000, "Engine Mushroom Portuaire", NULL, NULL);
@@ -133,6 +128,9 @@ namespace emp {
 		glfwSetWindowSize(this->window, this->config->window_width, this->config->window_height);
 		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, this->config->transparent);
 
+		glfwMakeContextCurrent(this->window);
+		GLenum err = glewInit();
+
 		// configure global opengl state
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
@@ -144,8 +142,7 @@ namespace emp {
 			return;
 		}
 
-		glfwMakeContextCurrent(this->window);
-		GLenum err = glewInit();
+	
 
 		m_sprite->Init();
 		m_square->Init();
@@ -183,9 +180,6 @@ namespace emp {
 
 	void GraphicManager::Draw()
 	{
-	
-		//glClearColor(screen._backgroundColor.r, screen._backgroundColor.g, screen._backgroundColor.b, screen._backgroundColor.a);
-		//glClear(GL_COLOR_BUFFER_BIT);
 		if (WireframeView) {
 			// Turn on wireframe mode
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -210,16 +204,6 @@ namespace emp {
 		{
 			element->Draw();
 		}
-		
-		//lineX->setMVP(transf);
-		//lineX->setColor(glm::vec3(0, 0, 1));
-		//lineX->Draw();
-		//lineY->setMVP(transf);
-		//lineY->setColor(glm::vec3(0, 1, 0));
-		//lineY->Draw();
-		// uncomment this call to draw in wireframe polygons.
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		
 	}
 
 

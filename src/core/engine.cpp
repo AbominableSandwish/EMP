@@ -124,13 +124,13 @@ namespace emp
         int i;
         float dt = 0.0f;
         this->m_graphic->Update(dt);
-        for (i = 0; i < 1; ++i)
-        {
-            this->m_entity->CreateEntity("Sprite_"+ std::to_string(i));
-            this->m_component->AddComponent(i, Transform(10*i, 10* i, 0));
-            this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
-            
-        }
+        //for (i = 0; i < 1; ++i)
+        //{
+        //    this->m_entity->CreateEntity("Sprite_"+ std::to_string(i));
+        //    this->m_component->AddComponent(i, Transform(10*i, 10* i, 0));
+        //    this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
+        //    
+        //}
 
         int entity = this->m_entity->CreateEntity("Cube").id;
         this->m_component->AddComponent(entity, Transform(-75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
@@ -149,7 +149,7 @@ namespace emp
         this->m_component->AddComponent(entity, Cube(entity, 0.1f, 0.1f, 0.1f));
 
         entity = this->m_entity->CreateEntity("Light").id;
-        this->m_component->AddComponent(entity, Transform(0, 75, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+        this->m_component->AddComponent(entity, Transform(0, 75, 75, 0, 0, 0, 0.1f, 0.1f, 0.1f));
         this->m_component->AddComponent(entity, Light(entity, 1.0f, 0, 0));
 
         this->is_running = true;

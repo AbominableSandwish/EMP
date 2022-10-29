@@ -118,47 +118,47 @@ namespace emp {
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
-       -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-       -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                 -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                  0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                  0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                  0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                 -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                 -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-       -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-       -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-       -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-       -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-       -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+                 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+                 -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                 -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                 -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                 -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+                 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                  0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                  0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                  0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                  0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-       -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-       -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                 -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                  0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                  0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                  0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                 -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                 -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-       -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-       -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-       -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+                 -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+                  0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+                  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                 -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                 -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
             };
 
             glGenVertexArrays(1, &VAO);
@@ -182,7 +182,6 @@ namespace emp {
             // note that we update the lamp's position attribute's stride to reflect the updated buffer data
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
-
         }
     }
 
@@ -200,8 +199,6 @@ namespace emp {
     {
         // draw our first triangle
         glUseProgram(shaderProgram);
-
-
         int PixelPerSize = config->PixelSize;
 
         auto arrayElement = engine->GetComponentManager()->GetComponents<Cube>();
@@ -236,7 +233,7 @@ namespace emp {
                 matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
                 matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
                 position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
-            transf = glm::rotate(transf, glm::radians(element.axis_x + time / 20), glm::vec3(1.0f, 0.0f, 0.0f));
+            transf = glm::rotate(transf, glm::radians(element.axis_x + time / 10), glm::vec3(1.0f, 0.0f, 0.0f));
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
 
             unsigned int objectColorLoc = glGetUniformLocation(shaderProgram, "objectColor");
