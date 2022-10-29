@@ -150,7 +150,7 @@ namespace emp
 
         entity = this->m_entity->CreateEntity("Light").id;
         this->m_component->AddComponent(entity, Transform(0, 75, 75, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-        this->m_component->AddComponent(entity, Light(entity, 1.0f, 0, 0));
+        this->m_component->AddComponent(entity, Light(entity, 0.5f, 0, 0.5f));
 
         this->is_running = true;
 	}

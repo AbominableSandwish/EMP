@@ -86,7 +86,14 @@ namespace emp {
                 " float diff = max(dot(norm, lightDir), 0.0);\n"
                 "vec3 diffuse = diff * lightColor;\n"
 
-                "vec3 result = (ambient + diffuse) * objectColor;\n"
+                // specular
+                "float specularStrength = 0.5;\n"
+                "vec3 viewDir = normalize(viewPos - FragPos);\n"
+                "vec3 reflectDir = reflect(lightDir, norm);\n"
+                "float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);\n"
+                "vec3 specular = specularStrength * spec * lightColor;\n"
+
+                "vec3 result = (ambient + diffuse + specular) * objectColor;\n"
                 "FragColor = vec4(result, 1.0);\n"
                 "}\n\0";
 
