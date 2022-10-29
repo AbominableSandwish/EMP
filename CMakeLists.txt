@@ -20,6 +20,12 @@ set(GLEW_DIR ${EXTERNAL_DIR}/glew)
 	LIST(APPEND MUSHROOM_LIBRARIES
 			glew)
 
+set(ASSIMP ${EXTERNAL_DIR}/assimp/)
+add_subdirectory(${ASSIMP})
+include_directories(${ASSIMP})
+LIST(APPEND MUSHROOM_LIBRARIES
+			assimp)
+
 #GLFW
 find_package(OpenGL REQUIRED)
 LIST(APPEND MUSHROOM_LIBRARIES OpenGL::GL)
