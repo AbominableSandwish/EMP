@@ -5,6 +5,7 @@
 #include <core/config.h>
 #include <math/matrice.h>
 #include <components/transform.h>
+#include <components/light.h>
 
 
 namespace emp {
@@ -16,35 +17,64 @@ namespace emp {
 
 	void ModelManager::Init() {
         vertexShaderSource = "#version 330 core\n"
-
             "layout(location = 0) in vec3 aPos;\n"
             "layout(location = 1) in vec3 aNormal;\n"
-            "layout(location = 2) in vec2 aTexCoords;\n"
-
-            "out vec2 TexCoords;\n"
 
             "uniform mat4 transform;\n"
             "uniform mat4 view;\n"
             "uniform mat4 projection;\n"
 
+            "out vec3 FragPos;\n"
+            "out vec3 Normal;\n"
+
             "void main()\n"
             "{\n"
-            "TexCoords = aTexCoords;\n"
-            "gl_Position = projection * view * transform * vec4(aPos, 1.0);\n"
+            "   FragPos = vec3(transform * vec4(aPos, 1.0));\n"
+            "   Normal = mat3(transpose(inverse(transform))) * aNormal;\n"
+
+            "   gl_Position = projection * view * vec4(FragPos, 1.0);\n"
             "}\n";
 
         fragmentShaderSource = "#version 330 core\n"
 
-            " out vec4 FragColor;\n"
-
-            "in vec2 TexCoords;\n"
-
-            "uniform sampler2D texture_diffuse1;\n"
+            "out vec4 FragColor;\n"
 
             "void main()\n"
             "{\n"
-            "FragColor = texture(texture_diffuse1, TexCoords);\n"
+                "FragColor = texture(texture_diffuse1, TexCoords);\n"
             "}\n";
+ fragmentShaderSource = "#version 330 core\n"
+                "in vec3 FragPos;\n"
+                "in vec3 Normal;\n"
+
+                "uniform vec3 objectColor;\n"
+                "uniform vec3 viewPos;\n"
+                "uniform vec3 lightPos;\n"
+                "uniform vec3 lightColor;\n"
+
+                "out vec4 FragColor;\n"
+                "void main()\n"
+                "{\n"
+                // ambient
+                "float ambientStrength = 0.1;\n"
+                "vec3 ambient = ambientStrength * lightColor;\n"
+
+                // diffuse 
+                "vec3 norm = normalize(Normal);"
+                "vec3 lightDir = normalize(lightPos - FragPos);\n"
+                " float diff = max(dot(norm, lightDir), 0.0);\n"
+                "vec3 diffuse = diff * lightColor;\n"
+
+                // specular
+                "float specularStrength = 0.5;\n"
+                "vec3 viewDir = normalize(viewPos - FragPos);\n"
+                "vec3 reflectDir = reflect(lightDir, norm);\n"
+                "float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);\n"
+                "vec3 specular = specularStrength * spec * lightColor;\n"
+
+                "vec3 result = (ambient + diffuse + specular) * objectColor;\n"
+                "FragColor = vec4(result, 1.0);\n"
+                "}\n\0";
 
 
         // build and compile our shader program
@@ -115,6 +145,18 @@ namespace emp {
                 position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
             transf = glm::rotate(transf, glm::radians(element.axis_x + time / 10), glm::vec3(0.0f, 1.0f, 0.0f));
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
+
+            unsigned int objectColorLoc = glGetUniformLocation(shaderProgram, "objectColor");
+            glUniform3f(objectColorLoc, element.color.r, element.color.g, element.color.b);
+            //LIGHT
+            auto arrayLight = engine->GetComponentManager()->GetComponents<Light>();
+            Light mainLight = arrayLight[0];
+            Vector3 lightpos = engine->GetComponentManager()->GetComponent<Transform>(mainLight.entity).GetPosition();
+
+            unsigned int lightPosLoc = glGetUniformLocation(shaderProgram, "lightPos");
+            glUniform3f(lightPosLoc, lightpos.x, lightpos.y, lightpos.z);
+            unsigned int lightColorLoc = glGetUniformLocation(shaderProgram, "lightColor");
+            glUniform3f(lightColorLoc, mainLight.color.r, mainLight.color.g, mainLight.color.b);
         
             element.Draw(shaderProgram);
         }

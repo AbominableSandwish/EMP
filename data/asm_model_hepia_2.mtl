@@ -1,0 +1,42 @@
+﻿newmtl DEFAULT_MTL
+Kd 0.635 0.686 0.749
+
+newmtl MTL0 
+Kd 0.000 0.000 0.000
+
+newmtl MTL1 
+Kd 0.745 0.392 0.294
+
+newmtl MTL2 
+Kd 0.635 0.686 0.749
+
+newmtl MTL3 
+Kd 0.588 0.569 0.549
+
+newmtl MTL4 
+Kd 0.878 0.949 1.000
+
+newmtl MTL5 
+Kd 1.000 1.000 0.502
+
+newmtl MTL6 
+Kd 1.000 0.697 0.000
+
+newmtl MTL7 
+Kd 1.000 1.000 0.000
+
+newmtl MTL8 
+Kd 0.251 0.251 0.251
+
+newmtl MTL9 
+Kd 0.325 0.359 0.326
+
+newmtl MTL10 
+Kd 0.894 0.894 0.894
+
+newmtl MTL11 
+Kd 0.098 0.098 0.098
+
+newmtl MTL12 
+Kd 0.730 0.730 0.730
+

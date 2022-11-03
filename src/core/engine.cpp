@@ -135,29 +135,33 @@ namespace emp
         //    
         //}
 
-        int entity = this->m_entity->CreateEntity("Cube").id;
+       /* int entity = this->m_entity->CreateEntity("Cube").id;
         this->m_component->AddComponent(entity, Transform(-75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        this->m_component->AddComponent(entity, Cube(entity, 1.0f, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, Cube(entity, 1.0f, 1.0f, 1.0f));*/
 
-        entity = this->m_entity->CreateEntity("Cube").id;
-        this->m_component->AddComponent(entity, Transform(-25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        this->m_component->AddComponent(entity, Cube(entity, 0.66f, 0.66f, 0.66f));
+        //entity = this->m_entity->CreateEntity("Cube").id;
+        //this->m_component->AddComponent(entity, Transform(-25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        //this->m_component->AddComponent(entity, Cube(entity, 0.66f, 0.66f, 0.66f));
 
-        entity = this->m_entity->CreateEntity("Cube").id;      
-        this->m_component->AddComponent(entity, Transform(25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
-        
-        entity = this->m_entity->CreateEntity("Cube").id;
-        this->m_component->AddComponent(entity, Transform(75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        this->m_component->AddComponent(entity, Cube(entity, 0.1f, 0.1f, 0.1f));
+        //entity = this->m_entity->CreateEntity("Cube").id;      
+        //this->m_component->AddComponent(entity, Transform(25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        //this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
+        //
+        //entity = this->m_entity->CreateEntity("Cube").id;
+        //this->m_component->AddComponent(entity, Transform(75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        //this->m_component->AddComponent(entity, Cube(entity, 0.1f, 0.1f, 0.1f));
 
-        entity = this->m_entity->CreateEntity("Light").id;
+        int entity = this->m_entity->CreateEntity("Light").id;
         this->m_component->AddComponent(entity, Transform(0, 75, 75, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-        this->m_component->AddComponent(entity, Light(entity, 0.5f, 0, 0.5f));
-        
-        entity = this->m_entity->CreateEntity("Model").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 75, 0, 0, 0, 0.2f, 0.2f, 0.2f));
-        this->m_component->AddComponent(entity, Model(entity, "./data/backpack.obj"));
+        this->m_component->AddComponent(entity, Light(entity, 0.8f, 0.4f, 0.0f));
+        //
+         entity = this->m_entity->CreateEntity("Model").id;
+        this->m_component->AddComponent(entity, Transform(0, -50, 0, 0, 0, 0, 1.f, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
+
+       /* entity = this->m_entity->CreateEntity("Model2").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0.5f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/backpack/backpack.obj"));*/
 
 
         this->is_running = true;

@@ -193,7 +193,7 @@ namespace emp {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
 		m_sprite->Draw();
