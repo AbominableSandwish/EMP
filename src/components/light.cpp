@@ -2,9 +2,11 @@
 #include <core/engine.h>
 #include <core/config.h>
 #include "core/component.h"
+#include <graphic/shader.h>
 #include <graphic/graphic.h>
 #include <components/transform.h>
 #include <math/matrice.h>
+
 
 namespace emp {
     Light::Light(int entity, float r, float g, float b)

@@ -9,6 +9,7 @@
 #include "components/cube.h"
 #include "components/line.h"
 #include "components/light.h"
+#include "components/model.h"
 #include "glm/gtx/transform.hpp"
 
 
@@ -23,6 +24,7 @@ namespace emp {
 		m_triangle = new TriangleManager(engine, config);
 		m_cube = new CubeManager(engine, config);
 		m_light = new LightManager(engine, config);
+		m_model = new ModelManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -150,7 +152,7 @@ namespace emp {
 		m_triangle->Init();
 		m_cube->Init();
 		m_light->Init();
-
+		m_model->Init();
 
 		lineX = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
 		lineY = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
@@ -169,6 +171,7 @@ namespace emp {
 		m_cube->Update(dt);
 		m_light->Update(dt);
 		m_sprite->Update(dt);
+		m_model->Update(dt);
 
 		glfwPollEvents();
 	}
@@ -190,7 +193,7 @@ namespace emp {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
 		m_sprite->Draw();
@@ -199,6 +202,7 @@ namespace emp {
 		m_triangle->Draw();
 		m_cube->Draw();
 		m_light->Draw();
+		m_model->Draw();
 
 		for (auto element : grid_line)
 		{
@@ -220,9 +224,9 @@ namespace emp {
 		glfwTerminate();
 	}
 
-	GLFWwindow* GraphicManager::GetWindow()
+	GLFWwindow& GraphicManager::GetWindow()
 	{
-		return this->window;
+		return *this->window;
 	}
 
 	//   enum Type

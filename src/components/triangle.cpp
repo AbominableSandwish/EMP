@@ -6,6 +6,7 @@
 #include <components/transform.h>
 #include <math/matrice.h>
 
+
 namespace emp {
     void Triangle::Init()
     {

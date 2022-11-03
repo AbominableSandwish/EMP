@@ -25,7 +25,7 @@ namespace emp
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		// Setup Platform/Renderer bindings
-		ImGui_ImplGlfw_InitForOpenGL(m_engine->GetWindow(), true);
+		ImGui_ImplGlfw_InitForOpenGL(&(m_engine->GetWindow()), true);
 		ImGui_ImplOpenGL3_Init();
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();

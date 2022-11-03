@@ -3,6 +3,7 @@
 #include <graphic/graphic.h>
 #include <iostream>
 #include <core/engine.h>
+#include <GLFW/glfw3.h>
 
 namespace emp {
     std::vector<KeyInput*> KeyInput::_instances;
@@ -38,8 +39,6 @@ namespace emp {
         }
     }
 
-    GLFWwindow* window = nullptr;
-
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
     {
         if (key == GLFW_KEY_E && action == GLFW_PRESS)
@@ -64,8 +63,7 @@ namespace emp {
 
     void InputSystem::Init()
     {
-        window = engine->GetWindow();
-        glfwSetKeyCallback(window, key_callback);
+        glfwSetKeyCallback(&engine->GetWindow(), key_callback);
     }
 
     void InputSystem::Update(float)

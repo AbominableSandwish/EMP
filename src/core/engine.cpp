@@ -19,6 +19,7 @@
 #include <components/circle.h>
 #include <components/cube.h>
 #include <components/light.h>
+#include <components/model.h>
 // External
 #include <iostream>
 #include <ctime>
@@ -96,6 +97,8 @@ namespace emp
 
         this->m_component->RegisterComponent<Cube>();
         this->m_component->RegisterComponent<Light>();
+        this->m_component->RegisterComponent<Model>();
+
 
         this->m_component->RegisterComponent<RigidBody2D>();
         this->m_graphic->Init();
@@ -151,6 +154,11 @@ namespace emp
         entity = this->m_entity->CreateEntity("Light").id;
         this->m_component->AddComponent(entity, Transform(0, 75, 75, 0, 0, 0, 0.1f, 0.1f, 0.1f));
         this->m_component->AddComponent(entity, Light(entity, 0.5f, 0, 0.5f));
+        
+        entity = this->m_entity->CreateEntity("Model").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 75, 0, 0, 0, 0.2f, 0.2f, 0.2f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/backpack.obj"));
+
 
         this->is_running = true;
 	}
@@ -201,7 +209,7 @@ namespace emp
         this->m_file = nullptr;
 	}
 
-    GLFWwindow* Engine::GetWindow()
+    GLFWwindow& Engine::GetWindow()
     {
         return this->m_graphic->GetWindow();
     }

@@ -2,6 +2,7 @@
  * Author: Dylan von Arx
  * Time: 07.10.2021
 */
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -10,9 +11,10 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace emp {
+	
 	namespace Shader
 	{
-        void static CheckVertexCompile(unsigned int& vertexShader) {
+		void static CheckVertexCompile(unsigned int& vertexShader) {
 			// check for shader compile errors
 			int success;
 			char infoLog[512];
@@ -31,7 +33,7 @@ namespace emp {
 			}
 		}
 
-        void static CheckFragmentCompile(unsigned int& fragmentShader) {
+		void static CheckFragmentCompile(unsigned int& fragmentShader) {
 			// check for shader compile errorsg
 			int success;
 			char infoLog[512];
@@ -50,7 +52,7 @@ namespace emp {
 			}
 		}
 
-        void static ChechShaderCompile(unsigned int& shaderProgram) {
+		void static ChechShaderCompile(unsigned int& shaderProgram) {
 			// check for shader compile errorsg
 			int success;
 			char infoLog[512];
@@ -69,7 +71,7 @@ namespace emp {
 			}
 		}
 	}
-	
+
 	class SpriteManager;
 	class ComponentManager;
 	class SquareManager;
@@ -77,6 +79,8 @@ namespace emp {
 	class TriangleManager;
 	class CubeManager;
 	class LightManager;
+	class ModelManager;
+
 
 	/// Holds all state information relevant to a character as loaded using FreeType
     struct Character {
@@ -129,7 +133,7 @@ namespace emp {
 		void AddGraphic(int entity);
 		void RemoveGraphic();
 
-		GLFWwindow* GetWindow();
+		GLFWwindow& GetWindow();
 
 	protected:
 		GLFWwindow* window = nullptr;
@@ -143,6 +147,7 @@ namespace emp {
 		TriangleManager* m_triangle;
 		CubeManager* m_cube;
 		LightManager* m_light;
+		ModelManager* m_model;
 
 		int width = 64;
 		int height = 64;

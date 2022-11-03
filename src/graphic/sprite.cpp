@@ -3,12 +3,14 @@
 #include "graphic/stb_image.h"
 
 #include "glm/gtx/transform.hpp"
+#include <graphic/shader.h>
 #include "graphic/graphic.h"
 #include <core/component.h>
 #include <core/engine.h>
 #include <core/config.h>
 #include <components/transform.h>
 #include <math/vector.h>
+
 
 
 namespace emp

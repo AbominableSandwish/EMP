@@ -12,6 +12,11 @@ set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/externals)
 #set INCLUDE_DIR and SRC_DIR
 include_directories(include ${CMAKE_SOURCE_DIR}/include)
 
+set(ASSIMP ${EXTERNAL_DIR}/assimp/)
+	add_subdirectory(${ASSIMP})
+	include_directories(${ASSIMP})
+	LIST(APPEND MUSHROOM_LIBRARIES assimp)
+
 #GLEW
 set(GLEW_DIR ${EXTERNAL_DIR}/glew)
 	add_compile_definitions(GLEW_STATIC)
@@ -19,12 +24,6 @@ set(GLEW_DIR ${EXTERNAL_DIR}/glew)
 	add_subdirectory(${GLEW_DIR})
 	LIST(APPEND MUSHROOM_LIBRARIES
 			glew)
-
-set(ASSIMP ${EXTERNAL_DIR}/assimp/)
-add_subdirectory(${ASSIMP})
-include_directories(${ASSIMP})
-LIST(APPEND MUSHROOM_LIBRARIES
-			assimp)
 
 #GLFW
 find_package(OpenGL REQUIRED)

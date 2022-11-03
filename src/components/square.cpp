@@ -7,6 +7,7 @@
 #include <math/matrice.h>
 #include "glm/gtx/transform.hpp"
 
+
 namespace emp {
     //
     SquareManager::SquareManager(Engine& engine, ConfigGraphic& config) : System(engine, "SquareManager")
