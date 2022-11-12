@@ -2,6 +2,7 @@
 #include <core/system.h>
 
 namespace emp {
+    class Shader;
     class Circle {
     public:
         Circle(int entity)
@@ -11,12 +12,7 @@ namespace emp {
         void Init();
 
 
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
+       
         
         float axis_x = 0.0f;
         float axis_y = 0.0f;
@@ -58,5 +54,7 @@ namespace emp {
     private:
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
+
+        Shader* Shader = nullptr;
     };
 }

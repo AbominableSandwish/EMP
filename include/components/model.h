@@ -221,6 +221,7 @@ namespace emp {
     class Engine;
     class ConfigGraphic;
     class ComponentManager;
+    class Shader;
     class ModelManager : public System {
     public:
         ModelManager(Engine& engine, ConfigGraphic& config);
@@ -233,13 +234,7 @@ namespace emp {
 
         void Draw();
 
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        const char* fragmentShader2Source;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
+        Shader* shader = nullptr;
     private:
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;

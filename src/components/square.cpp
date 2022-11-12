@@ -6,6 +6,7 @@
 #include <components/transform.h>
 #include <math/matrice.h>
 #include "glm/gtx/transform.hpp"
+#include "graphic/shader.h"
 
 
 namespace emp {
@@ -19,6 +20,40 @@ namespace emp {
     void SquareManager::Init()
     {
         m_component = engine->GetComponentManager();
+
+        std::string vertexShaderSource = "#version 330 core\n"
+            "layout (location = 0) in vec3 aPos;\n"
+            "uniform mat4 transform;\n"
+            "uniform mat4 view;\n"
+            "uniform mat4 projection;\n"
+            "void main()\n"
+            "{\n"
+            "   gl_Position = projection * view * transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+            "}\0";
+        std::string fragmentShaderSource = "#version 330 core\n"
+            "uniform vec4 color;\n"
+
+            "out vec4 FragColor;\n"
+            "void main()\n"
+            "{\n"
+            "   FragColor = color;\n"
+            "}\n\0";
+
+        // set up vertex data (and buffer(s)) and configure vertex attributes
+        // ------------------------------------------------------------------
+        float vertices[] = {
+             0.5f,  0.5f, 0.0f,  // top right
+             0.5f, -0.5f, 0.0f,  // bottom right
+            -0.5f, -0.5f, 0.0f,  // bottom left
+            -0.5f,  0.5f, 0.0f   // top left 
+        };
+        unsigned int indices[] = {  // note that we start from 0!
+            0, 1, 2,  // first Triangle
+            1, 2, 3   // second Triangle
+        };
+
+        this->shader = new Shader();
+        this->shader->Init(vertexShaderSource, fragmentShaderSource, vertices, indices);
     }
 
 
@@ -51,18 +86,18 @@ namespace emp {
             projection = glm::perspective(glm::radians(config->projetcion), (float)1000 / (float)1000, 0.1f, 100.0f);
 
             // draw our first triangle
-            glUseProgram(element.shaderProgram);
-            glBindVertexArray(element.VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+            glUseProgram(shader->shaderProgram);
+            glBindVertexArray(shader->VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 
             // get matrix's uniform location and set matrix
-            unsigned int transformLoc = glGetUniformLocation(element.shaderProgram, "transform");
-            unsigned int viewLoc = glGetUniformLocation(element.shaderProgram, "view");
-            unsigned int colorLoc = glGetUniformLocation(element.shaderProgram, "color");
+            unsigned int transformLoc = glGetUniformLocation(shader->shaderProgram, "transform");
+            unsigned int viewLoc = glGetUniformLocation(shader->shaderProgram, "view");
+            unsigned int colorLoc = glGetUniformLocation(shader->shaderProgram, "color");
 
 
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            glUniformMatrix4fv(glGetUniformLocation(element.shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+            glUniformMatrix4fv(glGetUniformLocation(shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
             glUniform4f(colorLoc, element.color.r, element.color.g, element.color.b, element.color.a);
             //glDrawArrays(GL_TRIANGLES, 0, 6);
             glDrawElements(GL_TRIANGLE_FAN, 40, GL_UNSIGNED_INT, 0);
@@ -80,78 +115,7 @@ namespace emp {
             float blue = (std::rand() % 10);
 
             color = glm::vec4(red / 10, green / 10, blue / 10, 1.0f);
-            vertexShaderSource = "#version 330 core\n"
-                "layout (location = 0) in vec3 aPos;\n"
-                "uniform mat4 transform;\n"
-                "uniform mat4 view;\n"
-                "uniform mat4 projection;\n"
-                "void main()\n"
-                "{\n"
-                "   gl_Position = projection * view * transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                "}\0";
-            fragmentShaderSource = "#version 330 core\n"
-                "uniform vec4 color;\n"
-
-                "out vec4 FragColor;\n"
-                "void main()\n"
-                "{\n"
-                "   FragColor = color;\n"
-                "}\n\0";
-            // build and compile our shader program
-            // ------------------------------------
-            // vertex shader
-            vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-            glCompileShader(vertexShader);
-            // check for shader compile errors
-            emp::Shader::CheckVertexCompile(vertexShader);
-            // fragment shader
-            fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-            glCompileShader(fragmentShader);
-            // check for shader compile errors
-            emp::Shader::CheckFragmentCompile(fragmentShader);
-            // link shaders
-            shaderProgram = glCreateProgram();
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
-            // check for linking errors
-            emp::Shader::ChechShaderCompile(shaderProgram);
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader);
-
-            // set up vertex data (and buffer(s)) and configure vertex attributes
-            // ------------------------------------------------------------------
-            float vertices[] = {
-                 0.5f,  0.5f, 0.0f,  // top right
-                 0.5f, -0.5f, 0.0f,  // bottom right
-                -0.5f, -0.5f, 0.0f,  // bottom left
-                -0.5f,  0.5f, 0.0f   // top left 
-            };
-            unsigned int indices[] = {  // note that we start from 0!
-                0, 1, 2,  // first Triangle
-                1, 2, 3   // second Triangle
-            };
-
-            glGenVertexArrays(1, &VAO);
-            glGenBuffers(1, &VBO);
-            glGenBuffers(1, &EBO);
-            // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-            glBindVertexArray(VAO);
-
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-
-            // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
+          
         }
     }
 

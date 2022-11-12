@@ -63,7 +63,7 @@ namespace emp {
 
     void InputSystem::Init()
     {
-        glfwSetKeyCallback(&engine->GetWindow(), key_callback);
+        glfwSetKeyCallback(engine->GetGraphicManager()->window, key_callback);
     }
 
     void InputSystem::Update(float)

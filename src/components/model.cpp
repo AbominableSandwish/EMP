@@ -6,7 +6,7 @@
 #include <math/matrice.h>
 #include <components/transform.h>
 #include <components/light.h>
-
+#include <graphic/shader.h>
 
 namespace emp {
 	ModelManager::ModelManager(Engine& engine, ConfigGraphic& config) : System(engine, "Model Manager")
@@ -16,7 +16,7 @@ namespace emp {
 	}
 
 	void ModelManager::Init() {
-        vertexShaderSource = "#version 330 core\n"
+        std::string vertexShaderSource = "#version 330 core\n"
             "layout(location = 0) in vec3 aPos;\n"
             "layout(location = 1) in vec3 aNormal;\n"
 
@@ -35,7 +35,7 @@ namespace emp {
             "   gl_Position = projection * view * vec4(FragPos, 1.0);\n"
             "}\n";
 
-        fragmentShaderSource = "#version 330 core\n"
+        std::string fragmentShaderSource = "#version 330 core\n"
 
             "out vec4 FragColor;\n"
 
@@ -77,29 +77,9 @@ namespace emp {
                 "}\n\0";
 
 
-        // build and compile our shader program
-        // ------------------------------------
-        // vertex shader
-        vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-        glCompileShader(vertexShader);
-        // check for shader compile errors
-        emp::Shader::CheckVertexCompile(vertexShader);
-        // fragment shader
-        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-        glCompileShader(fragmentShader);
-        // check for shader compile errors
-        emp::Shader::CheckFragmentCompile(fragmentShader);
-        // link shaders
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
-        // check for linking errors
-        emp::Shader::ChechShaderCompile(shaderProgram);
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+        this->shader = new Shader();
+        this->shader->Init(vertexShaderSource, fragmentShaderSource);
+
 	}
 
 	void ModelManager::Update(float dt) {
@@ -108,7 +88,7 @@ namespace emp {
 
 	void ModelManager::Draw() {
         // draw our first triangle
-        glUseProgram(shaderProgram);
+        this->shader->UseProgram();
         int PixelPerSize = config->PixelSize;
 
         auto arrayElement = engine->GetComponentManager()->GetComponents<Model>();
@@ -118,17 +98,17 @@ namespace emp {
         projection = glm::perspective(glm::radians(project), (float)1000 / (float)1000, 0.1f, 100.0f);
 
         //CAMERA
-        unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, "viewPos");
+        unsigned int viewPosLoc = glGetUniformLocation(this->shader->shaderProgram, "viewPos");
         glUniform3f(viewPosLoc, 0.0f, 0.0f, -3.0f);
 
         // get matrix's uniform location and set matrix
-        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-        unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
+        unsigned int transformLoc = glGetUniformLocation(this->shader->shaderProgram, "transform");
+        unsigned int viewLoc = glGetUniformLocation(this->shader->shaderProgram, "view");
 
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(this->shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
-        glBindVertexArray(VAO);
+        glBindVertexArray(this->shader->VAO);
 
         for (auto element : arrayElement)
         {
@@ -146,19 +126,19 @@ namespace emp {
             transf = glm::rotate(transf, glm::radians(element.axis_x + time / 10), glm::vec3(0.0f, 1.0f, 0.0f));
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
 
-            unsigned int objectColorLoc = glGetUniformLocation(shaderProgram, "objectColor");
+            unsigned int objectColorLoc = glGetUniformLocation(this->shader->shaderProgram, "objectColor");
             glUniform3f(objectColorLoc, element.color.r, element.color.g, element.color.b);
             //LIGHT
             auto arrayLight = engine->GetComponentManager()->GetComponents<Light>();
             Light mainLight = arrayLight[0];
             Vector3 lightpos = engine->GetComponentManager()->GetComponent<Transform>(mainLight.entity).GetPosition();
 
-            unsigned int lightPosLoc = glGetUniformLocation(shaderProgram, "lightPos");
+            unsigned int lightPosLoc = glGetUniformLocation(this->shader->shaderProgram, "lightPos");
             glUniform3f(lightPosLoc, lightpos.x, lightpos.y, lightpos.z);
-            unsigned int lightColorLoc = glGetUniformLocation(shaderProgram, "lightColor");
+            unsigned int lightColorLoc = glGetUniformLocation(this->shader->shaderProgram, "lightColor");
             glUniform3f(lightColorLoc, mainLight.color.r, mainLight.color.g, mainLight.color.b);
         
-            element.Draw(shaderProgram);
+            element.Draw(this->shader->shaderProgram);
         }
 	}
 

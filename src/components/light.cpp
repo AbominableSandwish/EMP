@@ -35,30 +35,7 @@ namespace emp {
                 "{\n"
                 "   FragColor = vec4(color, 1.0);\n"
                 "}\n\0";
-            // build and compile our shader program
-            // ------------------------------------
-            // vertex shader
-            vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-            glCompileShader(vertexShader);
-            // check for shader compile errors
-            emp::Shader::CheckVertexCompile(vertexShader);
-            // fragment shader
-            fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-            glCompileShader(fragmentShader);
-            // check for shader compile errors
-            emp::Shader::CheckFragmentCompile(fragmentShader);
-            // link shaders
-            shaderProgram = glCreateProgram();
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
-            // check for linking errors
-            emp::Shader::ChechShaderCompile(shaderProgram);
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader);
-     
+            
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {

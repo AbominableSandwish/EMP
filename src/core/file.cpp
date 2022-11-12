@@ -11,6 +11,7 @@ namespace emp
 
 	FileManager::FileManager(Engine& engine, string name) : System(engine, name)
 	{
+		instance_file = this;
 	}
 
 	void FileManager::Init()
@@ -34,6 +35,32 @@ namespace emp
 
 	void FileManager::Destroy()
 	{
+	}
+
+	FileManager* FileManager::GetInstance()
+	{
+		if (instance_file == nullptr)
+		{
+			return nullptr;
+		}
+		return instance_file;
+	}
+
+	std::string FileManager::ReadFile(string path) {
+
+		ifstream ifs = ifstream(path, ios_base::in);
+		string str;
+		if (ifs.is_open() == true) {
+			char c;
+			while (ifs.get(c))
+				str.push_back(c);
+			cout << str << endl;
+			ifs.close();
+			cout << "Opened File has been closed." << endl;
+		}
+		else
+			cout << "File could not be open!" << endl;
+		return str;
 	}
 
 	void FileManager::WriteFile(Data data, FormatFile format)

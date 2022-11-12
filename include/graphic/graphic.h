@@ -3,75 +3,15 @@
  * Time: 07.10.2021
 */
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 
 #include <core/system.h>
 #include <graphic/screen.h>
 #include <glm/gtc/type_ptr.hpp>
 
+
+	class GLFWwindow;
 namespace emp {
 	
-	namespace Shader
-	{
-		void static CheckVertexCompile(unsigned int& vertexShader) {
-			// check for shader compile errors
-			int success;
-			char infoLog[512];
-			glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-			if (!success)
-			{
-				glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-				string msg = "[SHADER] VERTEX::COMPILATION_FAILED\n";
-				for (char element : msg)
-				{
-					msg += element;
-				}
-
-				msg += "\n";
-				//LOG::Error(msg);
-			}
-		}
-
-		void static CheckFragmentCompile(unsigned int& fragmentShader) {
-			// check for shader compile errorsg
-			int success;
-			char infoLog[512];
-			glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-			if (!success)
-			{
-				glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-				string msg = "[SHADER] FRAGMENT::COMPILATION_FAILED\n";
-				for (char element : msg)
-				{
-					msg += element;
-				}
-
-				msg += "\n";
-				//LOG::Error(msg);
-			}
-		}
-
-		void static ChechShaderCompile(unsigned int& shaderProgram) {
-			// check for shader compile errorsg
-			int success;
-			char infoLog[512];
-			// check for linking errors
-			glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-			if (!success) {
-				glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-				string msg = "[SHADER] PROGRAM::LINKING_FAILED\n";
-				for (char element : msg)
-				{
-					msg += element;
-				}
-
-				msg += "\n";
-				//LOG::Error(msg);
-			}
-		}
-	}
-
 	class SpriteManager;
 	class ComponentManager;
 	class SquareManager;
@@ -133,10 +73,10 @@ namespace emp {
 		void AddGraphic(int entity);
 		void RemoveGraphic();
 
-		GLFWwindow& GetWindow();
-
-	protected:
+		//GLFWwindow& GetWindow();
 		GLFWwindow* window = nullptr;
+	protected:
+		
 		ConfigGraphic* config = nullptr;
         //std::vector<GraphicComponent*> components;
 		Screen screen;

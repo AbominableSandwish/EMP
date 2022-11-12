@@ -213,11 +213,6 @@ namespace emp
         this->m_file = nullptr;
 	}
 
-    GLFWwindow& Engine::GetWindow()
-    {
-        return this->m_graphic->GetWindow();
-    }
-
     LogManager* Engine::GetLogManager()
     {
     	if(this->m_log != nullptr)

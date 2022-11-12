@@ -4,6 +4,7 @@
 namespace emp {
     class Engine;
     class ConfigGraphic;
+    class Shader;
 
     class Cube {
     public:
@@ -53,17 +54,11 @@ namespace emp {
         void Update(float) override;
 
         void Draw();
-
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        const char* fragmentShader2Source;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
     private:
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
+
+        Shader* shader = nullptr;
         float project = 45.0f;
 
         float time = 0.0f;;

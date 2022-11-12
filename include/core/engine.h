@@ -30,8 +30,6 @@ namespace emp
         void Update();
         void Stop();
         virtual void Destroy();
-        GLFWwindow& GetWindow();
-		
         bool is_running = false;
 
         LogManager* GetLogManager();

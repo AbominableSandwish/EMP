@@ -6,6 +6,7 @@
 #include <components/transform.h>
 #include <components/light.h>
 #include <math/matrice.h>
+#include <graphic/shader.h>
 
 
 namespace emp {
@@ -32,7 +33,7 @@ namespace emp {
         m_component = engine->GetComponentManager();
 
         {
-            vertexShaderSource = "#version 330 core\n"
+           std::string vertexShaderSource = "#version 330 core\n"
 
                 "layout (location = 0) in vec3 aPos;\n"
                 "layout(location = 1) in vec3 aNormal;\n"
@@ -50,7 +51,7 @@ namespace emp {
 
                 "   gl_Position = projection * view * vec4(FragPos, 1.0);\n"
                 "}\0";
-            fragmentShader2Source = "#version 330 core\n"
+           std::string fragmentShader2Source = "#version 330 core\n"
                 "in vec3 Normal;\n"
                 "in vec3 FragPos;\n"
 
@@ -65,7 +66,7 @@ namespace emp {
                 "   FragColor = vec4(objectColor * lightColor, 1.0);\n"
                 "}\n\0";
 
-            fragmentShaderSource = "#version 330 core\n"
+           std::string fragmentShaderSource = "#version 330 core\n"
                 "in vec3 FragPos;\n"
                 "in vec3 Normal;\n"
 
@@ -98,31 +99,6 @@ namespace emp {
                 "FragColor = vec4(result, 1.0);\n"
                 "}\n\0";
 
-
-            // build and compile our shader program
-            // ------------------------------------
-            // vertex shader
-            vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-            glCompileShader(vertexShader);
-            // check for shader compile errors
-            emp::Shader::CheckVertexCompile(vertexShader);
-            // fragment shader
-            fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-            glCompileShader(fragmentShader);
-            // check for shader compile errors
-            emp::Shader::CheckFragmentCompile(fragmentShader);
-            // link shaders
-            shaderProgram = glCreateProgram();
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
-            // check for linking errors
-            emp::Shader::ChechShaderCompile(shaderProgram);
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader);
-
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
@@ -138,6 +114,9 @@ namespace emp {
                   0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
                   0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
                  -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+
+
                  -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
                  -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
@@ -169,27 +148,9 @@ namespace emp {
                  -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
             };
 
-            glGenVertexArrays(1, &VAO);
-            glGenBuffers(1, &VBO);
-            glGenBuffers(1, &EBO);
-            // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glBindVertexArray(VAO);
-            // position attribute
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-            // normal attribut;
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-            //SALUT MON  pote
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
-            // note that we update the lamp's position attribute's stride to reflect the updated buffer data
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
+            this->shader = new Shader();
+            this->shader->Init(vertexShaderSource, fragmentShaderSource, vertices);
+           
         }
     }
 
@@ -205,8 +166,7 @@ namespace emp {
 
     void CubeManager::Draw()
     {
-        // draw our first triangle
-        glUseProgram(shaderProgram);
+        this->shader->UseProgram();
         int PixelPerSize = config->PixelSize;
 
         auto arrayElement = engine->GetComponentManager()->GetComponents<Cube>();
@@ -216,17 +176,17 @@ namespace emp {
         projection = glm::perspective(glm::radians(project), (float)1000 / (float)1000, 0.1f, 100.0f);
 
         //CAMERA
-        unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, "viewPos");
+        unsigned int viewPosLoc = glGetUniformLocation(this->shader->shaderProgram, "viewPos");
         glUniform3f(viewPosLoc, 0.0f, 0.0f, -3.0f);
 
         // get matrix's uniform location and set matrix
-        unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-        unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
+        unsigned int transformLoc = glGetUniformLocation(this->shader->shaderProgram, "transform");
+        unsigned int viewLoc = glGetUniformLocation(this->shader->shaderProgram, "view");
       
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(this->shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
-        glBindVertexArray(VAO);
+        glBindVertexArray(this->shader->VAO);
 
         for (auto element : arrayElement)
         {
@@ -244,16 +204,16 @@ namespace emp {
             transf = glm::rotate(transf, glm::radians(element.axis_x + time / 10), glm::vec3(1.0f, 0.0f, 0.0f));
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
 
-            unsigned int objectColorLoc = glGetUniformLocation(shaderProgram, "objectColor");
+            unsigned int objectColorLoc = glGetUniformLocation(this->shader->shaderProgram, "objectColor");
             glUniform3f(objectColorLoc, element.color.r, element.color.g, element.color.b);
             //LIGHT
             auto arrayLight = engine->GetComponentManager()->GetComponents<Light>();
             Light mainLight = arrayLight[0];
             Vector3 lightpos = engine->GetComponentManager()->GetComponent<Transform>(mainLight.entity).GetPosition();
 
-            unsigned int lightPosLoc = glGetUniformLocation(shaderProgram, "lightPos");
+            unsigned int lightPosLoc = glGetUniformLocation(this->shader->shaderProgram, "lightPos");
             glUniform3f(lightPosLoc, lightpos.x, lightpos.y, lightpos.z);
-            unsigned int lightColorLoc = glGetUniformLocation(shaderProgram, "lightColor");       
+            unsigned int lightColorLoc = glGetUniformLocation(this->shader->shaderProgram, "lightColor");
             glUniform3f(lightColorLoc, mainLight.color.r, mainLight.color.g, mainLight.color.b);
           
             // render container

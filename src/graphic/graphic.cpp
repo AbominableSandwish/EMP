@@ -2,6 +2,7 @@
 #include <core/engine.h>
 #include <core/config.h>
 #include <graphic/sprite.h>
+#include <graphic/shader.h>
 #include "components/renderer2D.h"
 #include "components/square.h"
 #include "components/triangle.h"
@@ -224,10 +225,10 @@ namespace emp {
 		glfwTerminate();
 	}
 
-	GLFWwindow& GraphicManager::GetWindow()
+	/*GLFWwindow& GraphicManager::GetWindow()
 	{
 		return *this->window;
-	}
+	}*/
 
 	//   enum Type
 	   //{

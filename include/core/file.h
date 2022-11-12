@@ -93,7 +93,8 @@ namespace emp
 		int action; //read, write, append
 	};
 
-
+	class FileManager;
+	static FileManager* instance_file;
 	class FileManager : public System
 	{
 	public:
@@ -101,8 +102,10 @@ namespace emp
 		void Init() override;
 		void Update(float) override;
 		void Destroy() override;
+		static FileManager* GetInstance();
 
 		Data ReadFile(string, FormatFile);
+		string ReadFile(string path);
 		void WriteFile(Data, FormatFile);
 		void AppendFile(Data, FormatFile);
 		void RemoveFile(string);
@@ -112,6 +115,14 @@ namespace emp
 		int counter_Data = 0;
 			
 	};
+
+	namespace FileSystem
+	{
+		static std::string ReadFile(std::string msg)
+		{
+			return FileManager::GetInstance()->ReadFile(msg);
+		}
+	}
 }
 
 

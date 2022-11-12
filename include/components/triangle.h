@@ -1,7 +1,10 @@
 #include <core/system.h>
 #include "glm/gtx/transform.hpp"
 
+
 namespace emp {
+    class Shader;
+
     class Triangle {
     public:
         Triangle(int entity)
@@ -10,19 +13,11 @@ namespace emp {
         }
         void Init();
 
-
-        const char* vertexShaderSource;
-        const char* fragmentShaderSource;
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
-        unsigned int shaderProgram;
-        unsigned int VBO, VAO, EBO;
-
         float axis_x = 0.0f;
         float axis_y = 0.0f;
         float axis_z = 0.0f;
-
         float pi = 3.1415926f;
+        
 
         int entity;
         glm::vec4 color;
@@ -45,8 +40,12 @@ namespace emp {
         void Destroy();
 
         void Draw();
+     
     private:
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
+
+        Shader* shaderProgram;
+        float pi = 3.1415926f;
     };
 }

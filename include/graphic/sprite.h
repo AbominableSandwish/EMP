@@ -7,6 +7,8 @@ namespace emp
 	class ConfigGraphic;
 	class ComponentManager;
 
+    class Shader;
+
 	class SpriteRenderer
     {
     public:
@@ -14,38 +16,6 @@ namespace emp
         {
             this->entity = entity;
 
-            this->vs = "#version 330 core\n"
-                "layout(location = 0) in vec3 aPos;\n"
-                "layout(location = 1) in vec3 aColor;\n"
-                "layout(location = 2) in vec2 aTexCoord;\n"
-                "layout(location = 3) in vec2 aresolution;\n"
-
-                "out vec3 ourColor;\n"
-                "out vec2 TexCoord;\n"
-                "uniform mat4 transform;\n"
-
-                "void main()\n"
-                "{\n"
-
-                "gl_Position = transform * vec4(aPos, 1.0);\n"
-                "ourColor = aColor;\n"
-                "TexCoord = vec2(aTexCoord.x, aTexCoord.y);\n"
-                "}\0";
-
-            this->frag = "#version 330 core\n"
-                "out vec4 FragColor;\n"
-
-                "in vec3 ourColor;\n"
-                "in vec2 TexCoord;\n"
-
-                // texture sampler
-                "uniform sampler2D texture1;\n"
-
-                "void main()\n"
-                "{\n"
-
-                "FragColor = texture2D(texture1, TexCoord);\n"
-                "}\0";
 
             // set up vertex data (and buffer(s)) and configure vertex attributes
            // ------------------------------------------------------------------
@@ -77,6 +47,8 @@ namespace emp
 
         const char* vs;
         const char* frag;
+
+
     };
 
     class SpriteManager : public System
@@ -92,5 +64,7 @@ namespace emp
     private:
         ComponentManager* m_component;
         ConfigGraphic* config = nullptr;
+
+        Shader* shader = nullptr;
     };
 }
