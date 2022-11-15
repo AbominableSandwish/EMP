@@ -53,7 +53,10 @@ namespace emp {
         };
 
         this->shader = new Shader();
-        this->shader->Init(vertexShaderSource, fragmentShaderSource, vertices, indices);
+        bool warning = this->shader->Init(vertexShaderSource, fragmentShaderSource, vertices, indices);
+        if (warning) {
+            LOG::Warning( name + " help!");
+        }
     }
 
 

@@ -28,9 +28,6 @@ namespace emp {
     {
         m_component = engine->GetComponentManager();
 
-       string vertexShaderSource = FileSystem::ReadFile("./shader/shader_2d.vs");
-       string fragmentShaderSource = FileSystem::ReadFile("./shader/color.vs");
-
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
         float vertices[] = {
@@ -38,11 +35,16 @@ namespace emp {
              cos(pi / 6) * 0.5f, -sin(pi / 6) * 0.5f, 0.0f,  // middle top
             -cos(pi / 6) * 0.5f, -sin(pi / 6) * 0.5f, 0.0f,  // bottom left
         };
+
         unsigned int indices[] = {  // note that we start from 0!
             0, 1, 2,  // first Triangle
         };
+
         this->shaderProgram = new Shader();
-        this->shaderProgram->Init(vertexShaderSource, fragmentShaderSource, vertices, indices);
+        bool warning = this->shaderProgram->Init(FileSystem::ReadShader("./shader/light.vs"), FileSystem::ReadShader("./shader/color.fs"), vertices, indices);
+        if (warning) {
+            LOG::Warning( name + " help!");
+        }
     }
 
 
@@ -50,10 +52,10 @@ namespace emp {
     {
     }
 
-
     void TriangleManager::Draw()
     {
-
+        // draw our first triangle
+        this->shaderProgram->UseProgram();
         auto arrayElement = engine->GetComponentManager()->GetComponents<Triangle>();
         for (auto element : arrayElement)
         {
@@ -73,14 +75,13 @@ namespace emp {
             glm::mat4 projection = glm::mat4(1.0f);
             projection = glm::perspective(glm::radians(config->projetcion), (float)1000 / (float)1000, 0.1f, 100.0f);
 
-            // draw our first triangle
-            this->shaderProgram->UseProgram();
+  
             this->shaderProgram->SetMat4("transform", transf);
             this->shaderProgram->SetMat4("view", view);
             this->shaderProgram->SetVec4("color", element.color);
 
-            glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+
+            this->shaderProgram->DrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
         }
     }
-
 }

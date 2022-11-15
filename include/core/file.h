@@ -105,6 +105,7 @@ namespace emp
 		static FileManager* GetInstance();
 
 		Data ReadFile(string, FormatFile);
+		string ReadShader(string path);
 		string ReadFile(string path);
 		void WriteFile(Data, FormatFile);
 		void AppendFile(Data, FormatFile);
@@ -118,9 +119,13 @@ namespace emp
 
 	namespace FileSystem
 	{
-		static std::string ReadFile(std::string msg)
+		static std::string ReadFile(std::string path)
 		{
-			return FileManager::GetInstance()->ReadFile(msg);
+			return FileManager::GetInstance()->ReadFile(path);
+		}
+
+		static std::string ReadShader(std::string path) {
+			return FileManager::GetInstance()->ReadShader(path);
 		}
 	}
 }

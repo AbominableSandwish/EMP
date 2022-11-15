@@ -6,7 +6,8 @@
 #include <graphic/graphic.h>
 #include <components/transform.h>
 #include <math/matrice.h>
-
+#include <core/file.h>
+#include <fstream>
 
 namespace emp {
     Light::Light(int entity, float r, float g, float b)
@@ -17,16 +18,27 @@ namespace emp {
     //CUBE
     void Light::Init()
     {
+       
+    }
+
+    //CUBEMANAGER
+    LightManager::LightManager(Engine& engine, ConfigGraphic& config) : System(engine, "LightManager")
+    {
+        this->config = &config;
+        m_component = engine.GetComponentManager();
+    }
+
+    void LightManager::Init()
+    {
+        m_component = engine->GetComponentManager();
+
+
+
         {
-            vertexShaderSource = "#version 330 core\n"
-                "layout (location = 0) in vec3 aPos;\n"
-                "uniform mat4 transform;\n"
-                "uniform mat4 view;\n"
-                "uniform mat4 projection;\n"
-                "void main()\n"
-                "{\n"
-                "   gl_Position = projection * view * transform * vec4(aPos, 1.0);\n"
-                "}\0";
+           // vertexShaderSource = FileSystem::ReadFile("./shader/light.vs").c_str();
+            this->vertexCode = FileSystem::ReadShader("./shader/light.vs");
+            vertexShaderSource = vertexCode.c_str();
+
             fragmentShaderSource = "#version 330 core\n"
                 "uniform vec3 color;\n"
 
@@ -35,7 +47,33 @@ namespace emp {
                 "{\n"
                 "   FragColor = vec4(color, 1.0);\n"
                 "}\n\0";
-            
+
+            // build and compile our shader program
+            // ------------------------------------
+             // vertex shader
+            vertexShader = glCreateShader(GL_VERTEX_SHADER);
+            glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+            glCompileShader(vertexShader);
+            // check for shader compile errors
+            Shader::CheckVertexCompile(vertexShader);
+            // fragment shader
+            fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+            glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+            glCompileShader(fragmentShader);
+            // check for shader compile errors
+            Shader::CheckFragmentCompile(fragmentShader);
+            // link shaders
+            shaderProgram = glCreateProgram();
+            glAttachShader(shaderProgram, vertexShader);
+            glAttachShader(shaderProgram, fragmentShader);
+            glLinkProgram(shaderProgram);
+            // check for linking errors
+            if (!Shader::ChechShaderCompile(shaderProgram)) {
+                LOG::Warning( name + " Help!");
+            }
+            glDeleteShader(vertexShader);
+            glDeleteShader(fragmentShader); ;
+
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
@@ -78,18 +116,6 @@ namespace emp {
         }
     }
 
-    //CUBEMANAGER
-    LightManager::LightManager(Engine& engine, ConfigGraphic& config) : System(engine, "LightManager")
-    {
-        this->config = &config;
-        m_component = engine.GetComponentManager();
-    }
-
-    void LightManager::Init()
-    {
-        m_component = engine->GetComponentManager();
-    }
-
 
     void LightManager::Destroy()
     {
@@ -121,24 +147,24 @@ namespace emp {
             glm::mat4 projection = glm::mat4(1.0f);
             projection = glm::perspective(glm::radians(project), (float)1000 / (float)1000, 0.1f, 100.0f);
 
-            transf = glm::rotate(transf, glm::radians(element.axis_x + time / 20), glm::vec3(1.0f, 0.0f, 0.0f));
+            transf = glm::rotate(transf, glm::radians(element.axis_x + time / 5), glm::vec3(1.0f, 0.0f, 0.0f));
 
             // draw our first triangle
-            glUseProgram(element.shaderProgram);
+            glUseProgram(shaderProgram);
             // glBindVertexArray(element.VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 
              // get matrix's uniform location and set matrix
-            unsigned int transformLoc = glGetUniformLocation(element.shaderProgram, "transform");
-            unsigned int viewLoc = glGetUniformLocation(element.shaderProgram, "view");
+            unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+            unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
             glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
             glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            glUniformMatrix4fv(glGetUniformLocation(element.shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
-            unsigned int colorLoc = glGetUniformLocation(element.shaderProgram, "color");
+            unsigned int colorLoc = glGetUniformLocation(shaderProgram, "color");
             glUniform3f(colorLoc, element.color.r, element.color.g, element.color.b);
-            
+
             // render container
-            glBindVertexArray(element.VAO);
+            glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
         }
     }

@@ -90,7 +90,6 @@ namespace emp
         m_graphic = this->m_systems->RegisterSystem<GraphicManager>(*this, *configGraphic);
 
         this->m_component->RegisterComponent<Transform>();
-        this->m_component->RegisterComponent<SpriteRenderer>();
         this->m_component->RegisterComponent<Square>();
         this->m_component->RegisterComponent<Circle>();
         this->m_component->RegisterComponent<Triangle>();
@@ -135,28 +134,38 @@ namespace emp
         //    
         //}
 
-       /* int entity = this->m_entity->CreateEntity("Cube").id;
+        //int entity = this->m_entity->CreateEntity("Triangle").id;
+        //this->m_component->AddComponent(entity, Transform(0, 0, -10, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        //this->m_component->AddComponent(entity, Triangle(entity)); 
+
+
+     /*   int entity = this->m_entity->CreateEntity("Cube").id;
         this->m_component->AddComponent(entity, Transform(-75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
         this->m_component->AddComponent(entity, Cube(entity, 1.0f, 1.0f, 1.0f));*/
 
-        //entity = this->m_entity->CreateEntity("Cube").id;
-        //this->m_component->AddComponent(entity, Transform(-25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        //this->m_component->AddComponent(entity, Cube(entity, 0.66f, 0.66f, 0.66f));
+        int entity = this->m_entity->CreateEntity("triangle").id;
+        this->m_component->AddComponent(entity, Transform(05, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Triangle(entity));//, 0.66f, 0.66f, 0.66f
 
-        //entity = this->m_entity->CreateEntity("Cube").id;      
-        //this->m_component->AddComponent(entity, Transform(25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        //this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
+        entity = this->m_entity->CreateEntity("Square").id;
+        this->m_component->AddComponent(entity, Transform(05, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Square(entity));//, 0.66f, 0.66f, 0
+
+
+        entity = this->m_entity->CreateEntity("Cube").id;      
+        this->m_component->AddComponent(entity, Transform(25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
         //
         //entity = this->m_entity->CreateEntity("Cube").id;
         //this->m_component->AddComponent(entity, Transform(75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
         //this->m_component->AddComponent(entity, Cube(entity, 0.1f, 0.1f, 0.1f));
 
-        int entity = this->m_entity->CreateEntity("Light").id;
-        this->m_component->AddComponent(entity, Transform(0, 75, 75, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+        entity = this->m_entity->CreateEntity("Light").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
         this->m_component->AddComponent(entity, Light(entity, 0.8f, 0.4f, 0.0f));
         //
          entity = this->m_entity->CreateEntity("Model").id;
-        this->m_component->AddComponent(entity, Transform(0, -50, 0, 0, 0, 0, 1.f, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, Transform(0, -50, 0, 0, 0, 0, 3.0f, 3.0f, 3.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
 
        /* entity = this->m_entity->CreateEntity("Model2").id;
@@ -191,7 +200,7 @@ namespace emp
 
             end = clock();
 
-            LOG::Debug(std::to_string(dt));
+           // LOG::Debug(std::to_string(dt));
         }
     }
 

@@ -81,7 +81,7 @@ namespace emp {
         //std::vector<GraphicComponent*> components;
 		Screen screen;
 
-        SpriteManager* m_sprite;
+        //SpriteManager* m_sprite;
 		SquareManager* m_square;
 		CircleManager* m_circle;
 		TriangleManager* m_triangle;

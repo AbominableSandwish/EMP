@@ -23,11 +23,6 @@ namespace emp {
 
         void Init();
 
-        
-
-
-
-
         float axis_x = 0.0f;
         float axis_y = 0.0f;
         float axis_z = 0.0f;

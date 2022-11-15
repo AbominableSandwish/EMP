@@ -30,10 +30,11 @@ namespace emp {
 
     void CubeManager::Init()
     {
+        bool warning = false;
         m_component = engine->GetComponentManager();
 
         {
-           std::string vertexShaderSource = "#version 330 core\n"
+            const char* vertexShaderSource = "#version 330 core\n"
 
                 "layout (location = 0) in vec3 aPos;\n"
                 "layout(location = 1) in vec3 aNormal;\n"
@@ -51,7 +52,7 @@ namespace emp {
 
                 "   gl_Position = projection * view * vec4(FragPos, 1.0);\n"
                 "}\0";
-           std::string fragmentShader2Source = "#version 330 core\n"
+                const char* fragmentShader2Source = "#version 330 core\n"
                 "in vec3 Normal;\n"
                 "in vec3 FragPos;\n"
 
@@ -66,7 +67,7 @@ namespace emp {
                 "   FragColor = vec4(objectColor * lightColor, 1.0);\n"
                 "}\n\0";
 
-           std::string fragmentShaderSource = "#version 330 core\n"
+                const char* fragmentShaderSource = "#version 330 core\n"
                 "in vec3 FragPos;\n"
                 "in vec3 Normal;\n"
 
@@ -98,6 +99,8 @@ namespace emp {
                 "vec3 result = (ambient + diffuse + specular) * objectColor;\n"
                 "FragColor = vec4(result, 1.0);\n"
                 "}\n\0";
+
+           
 
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
@@ -149,7 +152,10 @@ namespace emp {
             };
 
             this->shader = new Shader();
-            this->shader->Init(vertexShaderSource, fragmentShaderSource, vertices);
+            warning = this->shader->Init(vertexShaderSource, fragmentShaderSource, vertices);
+            if (warning) {
+                LOG::Warning( name + " help!");
+            }
            
         }
     }
@@ -175,18 +181,16 @@ namespace emp {
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(project), (float)1000 / (float)1000, 0.1f, 100.0f);
 
-        //CAMERA
-        unsigned int viewPosLoc = glGetUniformLocation(this->shader->shaderProgram, "viewPos");
-        glUniform3f(viewPosLoc, 0.0f, 0.0f, -3.0f);
+      
 
-        // get matrix's uniform location and set matrix
+        //// get matrix's uniform location and set matrix
         unsigned int transformLoc = glGetUniformLocation(this->shader->shaderProgram, "transform");
         unsigned int viewLoc = glGetUniformLocation(this->shader->shaderProgram, "view");
       
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(this->shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
-        glBindVertexArray(this->shader->VAO);
+        //glBindVertexArray(this->shader->VAO);
 
         for (auto element : arrayElement)
         {
@@ -206,6 +210,11 @@ namespace emp {
 
             unsigned int objectColorLoc = glGetUniformLocation(this->shader->shaderProgram, "objectColor");
             glUniform3f(objectColorLoc, element.color.r, element.color.g, element.color.b);
+            //CAMERA
+            unsigned int viewPosLoc = glGetUniformLocation(this->shader->shaderProgram, "viewPos");
+            glUniform3f(viewPosLoc, 0.0f, 0.0f, -3.0f);
+
+        
             //LIGHT
             auto arrayLight = engine->GetComponentManager()->GetComponents<Light>();
             Light mainLight = arrayLight[0];

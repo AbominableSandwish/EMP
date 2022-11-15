@@ -91,7 +91,10 @@ namespace emp {
         }
 
         this->Shader = new emp::Shader();
-        this->Shader->Init(vertexShaderSource, fragmentShaderSource, vertices, indices);
+        bool warning = this->Shader->Init(vertexShaderSource, fragmentShaderSource, vertices, indices);
+        if (warning) {
+            LOG::Warning(name + " help!");
+        }
     }
 
     void CircleManager::Destroy()

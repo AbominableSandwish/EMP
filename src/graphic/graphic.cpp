@@ -19,9 +19,9 @@ namespace emp {
 	GraphicManager::GraphicManager(Engine& engine, ConfigGraphic& config) : System(engine, "GraphicManager")
 	{
 		this->config = &config;
-		m_sprite = new SpriteManager(engine, config);
+		//m_sprite = new SpriteManager(engine, config);
 		m_square = new SquareManager(engine, config);
-		m_circle = new CircleManager(engine, config);
+		//m_circle = new CircleManager(engine, config);
 		m_triangle = new TriangleManager(engine, config);
 		m_cube = new CubeManager(engine, config);
 		m_light = new LightManager(engine, config);
@@ -120,7 +120,7 @@ namespace emp {
 		
 		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		this->window = glfwCreateWindow(1000, 1000, "Engine Mushroom Portuaire", NULL, NULL);
-		this->screen._backgroundColor = ColorRGB(0.14f, 0.14f, 0.14f);
+		this->screen._backgroundColor = ColorRGB(0.84f, 0.14f, 0.84f);
 		if (this->config->horizontal > this->config->vertical)			
 			this->config->offset_scaling = this->config->horizontal / (float)this->config->vertical;
 		if (this->config->horizontal < this->config->vertical)
@@ -147,9 +147,9 @@ namespace emp {
 
 	
 
-		m_sprite->Init();
+		//m_sprite->Init();
 		m_square->Init();
-		m_circle->Init();
+		//m_circle->Init();
 		m_triangle->Init();
 		m_cube->Init();
 		m_light->Init();
@@ -171,7 +171,7 @@ namespace emp {
 		}
 		m_cube->Update(dt);
 		m_light->Update(dt);
-		m_sprite->Update(dt);
+		//m_sprite->Update(dt);
 		m_model->Update(dt);
 
 		glfwPollEvents();
@@ -194,12 +194,12 @@ namespace emp {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.6f, 0.0f, 8.0f, 0.6f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-		m_sprite->Draw();
+		//m_sprite->Draw();
 		m_square->Draw();
-		m_circle->Draw();
+		//m_circle->Draw();
 		m_triangle->Draw();
 		m_cube->Draw();
 		m_light->Draw();

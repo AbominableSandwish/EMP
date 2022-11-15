@@ -46,20 +46,39 @@ namespace emp
 		return instance_file;
 	}
 
+	string FileManager::ReadShader(string path)
+	{
+		std::string vertexCode;
+		std::ifstream vShaderFile;
+		// open files
+		vShaderFile.open(path);
+		std::stringstream vShaderStream, fShaderStream;
+		// read file's buffer contents into streams
+		vShaderStream << vShaderFile.rdbuf();
+		// close file handlers
+		vShaderFile.close();
+		// convert stream into string
+		vertexCode = vShaderStream.str();
+
+		return vertexCode;
+	}
+
 	std::string FileManager::ReadFile(string path) {
 
 		ifstream ifs = ifstream(path, ios_base::in);
 		string str;
+		
 		if (ifs.is_open() == true) {
 			char c;
 			while (ifs.get(c))
 				str.push_back(c);
-			cout << str << endl;
+			//cout << str << endl;
 			ifs.close();
-			cout << "Opened File has been closed." << endl;
+			//cout << "Opened File has been closed." << endl;
+			LOG::Info("Opened File: " + path);
 		}
 		else
-			cout << "File could not be open!" << endl;
+			LOG::Info("File could not be open! : " + path);
 		return str;
 	}
 
@@ -100,10 +119,10 @@ namespace emp
 			std::string dept = jdEmployees.value("Department", "oops");
 
 			// Print the values
-			std::cout << "First Name: " << fName << std::endl;
+			/*std::cout << "First Name: " << fName << std::endl;
 			std::cout << "Last Name: " << lName << std::endl;
 			std::cout << "Student ID: " << sID << std::endl;
-			std::cout << "Department: " << dept << std::endl;
+			std::cout << "Department: " << dept << std::endl;*/
 		}
 		{
 			// Here is a JSON text
@@ -121,7 +140,7 @@ namespace emp
                           )";
 			// Let's parse and serialize JSON
 			json j_complete = json::parse(text);
-			std::cout << std::setw(4) << j_complete << std::endl;
+			//std::cout << std::setw(4) << j_complete << std::endl;
 
 			// write prettified JSON to another file
 			std::ofstream o("data.json");
