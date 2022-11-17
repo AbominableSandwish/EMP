@@ -46,15 +46,12 @@ namespace emp {
             glm::mat4 projection = glm::mat4(1.0f);
             projection = glm::perspective(glm::radians(project), (float)1000 / (float)1000, 0.1f, 100.0f);
 
-            unsigned int viewLoc = glGetUniformLocation(this->shader->shaderProgram, "view");
-
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            glUniformMatrix4fv(glGetUniformLocation(this->shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+            this->shader->SetMat4("view", view);
+            this->shader->SetMat4("projection", projection);
 
             glBindVertexArray(this->shader->VAO);
             //CAMERA
-            unsigned int viewPosLoc = glGetUniformLocation(this->shader->shaderProgram, "viewPos");
-            glUniform3f(viewPosLoc, 0.0f, 0.0f, -3.0f);
+            this->shader->SetVec3("viewPos", glm::vec3(0.0f, 0.0f, -3.0f));
             //Get Transform Data
             auto transform = m_component->GetComponent<Transform>(element.entity);
             Vector3 position = transform.GetPosition();
@@ -71,19 +68,18 @@ namespace emp {
             transf = glm::rotate(transf, glm::radians(element.axis_x + time / 10), glm::vec3(0.0f, 1.0f, 0.0f));
 
             this->shader->SetMat4("transform", transf);
-
-            unsigned int objectColorLoc = glGetUniformLocation(this->shader->shaderProgram, "objectColor");
-            glUniform3f(objectColorLoc, element.color.r, element.color.g, element.color.b);
+            this->shader->SetVec3("objectColor", glm::vec3(element.color.r, element.color.g, element.color.b));
             //LIGHT
             auto arrayLight = engine->GetComponentManager()->GetComponents<Light>();
+            for each (auto& light in arrayLight) {
+
+            }
             Light mainLight = arrayLight[0];
             Vector3 lightpos = engine->GetComponentManager()->GetComponent<Transform>(mainLight.entity).GetPosition();
 
-            unsigned int lightPosLoc = glGetUniformLocation(this->shader->shaderProgram, "lightPos");
-            glUniform3f(lightPosLoc, lightpos.x, lightpos.y, lightpos.z);
-            unsigned int lightColorLoc = glGetUniformLocation(this->shader->shaderProgram, "lightColor");
-            glUniform3f(lightColorLoc, mainLight.color.r, mainLight.color.g, mainLight.color.b);
-        
+            this->shader->SetVec3("lightPos", glm::vec3(lightpos.x, lightpos.y, lightpos.z));
+            this->shader->SetVec3("lightColor", glm::vec3(mainLight.color.r, mainLight.color.g, mainLight.color.b));
+
             element.Draw(this->shader->shaderProgram);
         }
 	}

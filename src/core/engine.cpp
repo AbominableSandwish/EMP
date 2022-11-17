@@ -161,8 +161,12 @@ namespace emp
         //this->m_component->AddComponent(entity, Cube(entity, 0.1f, 0.1f, 0.1f));
 
         entity = this->m_entity->CreateEntity("Light").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-        this->m_component->AddComponent(entity, Light(entity, 0.8f, 0.4f, 0.0f));
+        this->m_component->AddComponent(entity, Transform(-20, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+        this->m_component->AddComponent(entity, Light(entity, 0.8f, 0.0f, 0.0f));
+
+        entity = this->m_entity->CreateEntity("Light2").id;
+        this->m_component->AddComponent(entity, Transform(20, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+        this->m_component->AddComponent(entity, Light(entity, 0.0f, 0.0f, 0.8f));
         //
          entity = this->m_entity->CreateEntity("Model").id;
         this->m_component->AddComponent(entity, Transform(0, -50, 0, 0, 0, 0, 3.0f, 3.0f, 3.0f));

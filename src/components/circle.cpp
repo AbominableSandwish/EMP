@@ -90,11 +90,11 @@ namespace emp {
             }
         }
 
-        this->Shader = new emp::Shader();
+       /* this->Shader = new emp::Shader();
         bool warning = this->Shader->Init(vertexShaderSource, fragmentShaderSource, vertices, indices);
         if (warning) {
             LOG::Warning(name + " help!");
-        }
+        }*/
     }
 
     void CircleManager::Destroy()
@@ -103,39 +103,39 @@ namespace emp {
 
     void CircleManager::Draw()
     {
-        auto arrayElement = engine->GetComponentManager()->GetComponents<Circle>();
-        for (auto element : arrayElement)
-        {
-            int PixelPerSize = config->PixelSize;
-            auto transform = m_component->GetComponent<Transform>(element.entity);
-            Vector3 position = transform.GetPosition();
-            std::vector<Vector4> matrice = transform.matrice->matrice4;
-            glm::mat4 transf = glm::mat4(matrice[0].r, matrice[0].g, matrice[0].b, matrice[0].a,
-                matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
-                matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
-                position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
+        //auto arrayElement = engine->GetComponentManager()->GetComponents<Circle>();
+        //for (auto element : arrayElement)
+        //{
+        //    int PixelPerSize = config->PixelSize;
+        //    auto transform = m_component->GetComponent<Transform>(element.entity);
+        //    Vector3 position = transform.GetPosition();
+        //    std::vector<Vector4> matrice = transform.matrice->matrice4;
+        //    glm::mat4 transf = glm::mat4(matrice[0].r, matrice[0].g, matrice[0].b, matrice[0].a,
+        //        matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
+        //        matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
+        //        position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
 
-            transf = glm::rotate(transf, glm::radians(element.axis_x), glm::vec3(1.0f, 0.0f, 0.0f));
+        //    transf = glm::rotate(transf, glm::radians(element.axis_x), glm::vec3(1.0f, 0.0f, 0.0f));
 
-            glm::mat4 view = glm::mat4(1.0f);
-            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-            glm::mat4 projection = glm::mat4(1.0f);
-            projection = glm::perspective(glm::radians(config->projetcion), (float)1000 / (float)1000, 0.1f, 100.0f);
-            this->Shader->UseProgram();
-            this->Shader->BindVertexArray();
-         
-            // get matrix's uniform location and set matrix
-            unsigned int transformLoc = glGetUniformLocation(Shader->shaderProgram, "transform");
-            unsigned int viewLoc = glGetUniformLocation(Shader->shaderProgram, "view");
-            unsigned int colorLoc = glGetUniformLocation(Shader->shaderProgram, "color");
+        //    glm::mat4 view = glm::mat4(1.0f);
+        //    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        //    glm::mat4 projection = glm::mat4(1.0f);
+        //    projection = glm::perspective(glm::radians(config->projetcion), (float)1000 / (float)1000, 0.1f, 100.0f);
+        //    this->Shader->UseProgram();
+        //    this->Shader->BindVertexArray();
+        // 
+        //    // get matrix's uniform location and set matrix
+        //    unsigned int transformLoc = glGetUniformLocation(Shader->shaderProgram, "transform");
+        //    unsigned int viewLoc = glGetUniformLocation(Shader->shaderProgram, "view");
+        //    unsigned int colorLoc = glGetUniformLocation(Shader->shaderProgram, "color");
 
-            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            glUniformMatrix4fv(glGetUniformLocation(Shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
-            glUniform4f(colorLoc, element.color.r, element.color.g, element.color.b, element.color.a);
-            //glDrawArrays(GL_TRIANGLES, 0, 6);
-            glDrawElements(GL_TRIANGLES, 360 * 3, GL_UNSIGNED_INT, 0);
-            // glBindVertexArray(0); // no need to unbind it every time
-        }
+        //    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
+        //    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        //    glUniformMatrix4fv(glGetUniformLocation(Shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+        //    glUniform4f(colorLoc, element.color.r, element.color.g, element.color.b, element.color.a);
+        //    //glDrawArrays(GL_TRIANGLES, 0, 6);
+        //    glDrawElements(GL_TRIANGLES, 360 * 3, GL_UNSIGNED_INT, 0);
+        //    // glBindVertexArray(0); // no need to unbind it every time
+        //}
     }
 }

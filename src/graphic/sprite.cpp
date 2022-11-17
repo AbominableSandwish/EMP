@@ -66,8 +66,8 @@ namespace emp
 		std::string vertex = FileSystem::ReadFile("./shader/2d_sprite.vs");
 		std::string fragment = FileSystem::ReadFile("./shader/2d_sprite.fs");
 
-		this->shader = new Shader();
-		this->shader->Init(vertex, fragment, vertices, indices);
+		//this->shader = new Shader();
+		//this->shader->Init(vertex, fragment, vertices, indices);
 	}
 
 	void SpriteManager::Update(float)
@@ -76,29 +76,29 @@ namespace emp
 
 	void SpriteManager::Draw()
 	{
-		auto components = m_component->GetComponents<SpriteRenderer>();
-		for (SpriteRenderer& element : components)
-		{
-			// bind Texture
-			glBindTexture(GL_TEXTURE_2D, element.texture);
-			auto transform = m_component->GetComponent<Transform>(element.entity);
-			Vector3 position = transform.GetPosition();
-			Vector3 scale = transform.GetScale();
-			glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-			transf = glm::translate(transf, glm::vec3(position.x / config->PixelSize, position.y / config->PixelSize, 0.0f));
-			transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));
-			transf = glm::rotate(transf, (float)transform.GetRotation().x / 57.28f, glm::vec3(0.0f, 0.0f, 1.0));
+		//auto components = m_component->GetComponents<SpriteRenderer>();
+		//for (SpriteRenderer& element : components)
+		//{
+		//	// bind Texture
+		//	glBindTexture(GL_TEXTURE_2D, element.texture);
+		//	auto transform = m_component->GetComponent<Transform>(element.entity);
+		//	Vector3 position = transform.GetPosition();
+		//	Vector3 scale = transform.GetScale();
+		//	glm::mat4 transf = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+		//	transf = glm::translate(transf, glm::vec3(position.x / config->PixelSize, position.y / config->PixelSize, 0.0f));
+		//	transf = glm::scale(transf, glm::vec3(scale.x, scale.y, 0.0f));
+		//	transf = glm::rotate(transf, (float)transform.GetRotation().x / 57.28f, glm::vec3(0.0f, 0.0f, 1.0));
 
-			//render container
-			glUseProgram(element.shaderProgram);
+		//	//render container
+		//	glUseProgram(element.shaderProgram);
 
-			// get matrix's uniform location and set matrix
-			unsigned int transformLoc = glGetUniformLocation(element.shaderProgram, "transform");
-			glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
+		//	// get matrix's uniform location and set matrix
+		//	unsigned int transformLoc = glGetUniformLocation(element.shaderProgram, "transform");
+		//	glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
 
-			glBindVertexArray(element.VAO);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		}
+		//	glBindVertexArray(element.VAO);
+		//	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		//}
 	}
 
 	void SpriteManager::Destroy()

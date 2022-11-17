@@ -24,8 +24,9 @@ namespace emp {
 		//m_circle = new CircleManager(engine, config);
 		m_triangle = new TriangleManager(engine, config);
 		m_cube = new CubeManager(engine, config);
-		m_light = new LightManager(engine, config);
+	
 		m_model = new ModelManager(engine, config);
+		m_light = new LightManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -152,8 +153,9 @@ namespace emp {
 		//m_circle->Init();
 		m_triangle->Init();
 		m_cube->Init();
-		m_light->Init();
 		m_model->Init();
+		m_light->Init();
+
 
 		lineX = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
 		lineY = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
@@ -202,8 +204,9 @@ namespace emp {
 		//m_circle->Draw();
 		m_triangle->Draw();
 		m_cube->Draw();
-		m_light->Draw();
+	
 		m_model->Draw();
+		m_light->Draw();
 
 		for (auto element : grid_line)
 		{

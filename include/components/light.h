@@ -4,6 +4,7 @@
 namespace emp {
     class Engine;
     class ConfigGraphic;
+    class Shader;
   
     class Light {
     public:
@@ -47,6 +48,8 @@ namespace emp {
         void Update(float) override;
 
         void Draw();
+
+        Shader* shader = nullptr;
 
         std::string vertexCode;
         const char* vertexShaderSource;

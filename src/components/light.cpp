@@ -31,49 +31,14 @@ namespace emp {
     void LightManager::Init()
     {
         m_component = engine->GetComponentManager();
-
-
-
         {
-           // vertexShaderSource = FileSystem::ReadFile("./shader/light.vs").c_str();
-            this->vertexCode = FileSystem::ReadShader("./shader/light.vs");
-            vertexShaderSource = vertexCode.c_str();
 
-            fragmentShaderSource = "#version 330 core\n"
-                "uniform vec3 color;\n"
+             this->shader = new Shader();
 
-                "out vec4 FragColor;\n"
-                "void main()\n"
-                "{\n"
-                "   FragColor = vec4(color, 1.0);\n"
-                "}\n\0";
-
-            // build and compile our shader program
-            // ------------------------------------
-             // vertex shader
-            vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-            glCompileShader(vertexShader);
-            // check for shader compile errors
-            Shader::CheckVertexCompile(vertexShader);
-            // fragment shader
-            fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-            glCompileShader(fragmentShader);
-            // check for shader compile errors
-            Shader::CheckFragmentCompile(fragmentShader);
-            // link shaders
-            shaderProgram = glCreateProgram();
-            glAttachShader(shaderProgram, vertexShader);
-            glAttachShader(shaderProgram, fragmentShader);
-            glLinkProgram(shaderProgram);
-            // check for linking errors
-            if (!Shader::ChechShaderCompile(shaderProgram)) {
-                LOG::Warning( name + " Help!");
+            bool warning = this->shader->Init(FileSystem::ReadShader("./shader/light/light.vs"), FileSystem::ReadShader("./shader/light/light.fs"));
+            if (warning) {
+                LOG::Warning(name + " Help!");
             }
-            glDeleteShader(vertexShader);
-            glDeleteShader(fragmentShader); ;
-
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
@@ -90,7 +55,7 @@ namespace emp {
             };
 
             unsigned int indices[] = {
-                0, 1, 3, 1, 2, 3,
+                0, 1, 2, 1, 2, 4,
                 4, 5, 7, 5, 6, 7,
                 0, 1, 4, 4, 5, 1,
                 2, 3, 7, 6, 7, 2,
@@ -98,21 +63,23 @@ namespace emp {
                 0, 3, 7, 7, 4, 0
             };
 
-            glGenVertexArrays(1, &VAO);
-            glGenBuffers(1, &VBO);
-            glGenBuffers(1, &EBO);
+            glGenVertexArrays(1, &this->shader->VAO);
+            glGenBuffers(1, &this->shader->VBO);
+            glGenBuffers(1, &this->shader->EBO);
             // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-            glBindVertexArray(VAO);
+            glBindVertexArray(this->shader->VAO);
 
-            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBindBuffer(GL_ARRAY_BUFFER, this->shader->VBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->shader->EBO);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
+
+           
         }
     }
 
@@ -150,22 +117,19 @@ namespace emp {
             transf = glm::rotate(transf, glm::radians(element.axis_x + time / 5), glm::vec3(1.0f, 0.0f, 0.0f));
 
             // draw our first triangle
-            glUseProgram(shaderProgram);
-            // glBindVertexArray(element.VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+            this->shader->UseProgram();
 
-             // get matrix's uniform location and set matrix
-            unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-            unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
-            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+            // get matrix's uniform location and set matrix
+            this->shader->SetMat4("transform", transf);
+            this->shader->SetMat4("view", view);
+            this->shader->SetMat4("projection", projection);
 
-            unsigned int colorLoc = glGetUniformLocation(shaderProgram, "color");
-            glUniform3f(colorLoc, element.color.r, element.color.g, element.color.b);
+            this->shader->SetVec3("color", glm::vec3(element.color.r, element.color.g, element.color.b));
 
             // render container
-            glBindVertexArray(VAO);
-            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            this->shader->BindVertexArray(this->shader->VAO);
+            this->shader->DrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+            this->shader->BindVertexArray(0);
         }
     }
 }
