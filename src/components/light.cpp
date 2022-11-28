@@ -5,23 +5,29 @@
 #include <graphic/shader.h>
 #include <graphic/graphic.h>
 #include <components/transform.h>
+#include <components/camera.h>
 #include <math/matrice.h>
 #include <core/file.h>
-#include <fstream>
+#include <fstream>s
 
 namespace emp {
-    Light::Light(int entity, float r, float g, float b)
+    PointLight::PointLight(int entity, float r, float g, float b, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
     {
         this->entity = entity;
-        this->color = glm::vec4(r, g, b, 1.0f);
+        this->constant = constant;
+        this->linear = linear;
+        this->quadratic = quadratic;
+
+        this->ambient = ambient;
+        this->diffuse = diffuse;
+        this->specular = specular;
     }
-    //CUBE
-    void Light::Init()
+
+    void PointLight::Init()
     {
        
     }
 
-    //CUBEMANAGER
     LightManager::LightManager(Engine& engine, ConfigGraphic& config) : System(engine, "LightManager")
     {
         this->config = &config;
@@ -79,6 +85,8 @@ namespace emp {
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
 
+
+
            
         }
     }
@@ -96,25 +104,29 @@ namespace emp {
     void LightManager::Draw()
     {
 
-        auto arrayElement = engine->GetComponentManager()->GetComponents<Light>();
+        auto arrayElement = engine->GetComponentManager()->GetComponents<PointLight>();
         for (auto element : arrayElement)
         {
             int PixelPerSize = config->PixelSize;
             auto transform = m_component->GetComponent<Transform>(element.entity);
+            
             Vector3 position = transform.GetPosition();
+
+            position = transform.GetPosition();
             Vector3 scale = transform.GetScale();
             std::vector<Vector4> matrice = transform.matrice->matrice4;
-            glm::mat4 transf = glm::mat4(matrice[0].r, matrice[0].g, matrice[0].b, matrice[0].a,
-                matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
-                matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
+            glm::mat4 transf = glm::mat4(matrice[0].r / 10.0f, matrice[0].g, matrice[0].b, matrice[0].a,
+                matrice[1].r, matrice[1].g / 10.0f, matrice[1].b, matrice[1].a,
+                matrice[2].r, matrice[2].g, matrice[2].b / 10.0f, matrice[2].a,
                 position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
-            //transf = glm::rotate(transf, glm::radians(axis), glm::vec3(1.0f, 0.0f, 0.0f));
-            glm::mat4 view = glm::mat4(1.0f);
-            view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-            glm::mat4 projection = glm::mat4(1.0f);
-            projection = glm::perspective(glm::radians(project), (float)1000 / (float)1000, 0.1f, 100.0f);
+     
 
-            transf = glm::rotate(transf, glm::radians(element.axis_x + time / 5), glm::vec3(1.0f, 0.0f, 0.0f));
+            auto list_camera = m_component->GetComponents<Camera>();
+            Camera MainCamera = list_camera[0];
+            glm::mat4 view = glm::mat4(1.0f);
+            view = glm::translate(view, MainCamera.GetPosition());
+            glm::mat4 projection = MainCamera.projection;
+
 
             // draw our first triangle
             this->shader->UseProgram();
@@ -124,7 +136,7 @@ namespace emp {
             this->shader->SetMat4("view", view);
             this->shader->SetMat4("projection", projection);
 
-            this->shader->SetVec3("color", glm::vec3(element.color.r, element.color.g, element.color.b));
+            this->shader->SetVec3("color", glm::vec3(element.specular.r, element.specular.g, element.specular.b));
 
             // render container
             this->shader->BindVertexArray(this->shader->VAO);

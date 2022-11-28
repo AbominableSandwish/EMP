@@ -20,6 +20,7 @@
 #include <components/cube.h>
 #include <components/light.h>
 #include <components/model.h>
+#include <components/camera.h>
 // External
 #include <iostream>
 #include <ctime>
@@ -95,9 +96,9 @@ namespace emp
         this->m_component->RegisterComponent<Triangle>();
 
         this->m_component->RegisterComponent<Cube>();
-        this->m_component->RegisterComponent<Light>();
+        this->m_component->RegisterComponent<PointLight>();
         this->m_component->RegisterComponent<Model>();
-
+        this->m_component->RegisterComponent<Camera>();
 
         this->m_component->RegisterComponent<RigidBody2D>();
         this->m_graphic->Init();
@@ -126,22 +127,6 @@ namespace emp
         int i;
         float dt = 0.0f;
         this->m_graphic->Update(dt);
-        //for (i = 0; i < 1; ++i)
-        //{
-        //    this->m_entity->CreateEntity("Sprite_"+ std::to_string(i));
-        //    this->m_component->AddComponent(i, Transform(10*i, 10* i, 0));
-        //    this->m_component->AddComponent(i, SpriteRenderer(i, "./data/NewLogoPixelColoredx192v2.jpg"));
-        //    
-        //}
-
-        //int entity = this->m_entity->CreateEntity("Triangle").id;
-        //this->m_component->AddComponent(entity, Transform(0, 0, -10, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        //this->m_component->AddComponent(entity, Triangle(entity)); 
-
-
-     /*   int entity = this->m_entity->CreateEntity("Cube").id;
-        this->m_component->AddComponent(entity, Transform(-75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        this->m_component->AddComponent(entity, Cube(entity, 1.0f, 1.0f, 1.0f));*/
 
         int entity = this->m_entity->CreateEntity("triangle").id;
         this->m_component->AddComponent(entity, Transform(05, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
@@ -153,24 +138,32 @@ namespace emp
 
 
         entity = this->m_entity->CreateEntity("Cube").id;      
-        this->m_component->AddComponent(entity, Transform(25, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Transform( 0, -125, 40, 0, 0, 0, 10.0f, 1.0f, 10.0f));
         this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
-        //
-        //entity = this->m_entity->CreateEntity("Cube").id;
-        //this->m_component->AddComponent(entity, Transform(75, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        //this->m_component->AddComponent(entity, Cube(entity, 0.1f, 0.1f, 0.1f));
 
         entity = this->m_entity->CreateEntity("Light").id;
-        this->m_component->AddComponent(entity, Transform(-20, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-        this->m_component->AddComponent(entity, Light(entity, 0.8f, 0.0f, 0.0f));
+        this->m_component->AddComponent(entity, Transform(0, 0, 40,  0, 0, 0, 1.0f, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.8f, 0.8f, 0.0f, glm::vec3(1.0f, 0.5f, 0.5f), glm::vec3(1.0f, 0.5f, 0.5f), glm::vec3(1.0f, 0.5f, 0.5f), 1.0f, 0.09f, 0.032f));
 
         entity = this->m_entity->CreateEntity("Light2").id;
-        this->m_component->AddComponent(entity, Transform(20, 0, 0, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-        this->m_component->AddComponent(entity, Light(entity, 0.0f, 0.0f, 0.8f));
-        //
+        this->m_component->AddComponent(entity, Transform(-80, 0, -60, 0, 0, 0, 0.25f, 0.25f, 0.25f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f));
+
+        entity = this->m_entity->CreateEntity("Light3").id;
+        this->m_component->AddComponent(entity, Transform(80, 0, 60, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), 1.0, 0.09f, 0.032f));
+        
+        entity = this->m_entity->CreateEntity("Light4").id;
+        this->m_component->AddComponent(entity, Transform(-80, 0, 60, 0, 0, 0, 0.1f, 0.1f, 0.1f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f));
+        
          entity = this->m_entity->CreateEntity("Model").id;
-        this->m_component->AddComponent(entity, Transform(0, -50, 0, 0, 0, 0, 3.0f, 3.0f, 3.0f));
-        this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
+        this->m_component->AddComponent(entity, Transform(0, -65, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled2.obj"));
+
+        entity = this->m_entity->CreateEntity("Main_Camera").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, -3));
+        this->m_component->AddComponent(entity, Camera(entity, this->m_component->GetComponent<Transform>(entity), 45.0f));
 
        /* entity = this->m_entity->CreateEntity("Model2").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0.5f));
@@ -189,7 +182,7 @@ namespace emp
             fps = (1.0 / deltaTime) * 1000;
             oldTime = clock();
             start = clock();
-            float dt = float(start - end);
+            float dt = float(start - end)/1000.0f;
             counter += dt;
             if(this->m_log != nullptr)
 				this->m_log->Update(dt); 

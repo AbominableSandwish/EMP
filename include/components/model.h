@@ -39,6 +39,7 @@ namespace emp {
         float axis_y = 0.0f;
         float axis_z = 0.0f;
 
+        float shininess = 32.0f;
 
 
         int entity;
@@ -239,7 +240,8 @@ namespace emp {
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
         float project = 45.0f;
-
+        unsigned int diffuse_map;
+        unsigned int specular_map;
         float time = 0.0f;;
     };
 }

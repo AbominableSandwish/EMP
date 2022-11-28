@@ -20,8 +20,7 @@ namespace emp {
 	class CubeManager;
 	class LightManager;
 	class ModelManager;
-
-
+	class Camera;
 	/// Holds all state information relevant to a character as loaded using FreeType
     struct Character {
         unsigned int TextureID; // ID handle of the glyph texture
@@ -73,6 +72,8 @@ namespace emp {
 		void AddGraphic(int entity);
 		void RemoveGraphic();
 
+		Camera& GetMainCamera();
+
 		//GLFWwindow& GetWindow();
 		GLFWwindow* window = nullptr;
 	protected:
@@ -88,6 +89,9 @@ namespace emp {
 		CubeManager* m_cube;
 		LightManager* m_light;
 		ModelManager* m_model;
+		
+		std::vector<Camera> *camera_list;
+
 
 		int width = 64;
 		int height = 64;

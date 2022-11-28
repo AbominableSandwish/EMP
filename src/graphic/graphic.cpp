@@ -11,6 +11,8 @@
 #include "components/line.h"
 #include "components/light.h"
 #include "components/model.h"
+
+#include "components/camera.h"
 #include "glm/gtx/transform.hpp"
 
 
@@ -138,6 +140,8 @@ namespace emp {
 		// configure global opengl state
 		// -----------------------------
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		if (window == NULL)
 		{
@@ -196,7 +200,7 @@ namespace emp {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		glClearColor(0.6f, 0.0f, 8.0f, 0.6f);
+		glClearColor(0.01f, 0.01f, 0.01f, 0.5f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
 		//m_sprite->Draw();
@@ -226,6 +230,11 @@ namespace emp {
 	void GraphicManager::Destroy()
 	{
 		glfwTerminate();
+	}
+
+	Camera& GraphicManager::GetMainCamera()
+	{
+		return *camera_list->begin();
 	}
 
 	/*GLFWwindow& GraphicManager::GetWindow()

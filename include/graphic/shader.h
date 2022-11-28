@@ -20,8 +20,7 @@ namespace emp
 		std::string vertexCode;
 		std::string fragmentCode;
 
-		std::vector<float> verticles;
-		unsigned int indices[];
+		float shininess = 32.0f;
 
 		Shader() {
 
@@ -138,6 +137,17 @@ namespace emp
 
 		void DrawArrays(GLenum mode, GLint first, GLsizei count) {
 			glDrawArrays(mode, first, count);
+		}
+
+		void SetInt(std::string name, int i) {
+			unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, name.c_str());
+			glUniform1i(viewPosLoc, i);
+		}
+
+
+		void SetFloat(std::string name, float f) {
+			unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, name.c_str());
+			glUniform1f(viewPosLoc, f);
 		}
 
         void SetVec3(std::string name, glm::vec3 vec) {

@@ -6,32 +6,32 @@ namespace emp {
     class ConfigGraphic;
     class Shader;
   
-    class Light {
+    class PointLight {
     public:
-        Light(int entity)
+        PointLight(int entity)
         {
             this->entity = entity;
-
-            float red = 1.0f; // (std::rand() % 10);
-            float green = 1.0f; // (std::rand() % 10);
-            float blue = 1.0f; // (std::rand() % 10);
-
-            this->color = glm::vec4(red, green, blue, 1.0f);
         }
 
-        Light(int entity, float r, float g, float b);
+        PointLight(int entity, float r, float g, float b, glm::vec3 ambiant, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
         void Init();
+
+        int entity;
 
         float axis_x = 0.0f;
         float axis_y = 0.0f;
         float axis_z = 0.0f;
+        
+        //light
+        glm::vec3 ambient;
+        glm::vec3 diffuse;
+        glm::vec3 specular;
 
-        int entity;
-        glm::vec4 color;
-        void SetColor(glm::vec4 color)
-        {
-            this->color = color;
-        }
+        float constant;
+        float linear;
+        float quadratic;
+
+        float shininess;
     };
 
 
