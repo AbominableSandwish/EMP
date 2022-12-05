@@ -10,10 +10,8 @@ namespace emp {
 	Transform::Transform(float x, float y, float z)
 	{
 		matrice = new Matrice4();
-		position = new Vector4(x, y, z, 1);
 		SetPosition(Vector3(x, y, z));
-		scale_x = 1.0f;
-		scale_y = 1.0f;
+		SetScale(1.0f, 1.0f, 1.0f);
 	}
 
 	Transform::Transform(float x, float y, float z, float w, float l)
@@ -43,9 +41,8 @@ namespace emp {
 	void Transform::Reset()
 	{
 		matrice = new Matrice4();
-		position = new Vector4();
-		scale_x = 1.0f;
-		scale_y = 1.0f;
+		SetPosition(Vector3(0, 0, 0));
+		SetScale(1.0f, 1.0f, 1.0f);
 	}
 
 	Vector3 Transform::GetPosition()
@@ -78,11 +75,11 @@ namespace emp {
 	void Transform::SetRotation(float radiant, Vector3 axis)
 	{
 		if (axis.x == 1)
-			this->angle_x = radiant;
+			this->angle_x = radiant / (3.14 * 5.5f);
 		if (axis.y == 1)
-			this->angle_y = radiant;
+			this->angle_y = radiant / (3.14 * 5.5f);
 		if (axis.z == 1)
-			this->angle_z = radiant;
+			this->angle_z = radiant / (3.14 * 5.5f);
 		Matrice4 rotation = RotationMatrixFrom(radiant, axis);
 		Matrice4 matrice = this->matrice->matrice4;
 		this->matrice->SetMatrice(rotation);
@@ -90,14 +87,14 @@ namespace emp {
 
 	Vector3 Transform::GetScale()
 	{
-		return Vector3(scale_x, scale_y, 1.0f);
+		return Vector3(scale_x, scale_y, scale_z);
 	}
 
 	void Transform::SetScale(float w, float l)
 	{
-		//this->matrice->SetScale(Vector3(w, l, 1));
 		scale_x = w;
 		scale_y = l;
+		scale_z = 1;
 		Matrice4 scale = ScalingMatrix(Vector3(w, l, 1));
 		Matrice4 matrice = this->matrice->matrice4;
 		this->matrice->SetMatrice(matrice * scale);
@@ -106,7 +103,7 @@ namespace emp {
 	{
 		scale_x = w;
 		scale_y = h;
-		scale_y = p;
+		scale_z = p;
 		Matrice4 scale = ScalingMatrix(Vector3(w, h, p));
 		Matrice4 matrice = this->matrice->matrice4;
 		this->matrice->SetMatrice(matrice * scale);

@@ -7,7 +7,7 @@ namespace emp {
 	{
 	public:
 		float angle_x, angle_y, angle_z;
-		float scale_x, scale_y = 1.0f;
+		float scale_x, scale_y, scale_z;
 		Matrice4* matrice;
 		Vector4* position;
 

@@ -34,248 +34,6 @@ namespace emp {
 		return instance;
 	}
 
-    // Edit colors components (each component in 0.0f..1.0f range).
-// See enum ImGuiColorEditFlags_ for available options. e.g. Only access 3 floats if ImGuiColorEditFlags_NoAlpha flag is set.
-// With typical options: Left-click on color square to open color picker. Right-click to open option menu. CTRL-Click over input fields to edit them and TAB to go to next item.
-    bool IColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flags)
-    {
-        ImGuiWindow* window = ImGui::GetCurrentWindow();
-        if (window->SkipItems)
-            return false;
-
-        ImGuiContext& g = *GImGui;
-        const ImGuiStyle& style = g.Style;
-        const float square_sz = ImGui::GetFrameHeight();
-        const float w_full = ImGui::CalcItemWidth();
-        const float w_button = (flags & ImGuiColorEditFlags_NoSmallPreview) ? 0.0f : (square_sz + style.ItemInnerSpacing.x);
-        const float w_inputs = w_full - w_button;
-        const char* label_display_end = ImGui::FindRenderedTextEnd(label);
-        g.NextItemData.ClearFlags();
-
-        ImGui::BeginGroup();
-        ImGui::PushID(label);
-
-        // If we're not showing any slider there's no point in doing any HSV conversions
-        const ImGuiColorEditFlags flags_untouched = flags;
-        if (flags & ImGuiColorEditFlags_NoInputs)
-            flags = (flags & (~ImGuiColorEditFlags_DisplayMask_)) | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoOptions;
-
-        // Context menu: display and modify options (before defaults are applied)
-        if (!(flags & ImGuiColorEditFlags_NoOptions))
-            ImGui::ColorEditOptionsPopup(col, flags);
-
-        // Read stored options
-        if (!(flags & ImGuiColorEditFlags_DisplayMask_))
-            flags |= (g.ColorEditOptions & ImGuiColorEditFlags_DisplayMask_);
-        if (!(flags & ImGuiColorEditFlags_DataTypeMask_))
-            flags |= (g.ColorEditOptions & ImGuiColorEditFlags_DataTypeMask_);
-        if (!(flags & ImGuiColorEditFlags_PickerMask_))
-            flags |= (g.ColorEditOptions & ImGuiColorEditFlags_PickerMask_);
-        if (!(flags & ImGuiColorEditFlags_InputMask_))
-            flags |= (g.ColorEditOptions & ImGuiColorEditFlags_InputMask_);
-        flags |= (g.ColorEditOptions & ~(ImGuiColorEditFlags_DisplayMask_ | ImGuiColorEditFlags_DataTypeMask_ | ImGuiColorEditFlags_PickerMask_ | ImGuiColorEditFlags_InputMask_));
-        IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiColorEditFlags_DisplayMask_)); // Check that only 1 is selected
-        IM_ASSERT(ImIsPowerOfTwo(flags & ImGuiColorEditFlags_InputMask_));   // Check that only 1 is selected
-
-        const bool alpha = (flags & ImGuiColorEditFlags_NoAlpha) == 0;
-        const bool hdr = (flags & ImGuiColorEditFlags_HDR) != 0;
-        const int components = alpha ? 4 : 3;
-
-        // Convert to the formats we need
-        float f[4] = { col[0], col[1], col[2], alpha ? col[3] : 1.0f };
-        if ((flags & ImGuiColorEditFlags_InputHSV) && (flags & ImGuiColorEditFlags_DisplayRGB))
-            ImGui::ColorConvertHSVtoRGB(f[0], f[1], f[2], f[0], f[1], f[2]);
-        else if ((flags & ImGuiColorEditFlags_InputRGB) && (flags & ImGuiColorEditFlags_DisplayHSV))
-        {
-            // Hue is lost when converting from greyscale rgb (saturation=0). Restore it.
-            ImGui::ColorConvertRGBtoHSV(f[0], f[1], f[2], f[0], f[1], f[2]);
-            //ImGui::ColorEditRestoreHS(col, &f[0], &f[1], &f[2]);
-        }
-        int i[4] = { IM_F32_TO_INT8_UNBOUND(f[0]), IM_F32_TO_INT8_UNBOUND(f[1]), IM_F32_TO_INT8_UNBOUND(f[2]), IM_F32_TO_INT8_UNBOUND(f[3]) };
-
-        bool value_changed = false;
-        bool value_changed_as_float = false;
-
-        const ImVec2 pos = window->DC.CursorPos;
-        const float inputs_offset_x = (style.ColorButtonPosition == ImGuiDir_Left) ? w_button : 0.0f;
-        window->DC.CursorPos.x = pos.x + inputs_offset_x;
-
-        if ((flags & (ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV)) != 0 && (flags & ImGuiColorEditFlags_NoInputs) == 0)
-        {
-            // RGB/HSV 0..255 Sliders
-            const float w_item_one = ImMax(1.0f, IM_FLOOR((w_inputs - (style.ItemInnerSpacing.x) * (components - 1)) / (float)components));
-            const float w_item_last = ImMax(1.0f, IM_FLOOR(w_inputs - (w_item_one + style.ItemInnerSpacing.x) * (components - 1)));
-
-            const bool hide_prefix = (w_item_one <= ImGui::CalcTextSize((flags & ImGuiColorEditFlags_Float) ? "M:0.000" : "M:000").x);
-            static const char* ids[4] = { "##X", "##Y", "##Z", "##W" };
-            static const char* fmt_table_int[3][4] =
-            {
-                {   "%3d",   "%3d",   "%3d",   "%3d" }, // Short display
-                { "X:%3d", "Y:%3d", "Z:%3d", "W:%3d" }, // Long display for RGBA
-                { "H:%3d", "S:%3d", "V:%3d", "A:%3d" }  // Long display for HSVA
-            };
-            static const char* fmt_table_float[3][4] =
-            {
-                {   "%0.3f",   "%0.3f",   "%0.3f",   "%0.3f" }, // Short display
-                { "X:%0.3f", "Y:%0.3f", "Z:%0.3f", "W:%0.3f" }, // Long display for RGBA
-                { "H:%0.3f", "S:%0.3f", "V:%0.3f", "A:%0.3f" }  // Long display for HSVA
-            };
-            const int fmt_idx = hide_prefix ? 0 : (flags & ImGuiColorEditFlags_DisplayHSV) ? 2 : 1;
-
-            for (int n = 0; n < components; n++)
-            {
-                if (n > 0)
-                    ImGui::SameLine(0, style.ItemInnerSpacing.x);
-                ImGui::SetNextItemWidth((n + 1 < components) ? w_item_one : w_item_last);
-
-                // FIXME: When ImGuiColorEditFlags_HDR flag is passed HS values snap in weird ways when SV values go below 0.
-                if (flags & ImGuiColorEditFlags_Float)
-                {
-                    value_changed |= ImGui::DragFloat(ids[n], &f[n], 1.0f / 255.0f, 0.0f, hdr ? 0.0f : 1.0f, fmt_table_float[fmt_idx][n]);
-                    value_changed_as_float |= value_changed;
-                }
-                else
-                {
-                    value_changed |= ImGui::DragInt(ids[n], &i[n], 1.0f, 0, hdr ? 0 : 255, fmt_table_int[fmt_idx][n]);
-                }
-                if (!(flags & ImGuiColorEditFlags_NoOptions))
-                    ImGui::OpenPopupOnItemClick("context");
-            }
-        }
-        else if ((flags & ImGuiColorEditFlags_DisplayHex) != 0 && (flags & ImGuiColorEditFlags_NoInputs) == 0)
-        {
-            // RGB Hexadecimal Input
-            char buf[64];
-            if (alpha)
-                ImFormatString(buf, IM_ARRAYSIZE(buf), "#%02X%02X%02X%02X", ImClamp(i[0], 0, 255), ImClamp(i[1], 0, 255), ImClamp(i[2], 0, 255), ImClamp(i[3], 0, 255));
-            else
-                ImFormatString(buf, IM_ARRAYSIZE(buf), "#%02X%02X%02X", ImClamp(i[0], 0, 255), ImClamp(i[1], 0, 255), ImClamp(i[2], 0, 255));
-            ImGui::SetNextItemWidth(w_inputs);
-            if (ImGui::InputText("##Text", buf, IM_ARRAYSIZE(buf), ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase))
-            {
-                value_changed = true;
-                char* p = buf;
-                while (*p == '#' || ImCharIsBlankA(*p))
-                    p++;
-                i[0] = i[1] = i[2] = 0;
-                i[3] = 0xFF; // alpha default to 255 is not parsed by scanf (e.g. inputting #FFFFFF omitting alpha)
-                int r;
-                if (alpha)
-                    r = sscanf(p, "%02X%02X%02X%02X", (unsigned int*)&i[0], (unsigned int*)&i[1], (unsigned int*)&i[2], (unsigned int*)&i[3]); // Treat at unsigned (%X is unsigned)
-                else
-                    r = sscanf(p, "%02X%02X%02X", (unsigned int*)&i[0], (unsigned int*)&i[1], (unsigned int*)&i[2]);
-                IM_UNUSED(r); // Fixes C6031: Return value ignored: 'sscanf'.
-            }
-            if (!(flags & ImGuiColorEditFlags_NoOptions))
-                ImGui::OpenPopupOnItemClick("context");
-        }
-
-        ImGuiWindow* picker_active_window = NULL;
-        //if (!(flags & ImGuiColorEditFlags_NoSmallPreview))
-        //{
-        //    const float button_offset_x = ((flags & ImGuiColorEditFlags_NoInputs) || (style.ColorButtonPosition == ImGuiDir_Left)) ? 0.0f : w_inputs + style.ItemInnerSpacing.x;
-        //    window->DC.CursorPos = ImVec2(pos.x + button_offset_x, pos.y);
-
-        //    const ImVec4 col_v4(col[0], col[1], col[2], alpha ? col[3] : 1.0f);
-        //    if (ImGui::ColorButton("##ColorButton", col_v4, flags))
-        //    {
-        //        if (!(flags & ImGuiColorEditFlags_NoPicker))
-        //        {
-        //            // Store current color and open a picker
-        //            g.ColorPickerRef = col_v4;
-        //            ImGui::OpenPopup("picker");
-        //            ImVec2 bl = g.LastItemData.Rect.GetBL();
-        //            ImGui::SetNextWindowPos(ImVec2(-1 + bl.x, style.ItemSpacing.y + bl.y));
-        //        }
-        //    }
-        //    if (!(flags & ImGuiColorEditFlags_NoOptions))
-        //        ImGui::OpenPopupOnItemClick("context");
-
-        //    if (ImGui::BeginPopup("picker"))
-        //    {
-        //        picker_active_window = g.CurrentWindow;
-        //        if (label != label_display_end)
-        //        {
-        //            ImGui::TextEx(label, label_display_end);
-        //            ImGui::Spacing();
-        //        }
-        //        ImGuiColorEditFlags picker_flags_to_forward = ImGuiColorEditFlags_DataTypeMask_ | ImGuiColorEditFlags_PickerMask_ | ImGuiColorEditFlags_InputMask_ | ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_AlphaBar;
-        //        ImGuiColorEditFlags picker_flags = (flags_untouched & picker_flags_to_forward) | ImGuiColorEditFlags_DisplayMask_ | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_AlphaPreviewHalf;
-        //        ImGui::SetNextItemWidth(square_sz * 12.0f); // Use 256 + bar sizes?
-        //        value_changed |= ImGui::ColorPicker4("##picker", col, picker_flags, &g.ColorPickerRef.x);
-        //        ImGui::EndPopup();
-        //    }
-        //}
-
-      /*  if (label != label_display_end && !(flags & ImGuiColorEditFlags_NoLabel))
-        {
-            const float text_offset_x = (flags & ImGuiColorEditFlags_NoInputs) ? w_button : w_full + style.ItemInnerSpacing.x;
-            window->DC.CursorPos = ImVec2(pos.x + text_offset_x, pos.y + style.FramePadding.y);
-            ImGui::TextEx(label, label_display_end);
-        }*/
-
-        // Convert back
-        if (value_changed && picker_active_window == NULL)
-        {
-            if (!value_changed_as_float)
-                for (int n = 0; n < 4; n++)
-                    f[n] = i[n] / 255.0f;
-            if ((flags & ImGuiColorEditFlags_DisplayHSV) && (flags & ImGuiColorEditFlags_InputRGB))
-            {
-                g.ColorEditLastHue = f[0];
-                g.ColorEditLastSat = f[1];
-                ImGui::ColorConvertHSVtoRGB(f[0], f[1], f[2], f[0], f[1], f[2]);
-                g.ColorEditLastColor = ImGui::ColorConvertFloat4ToU32(ImVec4(f[0], f[1], f[2], 0));
-            }
-            if ((flags & ImGuiColorEditFlags_DisplayRGB) && (flags & ImGuiColorEditFlags_InputHSV))
-                ImGui::ColorConvertRGBtoHSV(f[0], f[1], f[2], f[0], f[1], f[2]);
-
-            col[0] = f[0];
-            col[1] = f[1];
-            col[2] = f[2];
-            if (alpha)
-                col[3] = f[3];
-        }
-
-        ImGui::PopID();
-        ImGui::EndGroup();
-
-        // Drag and Drop Target
-        // NB: The flag test is merely an optional micro-optimization, BeginDragDropTarget() does the same test.
-        if ((g.LastItemData.StatusFlags & ImGuiItemStatusFlags_HoveredRect) && !(flags & ImGuiColorEditFlags_NoDragDrop) && ImGui::BeginDragDropTarget())
-        {
-            bool accepted_drag_drop = false;
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_3F))
-            {
-                memcpy((float*)col, payload->Data, sizeof(float) * 3); // Preserve alpha if any //-V512
-                value_changed = accepted_drag_drop = true;
-            }
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(IMGUI_PAYLOAD_TYPE_COLOR_4F))
-            {
-                memcpy((float*)col, payload->Data, sizeof(float) * components);
-                value_changed = accepted_drag_drop = true;
-            }
-
-            //// Drag-drop payloads are always RGB
-            //if (accepted_drag_drop && (flags & ImGuiColorEditFlags_InputHSV))
-            //    ImGui::ColorConvertRGBtoHSV(col[0], col[1], col[2], col[0], col[1], col[2]);
-            ImGui::EndDragDropTarget();
-        }
-
-        // When picker is being actively used, use its active id so IsItemActive() will function on ColorEdit4().
-        if (picker_active_window && g.ActiveId != 0 && g.ActiveIdWindow == picker_active_window)
-            g.LastItemData.ID = g.ActiveId;
-
-        if (value_changed)
-            ImGui::MarkItemEdited(g.LastItemData.ID);
-
-        return value_changed;
-    }
-
-
-
-
-
 
     void Inspector::Init()
     {
@@ -291,6 +49,8 @@ namespace emp {
     {
     }
 
+    float col2[4] = { 0, 0, 0.0f, 0.0f };
+
     void Inspector::Draw()
     {
         if (Target != -1) {
@@ -303,13 +63,15 @@ namespace emp {
                 buffer[c] = character;
                 c++;
             }
-            ImGui::Text("Name: ");
+            ImGui::Text("Entity Name: ");
             ImGui::SameLine();
             if (ImGui::InputText("##name", buffer, bufSize, ImGuiInputTextFlags_EnterReturnsTrue))
             {
                 emp::LOG::Debug("Setting attributes Spore");
                 entity->SetName(buffer);
             }
+
+            ImGui::Separator();
             emp::Transform& tranform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
 
             float angle_x = tranform.angle_x;
@@ -319,47 +81,123 @@ namespace emp {
             emp::Vector3 position = tranform.GetPosition();
             emp::Vector3 scale = tranform.GetScale();
             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-            ImGui::Text("Transform: ");
+            ImGui::Text(" Transform: ");
             ImGui::PopStyleColor();
-            float input_position[3] = { position.x, position.y, position.z };
-            float input_rotation[3] = { angle_x , angle_y, angle_z };
+            int input_position[3] = { position.x, position.y, position.z};
+            int input_rotation[3] = { angle_x , angle_y, angle_z };
             float input_scale[3] = { scale.x, scale.y, scale.z };
+          
+
+            bool value_changed = false;
+         
+            const char* format[3] = { "X:%1d",  "Y:%1d",  "Z:%1d" };
+            static const char* fmt_table_float[3]= { "%0.1f",   "%0.1f",   "%0.1f" }; // Short display 
+            ImGui::BeginGroup();
             ImGui::Text("   Position: ");
             ImGui::SameLine();
 
-            bool ismodif = false;
 
-            if (ImGui::InputFloat3("##Position: ", input_position, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-                //tranform.TranslationMatrix(emp::Vector3(input_position[0], input_position[1], 1));
-                ismodif = true;
-                printf("AAAA");
+            ImGuiContext& g = *GImGui;
+            ImGui::PushID("##Position");
+            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+            for (int i = 0; i < 3; i++)
+            {
+                ImGui::PushID(i);
+                if (i > 0)
+                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
+                value_changed |= ImGui::DragInt("", &input_position[i], 1.0f, -1000, 1000, format[i]);
+                ImGui::PopID();
+                ImGui::PopItemWidth();
             }
+            ImGui::PopID();
+            const char* label_end = ImGui::FindRenderedTextEnd("##Position");
+            if ("##Position" != label_end)
+            {
+                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+                ImGui::TextEx("##Position", label_end);
+            }
+            ImGui::EndGroup();
+
+
+            ImGui::BeginGroup();
             ImGui::Text("   Rotation: ");
             ImGui::SameLine();
-            if (ImGui::InputFloat3("##Rotation: ", input_rotation, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-                //tranform.TranslationMatrix(emp::Vector3(input_position[0], input_position[1], 1));
-                ismodif = true;
-                printf("AAAA");
+
+
+            ImGui::PushID("##Rotation");
+            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+            for (int i = 0; i < 3; i++)
+            {
+                ImGui::PushID(i);
+                if (i > 0)
+                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
+                value_changed |= ImGui::DragInt("", &input_rotation[i], 1.0f, 0, 360, format[i]);
+                ImGui::PopID();
+                ImGui::PopItemWidth();
+            }
+            ImGui::PopID();
+            label_end = ImGui::FindRenderedTextEnd("##Rotation");
+            if ("##Rotation" != label_end)
+            {
+                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+                ImGui::TextEx("##Rotation", label_end);
             }
 
-            ImGui::Text("   Scale:    ");
-            ImGui::SameLine();
-            if (ImGui::InputFloat3("##Scale", input_scale, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue)) {
-                ismodif = true;
-                printf("AAAA");
-            }
+            ImGui::EndGroup();
 
-            if (ismodif) {
+            if (value_changed) {
                 tranform.Reset();
                 tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
-                tranform.SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
-                tranform.SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
-                tranform.SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
-                tranform.SetScale(input_scale[0], input_scale[1]);
+                tranform.SetRotation(input_rotation[0] * 3.14f * 5.5f, emp::Vector3(1, 0, 0));
+                tranform.SetRotation(input_rotation[1] * 3.14f * 5.5f, emp::Vector3(0, 1, 0));
+                tranform.SetRotation(input_rotation[2] * 3.14f * 5.5f, emp::Vector3(0, 0, 1));
+                value_changed = false;
             }
 
+            ImGui::BeginGroup();
+            ImGui::Text("   Scale:    ");
+            ImGui::SameLine();
+
+
+            ImGui::PushID("##Scale");
+            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+            for (int i = 0; i < 3; i++)
+            {
+                ImGui::PushID(i);
+                if (i > 0)
+                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
+                value_changed |= ImGui::DragFloat("", &input_scale[i], 0.1f, -10.0f, 10.0f, fmt_table_float[i]);
+                ImGui::PopID();
+                ImGui::PopItemWidth();
+            }
+            ImGui::PopID();
+            label_end = ImGui::FindRenderedTextEnd("##Scale");
+            if ("##Scale" != label_end)
+            {
+                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+                ImGui::TextEx("##Scale", label_end);
+            }
+
+            ImGui::EndGroup();
+
+            if (value_changed) {
+                tranform.Reset();
+                tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
+                tranform.SetRotation(input_rotation[0] * 3.14f * 5.5f, emp::Vector3(1, 0, 0));
+                tranform.SetRotation(input_rotation[1] * 3.14f * 5.5f, emp::Vector3(0, 1, 0));
+                tranform.SetRotation(input_rotation[2] * 3.14f * 5.5f, emp::Vector3(0, 0, 1));
+                tranform.SetScale(input_scale[0], input_scale[1], input_scale[2]);
+            }
+
+
+            ImGui::Separator();
+
+            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+            ImGui::Text(" Material: ");
+            ImGui::PopStyleColor();
+
             emp::PointLight& light = m_engine->GetComponentManager()->GetComponent<emp::PointLight>(Target);
-            ismodif = false;
+            value_changed = false;
 
             float red = light.specular.r;
             float green = light.specular.g;
@@ -368,21 +206,26 @@ namespace emp {
             float input_red = red;
             float input_green = green;
             float input_blue = blue;
-
-            ImGui::Text("   Color: ");
-            if (ImGui::InputFloat("##RED", &input_red, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
-                ismodif = true;
-            if (ImGui::InputFloat("##GREEN", &input_green, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
-                ismodif = true;
-            if (ImGui::InputFloat("##BLUE", &input_blue, 0.0f, ImGuiInputTextFlags_EnterReturnsTrue))
-                ismodif = true;
-
-
+            int shininess= 32;
+            ImGui::Text("   Shininess:");
+            ImGui::SameLine();
+            ImGui::DragInt("", &shininess, 1.0f, 0, 100);
             static float col1[3] = { 1.0f, 0.0f, 0.2f };
-            static float col2[4] = { 0.4f, 0.7f, 0.0f, 0.5f };
-            ImGui::ColorEdit3("color 1", col1);
+            ImGui::Text("   Ambiant:  ");
+            ImGui::SameLine();
+            ImGui::ColorEdit3("", col1);
 
-            IColorEdit4("Color M", col2, ImGuiColorEditFlags_NoAlpha);
+            ImGui::Text("   Diffuse:  ");
+            ImGui::SameLine();
+            ImGui::ColorEdit3("", col1);
+            
+            ImGui::Text("   Specular: ");
+            ImGui::SameLine();
+            ImGui::ColorEdit3("", col1);
+
+
+
+           
         }
     }
 
