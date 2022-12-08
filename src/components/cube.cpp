@@ -19,7 +19,7 @@ namespace emp {
     //CUBE
     void Cube::Init()
     {
- 
+
     }
 
     //CUBEMANAGER
@@ -110,7 +110,63 @@ namespace emp {
             // note that we update the lamp's position attribute's stride to reflect the updated buffer data 
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
+
+            // at init time.
+            glm::vec4 color = glm::vec4(1, 1, 1, 1);
+
+            glGenTextures(0, &diffuse_map);
+            glBindTexture(GL_TEXTURE_2D, diffuse_map);
+
+            // set texture wrap parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // set texture filter parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            // set image data
+            int size = 156;
+            unsigned char* data = new unsigned char[3 * size * size * sizeof(unsigned char)];
+            for (unsigned int i = 0; i < size * size; i++)
+            {
+                data[i * 3] = (unsigned char)(color.x * 255.0f);
+                data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
+                data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
+            }
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            delete[] data;
+
+            glGenTextures(1, &specular_map);
+            glBindTexture(GL_TEXTURE_2D, specular_map);
+
+            // set texture wrap parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // set texture filter parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+
+            data = new unsigned char[3 * size * size * sizeof(unsigned char)];
+            for (unsigned int i = 0; i < size * size; i++)
+            {
+                data[i * 3] = (unsigned char)(color.x * 255.0f);
+                data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
+                data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
+            }
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            delete[] data;
+
+            this->shader->UseProgram();
+
+            this->shader->SetInt("material.diffuse", 0);
+            this->shader->SetInt("material.specular", 1);
         }
+
     }
 
 
@@ -169,39 +225,69 @@ namespace emp {
             this->shader->SetMat4("transform", transf);
             this->shader->SetVec3("objectColor", glm::vec3(element.color.r, element.color.g, element.color.b));
             //LIGHT
-            auto arrayLight = engine->GetComponentManager()->GetComponents<PointLight>();
-            PointLight light = arrayLight[0];
-            Vector3 lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
-
-            this->shader->SetVec3("lightPos", glm::vec3(lightpos.x, lightpos.y, lightpos.z));
+          
 
             // Material properties
             this->shader->SetFloat("material.shininess", this->shader->shininess);
             this->shader->SetVec3("material.color", glm::vec3(element.color.r, element.color.g, element.color.b));
 
+            auto arrayDirLight = engine->GetComponentManager()->GetComponents<DirectionalLight>();
+            DirectionalLight Dirlight = arrayDirLight[0];
             // Dirlight properties
-            this->shader->SetVec3("dirLight.direction", 0.2f, 1.0f, 0.3f);
-            this->shader->SetVec3("dirLight.ambient", 0.0f, 0.0f, 1.0f);
-            this->shader->SetVec3("dirLight.diffuse", 0.0f, 1.0f, 0.0f);
-            this->shader->SetVec3("dirLight.specular", 1.0f, 0.0f, 0.0f);
+            this->shader->SetVec3("dirLight.direction", Dirlight.direction);
+            this->shader->SetVec3("dirLight.ambient", Dirlight.ambient);
+            this->shader->SetVec3("dirLight.diffuse", Dirlight.diffuse);
+            this->shader->SetVec3("dirLight.specular", Dirlight.specular);
 
             // PointLight properties
-            this->shader->SetVec3("pointLight[0].position", glm::vec3(lightpos.x / 10.0f, lightpos.y / 10.0f, lightpos.z / 10.0f));
-            this->shader->SetVec3("pointLight[0].ambient", light.ambient);
-            this->shader->SetVec3("pointLight[0].diffuse", light.diffuse);
-            this->shader->SetVec3("pointLight[0].specular", light.specular);
-            this->shader->SetFloat("pointLight[0].constant", light.constant);
-            this->shader->SetFloat("pointLight[0].linear", light.linear);
-            this->shader->SetFloat("pointLight[0].quadratic", light.quadratic);
+            auto arrayLight = engine->GetComponentManager()->GetComponents<PointLight>();
+            PointLight light = arrayLight[0];
+            Vector3 lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
 
-             light = arrayLight[1];
-            this->shader->SetVec3("pointLight[1].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z));
-            this->shader->SetVec3("pointLight[1].ambient", light.ambient);
-            this->shader->SetVec3("pointLight[1].diffuse", light.diffuse);
-            this->shader->SetVec3("pointLight[1].specular", light.specular);
-            this->shader->SetFloat("pointLight[1].constant", light.constant);
-            this->shader->SetFloat("pointLight[1].linear", light.linear);
-            this->shader->SetFloat("pointLight[1].quadratic", light.quadratic);
+            this->shader->SetVec3("pointLights[0].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z)/100.0f);
+            this->shader->SetVec3("pointLights[0].ambient", light.ambient);
+            this->shader->SetVec3("pointLights[0].diffuse", light.diffuse);
+            this->shader->SetVec3("pointLights[0].specular", light.specular);
+            this->shader->SetFloat("pointLights[0].constant", light.constant);
+            this->shader->SetFloat("pointLights[0].linear", light.linear);
+            this->shader->SetFloat("pointLights[0].quadratic", light.quadratic);
+            light = arrayLight[1];
+            lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
+            this->shader->SetVec3("pointLights[1].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z)/100.0f);
+            this->shader->SetVec3("pointLights[1].ambient", light.ambient);
+            this->shader->SetVec3("pointLights[1].diffuse", light.diffuse);
+            this->shader->SetVec3("pointLights[1].specular", light.specular);
+            this->shader->SetFloat("pointLights[1].constant", light.constant);
+            this->shader->SetFloat("pointLights[1].linear", light.linear);
+            this->shader->SetFloat("pointLights[1].quadratic", light.quadratic);
+            light = arrayLight[2];
+            lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
+            this->shader->SetVec3("pointLights[2].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z)/100.0f);
+            this->shader->SetVec3("pointLights[2].ambient", light.ambient);
+            this->shader->SetVec3("pointLights[2].diffuse", light.diffuse);
+            this->shader->SetVec3("pointLights[2].specular", light.specular);
+            this->shader->SetFloat("pointLights[2].constant", light.constant);
+            this->shader->SetFloat("pointLights[2].linear", light.linear);
+            this->shader->SetFloat("pointLights[2].quadratic", light.quadratic);
+            light = arrayLight[3];
+            lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
+            this->shader->SetVec3("pointLights[3].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z)/100.0f);
+            this->shader->SetVec3("pointLights[3].ambient", light.ambient);
+            this->shader->SetVec3("pointLights[3].diffuse", light.diffuse);
+            this->shader->SetVec3("pointLights[3].specular", light.specular);
+            this->shader->SetFloat("pointLights[3].constant", light.constant);
+            this->shader->SetFloat("pointLights[3].linear", light.linear);
+            this->shader->SetFloat("pointLights[3].quadratic", light.quadratic);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, diffuse_map);
+            // at init time.
+            //glm::vec4 whiteColor = glm::vec4(1, 1, 1, 1);    
+            glGenTextures(1, &specular_map);
+            glBindTexture(GL_TEXTURE_2D, specular_map);
+            // bind specular map
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, specular_map);
           
             this->shader->DrawArrays(GL_TRIANGLES, 0, 36);
         }

@@ -6,6 +6,8 @@
 #include <core/component.h>
 #include <math/matrice.h>
 #include <components/transform.h>
+#include <components/cube.h>
+#include <components/model.h>
 #include <components/light.h>
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -192,40 +194,141 @@ namespace emp {
 
             ImGui::Separator();
 
-            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-            ImGui::Text(" Material: ");
-            ImGui::PopStyleColor();
+            emp::Model& model = m_engine->GetComponentManager()->GetComponent<emp::Model>(Target);
+            if (model.entity == Target) {
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+                ImGui::Text(" Model: ");
+                ImGui::PopStyleColor();
+                float col1[3] = { model.color.r,  model.color.g,  model.color.b };
+                ImGui::Text("   Color:  ");
+                ImGui::SameLine();
+                value_changed = ImGui::ColorEdit3("", col1);
+                if (value_changed) {
+                    model.SetColor(glm::vec4(col1[0], col1[1], col1[2], 1));
+                    value_changed = false;
+                }
 
-            emp::PointLight& light = m_engine->GetComponentManager()->GetComponent<emp::PointLight>(Target);
-            value_changed = false;
+                emp::Cube& cube = m_engine->GetComponentManager()->GetComponent<emp::Cube>(Target);
+                if (cube.entity == Target) {
+                    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+                    ImGui::Text(" Cube: ");
+                    ImGui::PopStyleColor();
+                    float col1[3] = { cube.color.r,  cube.color.g,  cube.color.b };
+                    ImGui::Text("   Color:  ");
+                    ImGui::SameLine();
+                    value_changed = ImGui::ColorEdit3("", col1);
+                    if (value_changed) {
+                        cube.SetColor(glm::vec4(col1[0], col1[1], col1[2], 1));
+                        value_changed = false;
+                    }
+                }
+            }
 
-            float red = light.specular.r;
-            float green = light.specular.g;
-            float blue = light.specular.b;
+            emp::DirectionalLight& light = m_engine->GetComponentManager()->GetComponent<emp::DirectionalLight>(Target);
+            if (light.entity == Target) {
 
-            float input_red = red;
-            float input_green = green;
-            float input_blue = blue;
-            int shininess= 32;
-            ImGui::Text("   Shininess:");
-            ImGui::SameLine();
-            ImGui::DragInt("", &shininess, 1.0f, 0, 100);
-            static float col1[3] = { 1.0f, 0.0f, 0.2f };
-            ImGui::Text("   Ambiant:  ");
-            ImGui::SameLine();
-            ImGui::ColorEdit3("", col1);
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+                ImGui::Text(" Directional Light: ");
+                ImGui::PopStyleColor();
 
-            ImGui::Text("   Diffuse:  ");
-            ImGui::SameLine();
-            ImGui::ColorEdit3("", col1);
-            
-            ImGui::Text("   Specular: ");
-            ImGui::SameLine();
-            ImGui::ColorEdit3("", col1);
+                float direction[3] = { light.direction.x, light.direction.y, light.direction.z };
+
+                float specular[3] = { light.specular.r, light.specular.g, light.specular.b };
+                float diffuse[3] = { light.diffuse.r, light.diffuse.g, light.diffuse.b };
+                float ambient[3] = { light.ambient.r, light.ambient.g, light.ambient.b };
+
+                ImGui::BeginGroup();
+                ImGui::Text("   Direction:");
+                ImGui::SameLine();
 
 
+                ImGui::PushID("##Direction");
+                ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+                for (int i = 0; i < 3; i++)
+                {
+                    ImGui::PushID(i);
+                    if (i > 0)
+                        ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
+                    value_changed |= ImGui::DragFloat("", &direction[i], 0.1f, -1.0f, 1.0f, fmt_table_float[i]);
+                    ImGui::PopID();
+                    ImGui::PopItemWidth();
+                }
+                ImGui::PopID();
+                label_end = ImGui::FindRenderedTextEnd("##Direction");
+                if ("##Direction" != label_end)
+                {
+                    ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+                    ImGui::TextEx("##Direction", label_end);
+                }
+                ImGui::EndGroup();
+                if (value_changed) {
+                    light.SetDirection(glm::vec3(direction[0], direction[1], direction[2]));
+                    value_changed = false;
+                }
 
-           
+
+                ImGui::Text("   Ambiant:  ");
+                ImGui::SameLine();
+                value_changed = ImGui::ColorEdit3("##AmbientLight", ambient);
+                if (value_changed) {
+                    light.SetAmbient(glm::vec3(ambient[0], ambient[1], ambient[2]));
+                    value_changed = false;
+                }
+
+                ImGui::Text("   Diffuse:  ");
+                ImGui::SameLine();
+                value_changed = ImGui::ColorEdit3("##DiffuseLight", diffuse);
+                if (value_changed) {
+                    light.SetDiffuse(glm::vec3(diffuse[0], diffuse[1], diffuse[2]));
+                    value_changed = false;
+                }
+
+                ImGui::Text("   Specular: ");
+                ImGui::SameLine();
+                value_changed = ImGui::ColorEdit3("##SpecularLight", specular);
+                if (value_changed) {
+                    light.SetSpecular(glm::vec3(specular[0], specular[1], specular[2]));
+                    value_changed = false;
+                }
+            }
+
+          
+            emp::PointLight& point_light = m_engine->GetComponentManager()->GetComponent<emp::PointLight>(Target);
+            if (point_light.entity == Target) {
+
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+                ImGui::Text(" Point Light: ");
+                ImGui::PopStyleColor();
+              
+
+                float specular[3] = {point_light.specular.r, point_light.specular.g, point_light.specular.b};
+                float diffuse[3] = { point_light.diffuse.r, point_light.diffuse.g, point_light.diffuse.b };
+                float ambient[3] = { point_light.ambient.r, point_light.ambient.g, point_light.ambient.b };
+
+                ImGui::Text("   Ambiant:  ");
+                ImGui::SameLine();
+                value_changed = ImGui::ColorEdit3("##AmbientLight", ambient);
+                if (value_changed) {
+                    point_light.SetAmbient(glm::vec3(ambient[0], ambient[1], ambient[2]));
+                    value_changed = false;
+                }
+
+                ImGui::Text("   Diffuse:  ");
+                ImGui::SameLine();
+                value_changed = ImGui::ColorEdit3("##DiffuseLight", diffuse);
+                if (value_changed) {
+                    point_light.SetDiffuse(glm::vec3(diffuse[0], diffuse[1], diffuse[2]));
+                    value_changed = false;
+                }
+
+                ImGui::Text("   Specular: ");
+                ImGui::SameLine();
+                value_changed = ImGui::ColorEdit3("##SpecularLight", specular);
+                if (value_changed) {
+                    point_light.SetSpecular(glm::vec3(specular[0], specular[1], specular[2]));
+                    value_changed = false;
+                }
+            }
         }
     }
 

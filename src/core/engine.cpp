@@ -96,6 +96,7 @@ namespace emp
         this->m_component->RegisterComponent<Triangle>();
 
         this->m_component->RegisterComponent<Cube>();
+        this->m_component->RegisterComponent<DirectionalLight>();
         this->m_component->RegisterComponent<PointLight>();
         this->m_component->RegisterComponent<Model>();
         this->m_component->RegisterComponent<Camera>();
@@ -128,7 +129,7 @@ namespace emp
         float dt = 0.0f;
         this->m_graphic->Update(dt);
 
-        int entity = this->m_entity->CreateEntity("triangle").id;
+        int entity = this->m_entity->CreateEntity("Triangle").id;
         this->m_component->AddComponent(entity, Transform(05, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
         this->m_component->AddComponent(entity, Triangle(entity));//, 0.66f, 0.66f, 0.66f
 
@@ -137,25 +138,34 @@ namespace emp
         this->m_component->AddComponent(entity, Square(entity));//, 0.66f, 0.66f, 0
 
 
-        entity = this->m_entity->CreateEntity("Cube").id;      
-        this->m_component->AddComponent(entity, Transform( 0, -125, 40, 0, 0, 0, 10.0f, 1.0f, 10.0f));
-        this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
+        for (int i = 0; i < 25; i++ ) {
+            for (int j = 0; j < 25; j++) {
+                entity = this->m_entity->CreateEntity("Cube").id;
+                this->m_component->AddComponent(entity, Transform(i * 200 - 2400, -125, j * 200 - 2400, 0, 0, 0, 1.0f, 1.0f, 1.0f));
+                this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
+            }
+        }
+     
 
-        entity = this->m_entity->CreateEntity("Light").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 40,  0, 0, 0, 1.0f, 1.0f, 1.0f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.8f, 0.8f, 0.0f, glm::vec3(1.0f, 0.5f, 0.5f), glm::vec3(1.0f, 0.5f, 0.5f), glm::vec3(1.0f, 0.5f, 0.5f), 1.0f, 0.09f, 0.032f));
+        entity = this->m_entity->CreateEntity("Directional_Light").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 40, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        this->m_component->AddComponent(entity, DirectionalLight(entity, glm::vec3(0.2f, 1.0f, 0.3f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
 
-        entity = this->m_entity->CreateEntity("Light2").id;
-        this->m_component->AddComponent(entity, Transform(-80, 0, -60, 0, 0, 0, 0.25f, 0.25f, 0.25f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f));
+        entity = this->m_entity->CreateEntity("Point_Light_1").id;
+        this->m_component->AddComponent(entity, Transform(1000, 40, 1000,  0, 0, 0, 2.0f, 2.0f, 2.0f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.8f, 0.8f, 0.0f, glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f));
 
-        entity = this->m_entity->CreateEntity("Light3").id;
-        this->m_component->AddComponent(entity, Transform(80, 0, 60, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), 1.0, 0.09f, 0.032f));
+        entity = this->m_entity->CreateEntity("Point_Light_2").id;
+        this->m_component->AddComponent(entity, Transform(+1000, 40, -1000, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0, 0.09f, 0.032f));
+
+        entity = this->m_entity->CreateEntity("Point_Light_3").id;
+        this->m_component->AddComponent(entity, Transform(-1000, 40, +1000, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0, 0.09f, 0.032f));
         
-        entity = this->m_entity->CreateEntity("Light4").id;
-        this->m_component->AddComponent(entity, Transform(-80, 0, 60, 0, 0, 0, 0.1f, 0.1f, 0.1f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f));
+        entity = this->m_entity->CreateEntity("Point_Light_4").id;
+        this->m_component->AddComponent(entity, Transform(-1000, 40, -1000, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0, 0.09f, 0.032f));
         
          entity = this->m_entity->CreateEntity("Model").id;
         this->m_component->AddComponent(entity, Transform(0, -65, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));

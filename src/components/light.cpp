@@ -28,6 +28,20 @@ namespace emp {
        
     }
 
+    DirectionalLight::DirectionalLight(int entity, glm::vec3 direction , glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
+    {
+        this->entity = entity;
+        this->direction = direction;
+        this->ambient = ambient;
+        this->diffuse = diffuse;
+        this->specular = specular;
+    }
+
+    void DirectionalLight::Init()
+    {
+
+    }
+
     LightManager::LightManager(Engine& engine, ConfigGraphic& config) : System(engine, "LightManager")
     {
         this->config = &config;

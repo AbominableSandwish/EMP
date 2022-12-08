@@ -56,6 +56,9 @@ namespace emp {
         Shader* shader = nullptr;
         float project = 45.0f;
 
+        unsigned int diffuse_map;
+        unsigned int specular_map;
+
         float time = 0.0f;;
     };
 }

@@ -56,7 +56,7 @@ namespace emp {
             this->entity = entity;
 
             float red = 1.0f; // (std::rand() % 10);
-            float green = 1.0f; // (std::rand() % 10);
+            float green = 0.5f; // (std::rand() % 10);
             float blue = 1.0f; // (std::rand() % 10);
 
             this->color = glm::vec4(red, green, blue, 1.0f);

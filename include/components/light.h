@@ -31,9 +31,67 @@ namespace emp {
         float linear;
         float quadratic;
 
-        float shininess;
+
+        void SetAmbient(glm::vec3 ambient) {
+            this->ambient = ambient;
+        }
+        void SetDiffuse(glm::vec3 diffuse) {
+            this->diffuse = diffuse;
+        }
+        void SetSpecular(glm::vec3 specular) {
+            this->specular = specular;
+        }
+
+        void SetConstant(float constant) {
+            this->constant = constant;
+        }
+
+        void SetLinear(float linear) {
+            this->linear = linear;
+        }
+
+        void SetQuadratic(float quadratic) {
+            this->quadratic = quadratic;
+        }
     };
 
+
+    class DirectionalLight {
+    public:
+        DirectionalLight(int entity)
+        {
+            this->entity = entity;
+        }
+
+        DirectionalLight(int entity, glm::vec3 direction, glm::vec3 ambiant, glm::vec3 diffuse, glm::vec3 specular);
+        void Init();
+
+        int entity;
+
+        float axis_x = 0.0f;
+        float axis_y = 0.0f;
+        float axis_z = 0.0f;
+
+        glm::vec3 direction;
+        //light
+        glm::vec3 ambient;
+        glm::vec3 diffuse;
+        glm::vec3 specular;
+
+        void SetAmbient(glm::vec3 ambient) {
+            this->ambient = ambient;
+        }
+        void SetDiffuse(glm::vec3 diffuse) {
+            this->diffuse = diffuse;
+        }
+        void SetSpecular(glm::vec3 specular) {
+            this->specular = specular;
+        }
+        void SetDirection(glm::vec3 direction) {
+            this->direction = direction;
+        }
+
+    };
 
     class ComponentManager;
     class LightManager : public System
