@@ -1,5 +1,6 @@
 #include <components/transform.h>
 #include <math/matrice.h>
+#include <glm/glm.hpp>
 
 namespace emp {
 	Transform::Transform() {
@@ -48,6 +49,10 @@ namespace emp {
 	Vector3 Transform::GetPosition()
 	{
 		return matrice->GetPosition();
+	}
+
+	glm::vec3 Transform::Position() {
+		return glm::vec3(this->position->r, position->g, this->position->b);
 	}
 
 	Vector4 Transform::GetPositionPosition()

@@ -40,7 +40,7 @@ namespace emp
 	{
         return this->fps;
 	}
-
+        float deltaTime = 0.0f;
     protected:
         ConfigEngine* m_config = nullptr;
         std::shared_ptr<LogManager> m_log;
@@ -53,6 +53,7 @@ namespace emp
         SystemManager* m_systems = nullptr;
 	private:
         double fps = 0.0;
+        
         clock_t start, end;
     };
 

@@ -18,6 +18,7 @@ namespace emp {
 	class CircleManager;
 	class TriangleManager;
 	class CubeManager;
+	class SphereManager;
 	class LightManager;
 	class ModelManager;
 	class Camera;
@@ -32,7 +33,7 @@ namespace emp {
 	class GraphicManager : public System
 	{
 	public:
-		bool WireframeView = false;
+		bool WireframeView = true;
         GraphicManager(Engine& engine, ConfigGraphic& config);
 		
         void Init() override;
@@ -87,6 +88,7 @@ namespace emp {
 		CircleManager* m_circle;
 		TriangleManager* m_triangle;
 		CubeManager* m_cube;
+		SphereManager* m_sphere;
 		LightManager* m_light;
 		ModelManager* m_model;
 		

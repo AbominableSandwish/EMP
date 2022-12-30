@@ -7,6 +7,7 @@
 #include <math/matrice.h>
 #include <components/transform.h>
 #include <components/cube.h>
+#include <components/circle.h>
 #include <components/model.h>
 #include <components/light.h>
 #include "imgui.h"
@@ -326,6 +327,21 @@ namespace emp {
                 value_changed = ImGui::ColorEdit3("##SpecularLight", specular);
                 if (value_changed) {
                     point_light.SetSpecular(glm::vec3(specular[0], specular[1], specular[2]));
+                    value_changed = false;
+                }
+            }
+
+            emp::Circle& circle = m_engine->GetComponentManager()->GetComponent<emp::Circle>(Target);
+            if (circle.entity == Target) {
+                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+                ImGui::Text(" Circle: ");
+                ImGui::PopStyleColor();
+                int segment = circle.segment ;
+                ImGui::Text("   Color:  ");
+                ImGui::SameLine();
+                value_changed = ImGui::InputInt("", &segment);
+                if (value_changed) {
+                    circle.SetSegment(segment);
                     value_changed = false;
                 }
             }

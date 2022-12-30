@@ -1,3 +1,4 @@
+#include <glm/glm.hpp>
 
 namespace emp {
 	class Matrice4;
@@ -9,7 +10,8 @@ namespace emp {
 		float angle_x, angle_y, angle_z;
 		float scale_x, scale_y, scale_z;
 		Matrice4* matrice;
-		Vector4* position;
+		Vector4* position; //Local Position
+		//int parent = null;
 
 		Transform();
 		Transform(float x, float y, float z);
@@ -19,6 +21,7 @@ namespace emp {
 		void Init();
 		void Reset();
 		Vector3 GetPosition();
+		glm::vec3 Position();
 		Vector4 GetPositionPosition();
 
 		void SetPosition(Vector3 position);
@@ -32,8 +35,28 @@ namespace emp {
 		void SetScale(float w, float l);
 		void SetScale(float w, float h, float p);
 
+		/*void SetParent(int entity_parent)
+		{
+			this->parent = entity_parent;
+		}*/
+
 		Matrice4 TranslationMatrix(Vector3 position);
 		Matrice4 RotationMatrixFrom(const float angle, Vector3 axis);
 		Matrice4 ScalingMatrix(Vector3 scale);
 	};
+
+
+	//class TransformManager : public System {
+	//public:
+	//	TransformManager(Engine& engine, string name);
+
+	//	void Init();
+
+	//	void Destroy() override;
+
+	//	void Update(float) override;
+
+	//private:
+	//	ComponentManager* m_component = nullptr;
+	//};
 }

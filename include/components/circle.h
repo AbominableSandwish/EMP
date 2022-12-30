@@ -12,7 +12,7 @@ namespace emp {
         void Init();
 
 
-       
+        unsigned int segment = 64;
         
         float axis_x = 0.0f;
         float axis_y = 0.0f;
@@ -31,6 +31,11 @@ namespace emp {
         void SetRadius(float radius)
         {
             this->radius = radius;
+        }
+
+        void SetSegment(int segnment)
+        {
+            this->segment = segment;
         }
     };
 
@@ -55,6 +60,14 @@ namespace emp {
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
 
-        Shader* Shader = nullptr;
+        unsigned int segment = 16;
+        unsigned int diffuse_map;
+        unsigned int specular_map;
+
+        Shader* shader = nullptr;
+
+        float time = 0.0f;
+
+      
     };
 }

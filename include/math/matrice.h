@@ -1,4 +1,5 @@
 #include <math/vector.h>
+#include <glm/glm.hpp>
 #define PI 3.14159265
 namespace emp
 {
@@ -22,6 +23,13 @@ namespace emp
 		}
 		Matrice4(Vector3 position);
 		Matrice4(std::vector<Vector4> matrice) : matrice4(matrice) {};
+
+		glm::mat4 GetMatrice() {
+			return glm::mat4(matrice4[0].r, matrice4[0].g, matrice4[0].b, matrice4[0].a,
+				matrice4[1].r, matrice4[1].g, matrice4[1].b, matrice4[1].a,
+				matrice4[2].r, matrice4[2].g, matrice4[2].b, matrice4[2].a,
+				matrice4[3].r / 100, matrice4[3].g / 100, matrice4[3].b / 100, matrice4[3].a);
+		}
 
 		void Zero() {
 			matrice4 = std::vector<Vector4>(4);

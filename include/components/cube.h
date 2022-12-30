@@ -59,6 +59,6 @@ namespace emp {
         unsigned int diffuse_map;
         unsigned int specular_map;
 
-        float time = 0.0f;;
+        float time = 0.0f;
     };
 }

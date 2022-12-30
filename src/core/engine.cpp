@@ -18,6 +18,7 @@
 #include <components/square.h>
 #include <components/circle.h>
 #include <components/cube.h>
+#include <components/sphere.h>
 #include <components/light.h>
 #include <components/model.h>
 #include <components/camera.h>
@@ -93,11 +94,13 @@ namespace emp
         this->m_component->RegisterComponent<Transform>();
         this->m_component->RegisterComponent<Square>();
         this->m_component->RegisterComponent<Circle>();
+        this->m_component->RegisterComponent<Sphere>();
         this->m_component->RegisterComponent<Triangle>();
 
         this->m_component->RegisterComponent<Cube>();
         this->m_component->RegisterComponent<DirectionalLight>();
         this->m_component->RegisterComponent<PointLight>();
+        this->m_component->RegisterComponent<SpotLight>();
         this->m_component->RegisterComponent<Model>();
         this->m_component->RegisterComponent<Camera>();
 
@@ -129,24 +132,35 @@ namespace emp
         float dt = 0.0f;
         this->m_graphic->Update(dt);
 
+   
         int entity = this->m_entity->CreateEntity("Triangle").id;
         this->m_component->AddComponent(entity, Transform(05, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
         this->m_component->AddComponent(entity, Triangle(entity));//, 0.66f, 0.66f, 0.66f
 
         entity = this->m_entity->CreateEntity("Square").id;
-        this->m_component->AddComponent(entity, Transform(05, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
+        this->m_component->AddComponent(entity, Transform(0, -65, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
         this->m_component->AddComponent(entity, Square(entity));//, 0.66f, 0.66f, 0
 
+        entity = this->m_entity->CreateEntity("Circle").id;
+        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, Circle(entity));//, 0.66f, 0.66f, 0
 
         for (int i = 0; i < 25; i++ ) {
             for (int j = 0; j < 25; j++) {
-                entity = this->m_entity->CreateEntity("Cube").id;
-                this->m_component->AddComponent(entity, Transform(i * 200 - 2400, -125, j * 200 - 2400, 0, 0, 0, 1.0f, 1.0f, 1.0f));
+                entity = this->m_entity->CreateEntity("sphere_" +  std::to_string(this->m_entity->GetEntitesCount())).id;
+                this->m_component->AddComponent(entity, Transform(i * 200 + 75, -125, j * 200 - 2400 , 0, 0, 0, 1.0f, 1.0f, 1.0f));
+                this->m_component->AddComponent(entity, Sphere(entity));
+            }
+        }
+
+        for (int i = 0; i < 25; i++) {
+            for (int j = 0; j < 25; j++) {
+                entity = this->m_entity->CreateEntity("cube_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+                this->m_component->AddComponent(entity, Transform(i * -200 - 75, -125, j * 200 - 2400, 0, 0, 0, 1.0f, 1.0f, 1.0f));
                 this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
             }
         }
      
-
         entity = this->m_entity->CreateEntity("Directional_Light").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 40, 0, 0, 0, 2.0f, 2.0f, 2.0f));
         this->m_component->AddComponent(entity, DirectionalLight(entity, glm::vec3(0.2f, 1.0f, 0.3f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
@@ -167,13 +181,19 @@ namespace emp
         this->m_component->AddComponent(entity, Transform(-1000, 40, -1000, 0, 0, 0, 2.0f, 2.0f, 2.0f));
         this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0, 0.09f, 0.032f));
         
+        entity = this->m_entity->CreateEntity("SpotLight").id;
+        this->m_component->AddComponent(entity, Transform(0, 400, 0, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        this->m_component->AddComponent(entity, SpotLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f))));
+
+
          entity = this->m_entity->CreateEntity("Model").id;
-        this->m_component->AddComponent(entity, Transform(0, -65, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
+        this->m_component->AddComponent(entity, Transform(0, -165, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled2.obj"));
 
         entity = this->m_entity->CreateEntity("Main_Camera").id;
         this->m_component->AddComponent(entity, Transform(0, 0, -3));
         this->m_component->AddComponent(entity, Camera(entity, this->m_component->GetComponent<Transform>(entity), 45.0f));
+
 
        /* entity = this->m_entity->CreateEntity("Model2").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0.5f));
@@ -189,7 +209,7 @@ namespace emp
         {
             ///DELTATIME AND FPS COUNTING
             clock_t deltaTime = clock() - oldTime;
-            fps = (1.0 / deltaTime) * 1000;
+            fps = (1.0f / deltaTime) * 1000.0f;
             oldTime = clock();
             start = clock();
             float dt = float(start - end)/1000.0f;
@@ -206,6 +226,8 @@ namespace emp
 				this->m_graphic->Draw();
 
             end = clock();
+
+            this->deltaTime = dt;
 
            // LOG::Debug(std::to_string(dt));
         }

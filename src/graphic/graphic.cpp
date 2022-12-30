@@ -8,6 +8,7 @@
 #include "components/triangle.h"
 #include "components/circle.h"
 #include "components/cube.h"
+#include "components/sphere.h"
 #include "components/line.h"
 #include "components/light.h"
 #include "components/model.h"
@@ -23,9 +24,10 @@ namespace emp {
 		this->config = &config;
 		//m_sprite = new SpriteManager(engine, config);
 		m_square = new SquareManager(engine, config);
-		//m_circle = new CircleManager(engine, config);
+		m_circle = new CircleManager(engine, config);
 		m_triangle = new TriangleManager(engine, config);
 		m_cube = new CubeManager(engine, config);
+		m_sphere = new SphereManager(engine, config);
 	
 		m_model = new ModelManager(engine, config);
 		m_light = new LightManager(engine, config);
@@ -154,9 +156,10 @@ namespace emp {
 
 		//m_sprite->Init();
 		m_square->Init();
-		//m_circle->Init();
+		m_circle->Init();
 		m_triangle->Init();
 		m_cube->Init();
+		m_sphere->Init();
 		m_model->Init();
 		m_light->Init();
 
@@ -167,26 +170,29 @@ namespace emp {
 		grid(*config);
 	}
 
+	bool pause = false;
 	float timer = 0.0f;
 	void GraphicManager::Update(float dt)
 	{
+		if (pause) {
+			return;
+		}
 		timer += dt;
 		if (glfwWindowShouldClose(this->window))
 		{
 			engine->Stop();
 		}
-		m_cube->Update(dt);
-		m_light->Update(dt);
+
+
+		//m_cube->Update(dt);
+		//m_sphere->Update(dt);
+		//m_light->Update(dt);
 		//m_sprite->Update(dt);
-		m_model->Update(dt);
+		//m_model->Update(dt);
 
 		glfwPollEvents();
+		timer = 0.0f;
 	}
-
-	
-
-
-	
 
 	void GraphicManager::Draw()
 	{
@@ -195,8 +201,7 @@ namespace emp {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
 		else {
-
-		// Turn off wireframe 
+			// Turn off wireframe 
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
@@ -204,18 +209,18 @@ namespace emp {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
 		//m_sprite->Draw();
-		m_square->Draw();
+		//m_square->Draw();
 		//m_circle->Draw();
-		m_triangle->Draw();
+		//m_triangle->Draw();
 		m_cube->Draw();
-	
-		m_model->Draw();
-		m_light->Draw();
+		//m_sphere->Draw();
+		//m_model->Draw();
+		//m_light->Draw();
 
-		for (auto element : grid_line)
+		/*for (auto& element : grid_line)
 		{
 			element->Draw();
-		}
+		}*/
 	}
 
 

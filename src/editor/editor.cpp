@@ -29,10 +29,21 @@ namespace emp
 		ImGui_ImplOpenGL3_Init();
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
-	}
 
-	void Editor::Update(float)
+		Newtool(ToolType::HIERARCHY);
+		Newtool(ToolType::INSPECTOR);
+	}
+	float deltaTime;
+	float counterTime;
+	bool refresh = true;
+	int fps;
+	void Editor::Update(float dt)
 	{
+		counterTime += dt;
+		if(counterTime >= 0.25f){
+			counterTime = 0.0f;
+			refresh = true;
+		}
 	}
 
 	int x = 0;
@@ -131,9 +142,16 @@ namespace emp
 			total += element;
 		}
 		total / 100;
+
+		if (refresh) {
+
+			fps = total / 60;
+			refresh = false;
+		}
+
 		// render your GUI
 		ImGui::Begin("Editor");
-		string average = "FPS : " + to_string(total /60);
+		string average = "FPS : " + to_string(fps);
 		ImGui::Text(average.c_str());
 		ImGui::End();
 

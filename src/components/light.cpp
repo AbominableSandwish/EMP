@@ -28,6 +28,27 @@ namespace emp {
        
     }
 
+    SpotLight::SpotLight(int entity, float r, float g, float b, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff)
+    {
+        this->entity = entity;
+        this->direction = direction;
+        this->constant = constant;
+        this->linear = linear;
+        this->quadratic = quadratic;
+
+        this->ambient = ambient;
+        this->diffuse = diffuse;
+        this->specular = specular;
+
+        this->cutOff = cutOff;
+        this->outerCutOff = outerCutOff;
+    }
+
+    void SpotLight::Init()
+    {
+
+    }
+
     DirectionalLight::DirectionalLight(int entity, glm::vec3 direction , glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular)
     {
         this->entity = entity;
@@ -118,16 +139,15 @@ namespace emp {
     void LightManager::Draw()
     {
 
-        auto arrayElement = engine->GetComponentManager()->GetComponents<PointLight>();
-        for (auto element : arrayElement)
+        auto& arrayElement = engine->GetComponentManager()->GetComponents<PointLight>();
+        for (auto& element : arrayElement)
         {
             int PixelPerSize = config->PixelSize;
-            auto transform = m_component->GetComponent<Transform>(element.entity);
+            auto& transform = m_component->GetComponent<Transform>(element.entity);
             
             Vector3 position = transform.GetPosition();
 
             position = transform.GetPosition();
-            Vector3 scale = transform.GetScale();
             std::vector<Vector4> matrice = transform.matrice->matrice4;
             glm::mat4 transf = glm::mat4(matrice[0].r / 10.0f, matrice[0].g, matrice[0].b, matrice[0].a,
                 matrice[1].r, matrice[1].g / 10.0f, matrice[1].b, matrice[1].a,
@@ -135,11 +155,11 @@ namespace emp {
                 position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
      
 
-            auto list_camera = m_component->GetComponents<Camera>();
-            Camera MainCamera = list_camera[0];
+            auto& list_camera = m_component->GetComponents<Camera>();
+            Camera& MainCamera = list_camera[0];
             glm::mat4 view = glm::mat4(1.0f);
             view = glm::translate(view, MainCamera.GetPosition());
-            glm::mat4 projection = MainCamera.projection;
+            glm::mat4& projection = MainCamera.projection;
 
 
             // draw our first triangle

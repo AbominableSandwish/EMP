@@ -26,6 +26,7 @@ int main() {
 		editor->Draw();
 		if(editor != nullptr)
 			engine->Update();
+		editor->Update(engine->deltaTime);
 	}
 
     if (editor != nullptr) {

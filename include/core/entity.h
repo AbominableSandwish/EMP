@@ -53,6 +53,9 @@ namespace emp
 		
 		Entity* GetEntity(int);
 		std::vector<Entity*> GetEntities();
+		int GetEntitesCount() {
+			return this->entities.size();
+		}
 			
 	private:
 		std::vector<Entity*> entities;

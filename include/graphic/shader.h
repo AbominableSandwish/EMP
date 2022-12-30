@@ -168,11 +168,11 @@ namespace emp
         {
             unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, name.c_str());
             glUniform4f(viewPosLoc, x, y, z, w);
-        }
+        }	
 
-        void SetMat4(std::string name, glm::mat4 mat) {
-            unsigned int viewLoc = glGetUniformLocation(shaderProgram, name.c_str());
-            glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &mat[0][0]);
-        }		
+		void SetMat4(std::string name, glm::mat4& mat) {
+			unsigned int viewLoc = glGetUniformLocation(shaderProgram, name.c_str());
+			glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &mat[0][0]);
+		}
 	};
 }
