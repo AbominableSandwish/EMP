@@ -20,9 +20,6 @@ namespace emp {
         float blue = (std::rand() % 10);
 
         color = glm::vec4(red / 10, green / 10, blue / 10, 1.0f);
-
-
-
     }
 
     CircleManager::CircleManager(Engine& engine, ConfigGraphic& config) : System(engine, "CircleManager")
@@ -156,6 +153,7 @@ namespace emp {
 
     void CircleManager::Destroy()
     {
+
     }
 
     void CircleManager::Draw()
@@ -165,113 +163,85 @@ namespace emp {
         auto& arrayElement = engine->GetComponentManager()->GetComponents<Circle>();
         this->shader->UseProgram();
 
-
         //CAMERA
         auto& list_camera = m_component->GetComponents<Camera>();
         Camera& MainCamera = list_camera[0];
-        unsigned int viewPosLoc = glGetUniformLocation(this->shader->shaderProgram, "viewPos");
+
         glm::vec3 pos = MainCamera.GetPosition();
-        glUniform3f(viewPosLoc, pos.x, pos.y, pos.z);
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, pos);
+        this->shader->SetVec3("viewPos", pos);
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), pos);
 
         glm::mat4 projection = MainCamera.projection;
         // get matrix's uniform location and set matrix
-        unsigned int transformLoc = glGetUniformLocation(this->shader->shaderProgram, "transform");
-        unsigned int viewLoc = glGetUniformLocation(this->shader->shaderProgram, "view");
-
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(this->shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+        this->shader->SetMat4("view", view);
+        this->shader->SetMat4("projection", projection);
 
         // render boxes
         this->shader->BindVertexArray(this->shader->VAO);
 
         for (auto& element : arrayElement)
         {
-            //Get Transform Data
-            auto& transform = m_component->GetComponent<Transform>(element.entity);
-            Vector3 position = transform.GetPosition();
-            Vector3 scale = transform.GetScale();
-            std::vector<Vector4> matrice = transform.matrice->matrice4;
-
             //Matrice Transform
-            glm::mat4 transf = glm::mat4(matrice[0].r, matrice[0].g, matrice[0].b, matrice[0].a,
-                matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
-                matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
-                position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
+            glm::mat4 transf = m_component->GetComponent<Transform>(element.entity).matrice->GetMatrice();
             transf = glm::rotate(transf, glm::radians(time * 50), glm::vec3(0.0f, 1.0f, 0.0f));
 
             //transf = glm::rotate(transf, glm::radians(sin(time)*180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             this->shader->SetMat4("transform", transf);
             this->shader->SetVec3("objectColor", glm::vec3(element.color.r, element.color.g, element.color.b));
             //LIGHT
-
-
             // Material properties
             this->shader->SetFloat("material.shininess", this->shader->shininess);
             this->shader->SetVec3("material.color", glm::vec3(element.color.r, element.color.g, element.color.b));
 
-            auto arrayDirLight = engine->GetComponentManager()->GetComponents<DirectionalLight>();
-            DirectionalLight Dirlight = arrayDirLight[0];
             // Dirlight properties
-            this->shader->SetVec3("dirLight.direction", Dirlight.direction);
-            this->shader->SetVec3("dirLight.ambient", Dirlight.ambient);
-            this->shader->SetVec3("dirLight.diffuse", Dirlight.diffuse);
-            this->shader->SetVec3("dirLight.specular", Dirlight.specular);
+            auto& arrayDirLight = engine->GetComponentManager()->GetComponents<DirectionalLight>();
+            this->shader->SetVec3("dirLight.direction", arrayDirLight[0].direction);
+            this->shader->SetVec3("dirLight.ambient", arrayDirLight[0].ambient);
+            this->shader->SetVec3("dirLight.diffuse", arrayDirLight[0].diffuse);
+            this->shader->SetVec3("dirLight.specular", arrayDirLight[0].specular);
 
             // PointLight properties
             auto& arrayLight = engine->GetComponentManager()->GetComponents<PointLight>();
-            PointLight& light = arrayLight[0];
-            Vector3 lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
-
-            this->shader->SetVec3("pointLights[0].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z) / 100.0f);
-            this->shader->SetVec3("pointLights[0].ambient", light.ambient);
-            this->shader->SetVec3("pointLights[0].diffuse", light.diffuse);
-            this->shader->SetVec3("pointLights[0].specular", light.specular);
-            this->shader->SetFloat("pointLights[0].constant", light.constant);
-            this->shader->SetFloat("pointLights[0].linear", light.linear);
-            this->shader->SetFloat("pointLights[0].quadratic", light.quadratic);
-            light = arrayLight[1];
-            lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
-            this->shader->SetVec3("pointLights[1].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z) / 100.0f);
-            this->shader->SetVec3("pointLights[1].ambient", light.ambient);
-            this->shader->SetVec3("pointLights[1].diffuse", light.diffuse);
-            this->shader->SetVec3("pointLights[1].specular", light.specular);
-            this->shader->SetFloat("pointLights[1].constant", light.constant);
-            this->shader->SetFloat("pointLights[1].linear", light.linear);
-            this->shader->SetFloat("pointLights[1].quadratic", light.quadratic);
-            light = arrayLight[2];
-            lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
-            this->shader->SetVec3("pointLights[2].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z) / 100.0f);
-            this->shader->SetVec3("pointLights[2].ambient", light.ambient);
-            this->shader->SetVec3("pointLights[2].diffuse", light.diffuse);
-            this->shader->SetVec3("pointLights[2].specular", light.specular);
-            this->shader->SetFloat("pointLights[2].constant", light.constant);
-            this->shader->SetFloat("pointLights[2].linear", light.linear);
-            this->shader->SetFloat("pointLights[2].quadratic", light.quadratic);
-            light = arrayLight[3];
-            lightpos = engine->GetComponentManager()->GetComponent<Transform>(light.entity).GetPosition();
-            this->shader->SetVec3("pointLights[3].position", glm::vec3(lightpos.x, lightpos.y, lightpos.z) / 100.0f);
-            this->shader->SetVec3("pointLights[3].ambient", light.ambient);
-            this->shader->SetVec3("pointLights[3].diffuse", light.diffuse);
-            this->shader->SetVec3("pointLights[3].specular", light.specular);
-            this->shader->SetFloat("pointLights[3].constant", light.constant);
-            this->shader->SetFloat("pointLights[3].linear", light.linear);
-            this->shader->SetFloat("pointLights[3].quadratic", light.quadratic);
+            this->shader->SetVec3("pointLights[0].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[0].entity).Position() / 100.0f);
+            this->shader->SetVec3("pointLights[0].ambient", arrayLight[0].ambient);
+            this->shader->SetVec3("pointLights[0].diffuse", arrayLight[0].diffuse);
+            this->shader->SetVec3("pointLights[0].specular", arrayLight[0].specular);
+            this->shader->SetFloat("pointLights[0].constant", arrayLight[0].constant);
+            this->shader->SetFloat("pointLights[0].linear", arrayLight[0].linear);
+            this->shader->SetFloat("pointLights[0].quadratic", arrayLight[0].quadratic);
+            this->shader->SetVec3("pointLights[1].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[1].entity).Position() / 100.0f);
+            this->shader->SetVec3("pointLights[1].ambient", arrayLight[1].ambient);
+            this->shader->SetVec3("pointLights[1].diffuse", arrayLight[1].diffuse);
+            this->shader->SetVec3("pointLights[1].specular", arrayLight[1].specular);
+            this->shader->SetFloat("pointLights[1].constant", arrayLight[1].constant);
+            this->shader->SetFloat("pointLights[1].linear", arrayLight[1].linear);
+            this->shader->SetFloat("pointLights[1].quadratic", arrayLight[1].quadratic);
+            this->shader->SetVec3("pointLights[2].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[2].entity).Position() / 100.0f);
+            this->shader->SetVec3("pointLights[2].ambient", arrayLight[2].ambient);
+            this->shader->SetVec3("pointLights[2].diffuse", arrayLight[2].diffuse);
+            this->shader->SetVec3("pointLights[2].specular", arrayLight[2].specular);
+            this->shader->SetFloat("pointLights[2].constant", arrayLight[2].constant);
+            this->shader->SetFloat("pointLights[2].linear", arrayLight[2].linear);
+            this->shader->SetFloat("pointLights[2].quadratic", arrayLight[2].quadratic);
+            this->shader->SetVec3("pointLights[3].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[3].entity).Position() / 100.0f);
+            this->shader->SetVec3("pointLights[3].ambient", arrayLight[3].ambient);
+            this->shader->SetVec3("pointLights[3].diffuse", arrayLight[3].diffuse);
+            this->shader->SetVec3("pointLights[3].specular", arrayLight[3].specular);
+            this->shader->SetFloat("pointLights[3].constant", arrayLight[3].constant);
+            this->shader->SetFloat("pointLights[3].linear", arrayLight[3].linear);
+            this->shader->SetFloat("pointLights[3].quadratic", arrayLight[3].quadratic);
             // spotLight
             auto& arraySpot = engine->GetComponentManager()->GetComponents<SpotLight>();
-            SpotLight& spot = arraySpot[0];
-            Vector3 pos = engine->GetComponentManager()->GetComponent<Transform>(spot.entity).GetPosition();
-            this->shader->SetVec3("spotLight.position", glm::vec3(pos.x, pos.y, pos.z) / 100.0f);
-            this->shader->SetVec3("spotLight.direction", spot.direction);
-            this->shader->SetVec3("spotLight.ambient", spot.ambient);
-            this->shader->SetVec3("spotLight.diffuse", spot.diffuse);
-            this->shader->SetVec3("spotLight.specular", spot.specular);
-            this->shader->SetFloat("spotLight.constant", spot.constant);
-            this->shader->SetFloat("spotLight.linear", spot.linear);
-            this->shader->SetFloat("spotLight.quadratic", spot.quadratic);
-            this->shader->SetFloat("spotLight.cutOff", spot.cutOff);
-            this->shader->SetFloat("spotLight.outerCutOff", spot.outerCutOff);
+            this->shader->SetVec3("spotLight.position", engine->GetComponentManager()->GetComponent<Transform>(arraySpot[0].entity).Position() / 100.0f);
+            this->shader->SetVec3("spotLight.direction", arraySpot[0].direction);
+            this->shader->SetVec3("spotLight.ambient", arraySpot[0].ambient);
+            this->shader->SetVec3("spotLight.diffuse", arraySpot[0].diffuse);
+            this->shader->SetVec3("spotLight.specular", arraySpot[0].specular);
+            this->shader->SetFloat("spotLight.constant", arraySpot[0].constant);
+            this->shader->SetFloat("spotLight.linear", arraySpot[0].linear);
+            this->shader->SetFloat("spotLight.quadratic", arraySpot[0].quadratic);
+            this->shader->SetFloat("spotLight.cutOff", arraySpot[0].cutOff);
+            this->shader->SetFloat("spotLight.outerCutOff", arraySpot[0].outerCutOff);
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, diffuse_map);

@@ -184,11 +184,11 @@ namespace emp {
 		}
 
 
-		//m_cube->Update(dt);
-		//m_sphere->Update(dt);
-		//m_light->Update(dt);
+		m_cube->Update(dt);
+		m_sphere->Update(dt);
+		m_light->Update(dt);
 		//m_sprite->Update(dt);
-		//m_model->Update(dt);
+		m_model->Update(dt);
 
 		glfwPollEvents();
 		timer = 0.0f;
@@ -209,13 +209,13 @@ namespace emp {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
 		//m_sprite->Draw();
-		//m_square->Draw();
-		//m_circle->Draw();
+		m_square->Draw();
+		m_circle->Draw();
 		//m_triangle->Draw();
 		m_cube->Draw();
-		//m_sphere->Draw();
-		//m_model->Draw();
-		//m_light->Draw();
+		m_sphere->Draw();
+		m_model->Draw();
+		m_light->Draw();
 
 		/*for (auto& element : grid_line)
 		{

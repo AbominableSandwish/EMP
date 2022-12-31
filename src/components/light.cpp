@@ -11,6 +11,7 @@
 #include <fstream>s
 
 namespace emp {
+
     PointLight::PointLight(int entity, float r, float g, float b, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic)
     {
         this->entity = entity;
@@ -142,33 +143,16 @@ namespace emp {
         auto& arrayElement = engine->GetComponentManager()->GetComponents<PointLight>();
         for (auto& element : arrayElement)
         {
-            int PixelPerSize = config->PixelSize;
-            auto& transform = m_component->GetComponent<Transform>(element.entity);
-            
-            Vector3 position = transform.GetPosition();
-
-            position = transform.GetPosition();
-            std::vector<Vector4> matrice = transform.matrice->matrice4;
-            glm::mat4 transf = glm::mat4(matrice[0].r / 10.0f, matrice[0].g, matrice[0].b, matrice[0].a,
-                matrice[1].r, matrice[1].g / 10.0f, matrice[1].b, matrice[1].a,
-                matrice[2].r, matrice[2].g, matrice[2].b / 10.0f, matrice[2].a,
-                position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
-     
-
+            glm::mat4 transf = m_component->GetComponent<Transform>(element.entity).matrice->GetMatrice();
             auto& list_camera = m_component->GetComponents<Camera>();
-            Camera& MainCamera = list_camera[0];
             glm::mat4 view = glm::mat4(1.0f);
-            view = glm::translate(view, MainCamera.GetPosition());
-            glm::mat4& projection = MainCamera.projection;
-
-
             // draw our first triangle
             this->shader->UseProgram();
 
             // get matrix's uniform location and set matrix
             this->shader->SetMat4("transform", transf);
-            this->shader->SetMat4("view", view);
-            this->shader->SetMat4("projection", projection);
+            this->shader->SetMat4("view", glm::translate(view, list_camera[0].GetPosition()));
+            this->shader->SetMat4("projection", list_camera[0].projection);
 
             this->shader->SetVec3("color", glm::vec3(element.specular.r, element.specular.g, element.specular.b));
 
