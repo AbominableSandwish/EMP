@@ -145,16 +145,16 @@ namespace emp
         this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 1.0f));
         this->m_component->AddComponent(entity, Circle(entity));//, 0.66f, 0.66f, 0
 
-        for (int i = 0; i < 100; i++ ) {
-            for (int j = 0; j < 100; j++) {
+        for (int i = 0; i < 25; i++ ) {
+            for (int j = 0; j < 25; j++) {
                 entity = this->m_entity->CreateEntity("sphere_" +  std::to_string(this->m_entity->GetEntitesCount())).id;
                 this->m_component->AddComponent(entity, Transform(i * 200 + 75, -125, j * 200 - 2400 , 0, 0, 0, 1.0f, 1.0f, 1.0f));
                 this->m_component->AddComponent(entity, Sphere(entity));
             }
         }
 
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
+        for (int i = 0; i < 25; i++) {
+            for (int j = 0; j < 25; j++) {
                 entity = this->m_entity->CreateEntity("cube_" + std::to_string(this->m_entity->GetEntitesCount())).id;
                 this->m_component->AddComponent(entity, Transform(i * -200 - 75, -125, j * 200 - 2400, 0, 0, 0, 1.0f, 1.0f, 1.0f));
                 this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
