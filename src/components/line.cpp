@@ -6,6 +6,7 @@
 #include <components/transform.h>
 #include <math/matrice.h>
 #include "glm/gtx/transform.hpp"
+#include "GL/glew.h"
 
 namespace emp {
     Line::Line(ConfigGraphic& config, glm::vec3 start, glm::vec3 end)

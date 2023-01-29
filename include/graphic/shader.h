@@ -1,5 +1,5 @@
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
+
 #include "glm/gtx/transform.hpp"
 #include "glm/glm.hpp"
 #include <string>
@@ -24,7 +24,7 @@ namespace emp
 
 		Shader() {
 
-			vertexShaderSource = "";
+			vertexShaderSource = "";	
 			fragmentShaderSource = "";
 			fragmentShader2Source  = "";
 			vertexShader;

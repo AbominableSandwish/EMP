@@ -9,7 +9,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-	class GLFWwindow;
+	class SDL_Window;
+	class SDL_Renderer;
 namespace emp {
 	
 	class SpriteManager;
@@ -76,7 +77,8 @@ namespace emp {
 		Camera& GetMainCamera();
 
 		//GLFWwindow& GetWindow();
-		GLFWwindow* window = nullptr;
+		SDL_Window* window = nullptr;
+		SDL_Renderer* renderer = nullptr;
 	protected:
 		
 		ConfigGraphic* config = nullptr;

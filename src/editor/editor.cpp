@@ -7,6 +7,8 @@
 #include "tool/hierarchy.h"
 #include "core/entity.h"
 #include "tool/inspector.h"
+#include "GL/glew.h"
+#include "imgui_impl_sdl.h"
 
 namespace emp
 {
@@ -17,6 +19,8 @@ namespace emp
 
 	float menuBarHeight;
 
+
+
 	void Editor::Init()
 	{
 		graphic = m_engine->GetGraphicManager();
@@ -25,7 +29,8 @@ namespace emp
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO();
 		// Setup Platform/Renderer bindings
-		ImGui_ImplGlfw_InitForOpenGL((m_engine->GetGraphicManager()->window), true);
+		ImGui_ImplSDL2_InitForOpenGL((m_engine->GetGraphicManager()->window), 0);
+		//ImGui_ImplGlfw_InitForOpenGL((m_engine->GetGraphicManager()->window), true);
 		ImGui_ImplOpenGL3_Init();
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
@@ -51,11 +56,10 @@ namespace emp
 	
 	void Editor::Draw()
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// feed inputs to dear imgui, start new frame
 		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
+		//ImGui_ImplGlfw_NewFrame();
+		ImGui_ImplSDL2_NewFrame(m_engine->GetGraphicManager()->window);
 		ImGui::NewFrame();
 
 		ImGuiWindowFlags window_flags = 0
@@ -184,14 +188,14 @@ namespace emp
 		// Render dear imgui into screen
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		graphic->Swap();
+		m_engine->GetGraphicManager()->Swap();
 	}
 
 	void Editor::Destroy()
 	{
 		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
+		//ImGui_ImplGlfw_Shutdown();
+		ImGui_ImplSDL2_Shutdown();
 		ImGui::DestroyContext();
 	}
 

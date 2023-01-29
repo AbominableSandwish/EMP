@@ -228,8 +228,6 @@ namespace emp
             end = clock();
 
             this->deltaTime = dt;
-
-           // LOG::Debug(std::to_string(dt));
         }
     }
 

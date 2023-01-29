@@ -1,48 +1,194 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.24.1)
 
 # set the project name and version
-project(MUSHROOM VERSION 0.0)
+project(MUSHROOM VERSION 0.3.0)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" )
 
 #set EXTERNAL_DIR
-set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/externals)
+set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
 #set INCLUDE_DIR and SRC_DIR
 include_directories(include ${CMAKE_SOURCE_DIR}/include)
 
-set(ASSIMP ${EXTERNAL_DIR}/assimp/)
-	add_subdirectory(${ASSIMP})
-	include_directories(${ASSIMP})
-	LIST(APPEND MUSHROOM_LIBRARIES assimp)
+include(GNUInstallDirs)
 
-#GLEW
-set(GLEW_DIR ${EXTERNAL_DIR}/glew)
-	add_compile_definitions(GLEW_STATIC)
-	include_directories(${GLEW_DIR}/include)
-	add_subdirectory(${GLEW_DIR})
-	LIST(APPEND MUSHROOM_LIBRARIES
-			glew)
+if (COMMAND cmake_policy)
+  cmake_policy (SET CMP0003 NEW)
+  cmake_policy (SET CMP0042 NEW)
+endif()
 
-#GLFW
-find_package(OpenGL REQUIRED)
-LIST(APPEND MUSHROOM_LIBRARIES OpenGL::GL)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-add_subdirectory(${EXTERNAL_DIR}/glfw3)
-include_directories(${EXTERNAL_DIR}/glfw3/include)
-LIST(APPEND MUSHROOM_LIBRARIES glfw3)
+set(CMAKE_DEBUG_POSTFIX d)
 
-#IMGUI GLFW
-set(GLFW_IMGUI ${EXTERNAL_DIR}/imgui-glfw/)
-set(IMGUI_ROOT ${EXTERNAL_DIR}/imgui/)
+set(SDL_STATIC ON CACHE BOOL "" FORCE )
+set(SDL_SHARED OFF CACHE BOOL "" FORCE )
+find_package(SDL2 REQUIRED)
+add_subdirectory(${EXTERNAL_DIR}/sdl2)
+include_directories(${SDL2_INCLUDE_DIR})
+LIST(APPEND MUSHROOM_LIBRARIES SDL2main SDL2-static)
 
-set(GLFW_ROOT ${EXTERNAL_DIR}/GLFW/)
-add_subdirectory(${GLFW_IMGUI})
-include_directories(${IMGUI_ROOT} ${GLFW_IMGUI})
-LIST(APPEND MUSHROOM_LIBRARIES imgui-glfw)
+
+option (BUILD_UTILS "utilities" ON)
+option (GLEW_REGAL "Regal mode" OFF)
+option (GLEW_OSMESA "OSMesa mode" OFF)
+if (APPLE)
+    option (BUILD_FRAMEWORK "Build Framework bundle for OSX" OFF)
+endif ()
+
+set (GLEW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/glew)
+
+# get version from config/version
+file (STRINGS ${GLEW_DIR}/config/version  _VERSION_MAJOR_STRING REGEX "GLEW_MAJOR[ ]*=[ ]*[0-9]+.*")
+string (REGEX REPLACE "GLEW_MAJOR[ ]*=[ ]*([0-9]+)" "\\1" CPACK_PACKAGE_VERSION_MAJOR ${_VERSION_MAJOR_STRING})
+file (STRINGS ${GLEW_DIR}/config/version  _VERSION_MINOR_STRING REGEX "GLEW_MINOR[ ]*=[ ]*[0-9]+.*")
+string (REGEX REPLACE "GLEW_MINOR[ ]*=[ ]*([0-9]+)" "\\1" CPACK_PACKAGE_VERSION_MINOR ${_VERSION_MINOR_STRING})
+file (STRINGS ${GLEW_DIR}/config/version  _VERSION_PATCH_STRING REGEX "GLEW_MICRO[ ]*=[ ]*[0-9]+.*")
+string (REGEX REPLACE "GLEW_MICRO[ ]*=[ ]*([0-9]+)" "\\1" CPACK_PACKAGE_VERSION_PATCH ${_VERSION_PATCH_STRING})
+set (GLEW_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
+
+set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+find_package (OpenGL REQUIRED)
+
+# X11 required when builing visualinfo and glewinfo,
+# but not for Windows or Apple OSX platforms
+if (BUILD_UTILS AND NOT WIN32 AND NOT APPLE)
+  find_package (X11)
+endif()
+
+if (WIN32)
+  set (GLEW_LIB_NAME glew32)
+else ()
+  set (GLEW_LIB_NAME GLEW)
+  set (DLL_PREFIX lib)
+endif ()
+
+set (GLEW_LIBRARIES ${OPENGL_LIBRARIES})
+
+add_definitions (-DGLEW_NO_GLU)
+
+#### Regal mode ####
+
+if (GLEW_REGAL)
+  if (WIN32)
+    set (REGAL_LIB_NAME regal32)
+  else ()
+    set (REGAL_LIB_NAME Regal)
+  endif ()
+  add_definitions (-DGLEW_REGAL)
+  set (GLEW_LIBRARIES ${REGAL_LIB_NAME})
+endif ()
+
+#### OSMesa mode ####
+
+if (GLEW_OSMESA)
+  if (WIN32)
+    set (OSMESA_LIB_NAME osmesa)
+  else ()
+    set (OSMESA_LIB_NAME OSMesa)
+  endif ()
+  add_definitions (-DGLEW_OSMESA)
+  set (GLEW_LIBRARIES ${OSMESA_LIB_NAME} ${OPENGL_LIBRARIES})
+  set (X11_LIBRARIES)
+endif ()
+
+#### GLEW ####
+
+include_directories (${EXTERNAL_DIR}/glew/include)
+
+set (GLEW_PUBLIC_HEADERS_FILES ${GLEW_DIR}/include/GL/wglew.h ${GLEW_DIR}/include/GL/glew.h ${GLEW_DIR}/include/GL/glxew.h)
+set (GLEW_SRC_FILES ${GLEW_DIR}/src/glew.c)
+
+if (WIN32)
+  list (APPEND GLEW_SRC_FILES ${GLEW_DIR}/build/glew.rc)
+endif ()
+
+add_library (glew_s STATIC ${GLEW_PUBLIC_HEADERS_FILES} ${GLEW_SRC_FILES})
+set_target_properties (glew_s PROPERTIES COMPILE_DEFINITIONS "GLEW_STATIC" OUTPUT_NAME "${GLEW_LIB_NAME}" PREFIX lib)
+
+if (MSVC)
+  # add options from visual studio project
+  target_compile_definitions (glew_s PRIVATE "GLEW_STATIC;VC_EXTRALEAN")
+  # kill security checks which are dependent on stdlib
+  target_compile_options (glew_s PRIVATE -GS-)
+elseif (WIN32 AND ((CMAKE_C_COMPILER_ID MATCHES "GNU") OR (CMAKE_C_COMPILER_ID MATCHES "Clang")))
+  # remove stdlib dependency on windows with GCC and Clang (for similar reasons
+  # as to MSVC - to allow it to be used with any Windows compiler)
+  target_compile_options (glew_s PRIVATE -fno-builtin -fno-stack-protector)
+  target_link_libraries (glew LINK_PRIVATE -nostdlib)
+endif ()
+
+if (BUILD_FRAMEWORK)
+  set_target_properties(glew PROPERTIES
+    FRAMEWORK TRUE
+    FRAMEWORK_VERSION ${GLEW_VERSION}
+    MACOSX_FRAMEWORK_IDENTIFIER net.sourceforge.glew
+    MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${GLEW_VERSION}
+    MACOSX_FRAMEWORK_BUNDLE_VERSION ${GLEW_VERSION}
+    XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+    PUBLIC_HEADER "${GLEW_PUBLIC_HEADERS_FILES}"
+    OUTPUT_NAME GLEW
+  )
+endif()
+
+LIST(APPEND MUSHROOM_LIBRARIES glew_s ${GLEW_LIBRARIES})
+
+if(CMAKE_VERSION VERSION_LESS 2.8.12)
+  set(MAYBE_EXPORT "")
+else()
+  target_compile_definitions(glew_s INTERFACE "GLEW_STATIC")
+  foreach(t glew_s)
+    target_include_directories(${t} PUBLIC $<INSTALL_INTERFACE:include>)
+  endforeach()
+  set(MAYBE_EXPORT EXPORT glew-targets)
+endif()
+
+if(NOT DEFINED BUILD_SHARED_LIBS OR NOT BUILD_SHARED_LIBS)
+  list(APPEND targets_to_install glew_s)
+endif()
+
+
+set (prefix ${CMAKE_INSTALL_PREFIX})
+set (exec_prefix ${CMAKE_INSTALL_PREFIX})
+set (libdir ${CMAKE_INSTALL_FULL_LIBDIR})
+set (includedir ${CMAKE_INSTALL_FULL_INCLUDEDIR})
+set (version ${GLEW_VERSION})
+set (libname ${GLEW_LIB_NAME})
+set (cflags)
+set (requireslib glu)
+
+#  Mac OSX has no glu.pc unless optional X11/GLX is installed
+if (APPLE)
+  set (requireslib)
+endif ()
+
+configure_file (${GLEW_DIR}/glew.pc.in ${GLEW_DIR}/glew.pc @ONLY)
+
+install(FILES ${GLEW_DIR}/glew.pc
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+)
+
+install (FILES
+    ${GLEW_DIR}/include/GL/wglew.h
+    ${GLEW_DIR}/include/GL/glew.h
+    ${GLEW_DIR}/include/GL/glxew.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/GL)
+
+
+if(NOT TARGET uninstall)
+  configure_file(
+      ${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in
+      ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+      IMMEDIATE @ONLY)
+
+  add_custom_target(uninstall
+      COMMAND ${CMAKE_COMMAND} -P
+      ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
 
 #GLM
 set(GLM ${EXTERNAL_DIR}/glm/)
@@ -50,21 +196,27 @@ add_subdirectory(${GLM})
 include_directories(${GLM})
 LIST(APPEND MUSHROOM_LIBRARIES glm)
 
-#JSON
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-#find_package(nlohmann_json REQUIRED)
-#add_subdirectory(${nlohmann_json_source} ${EXTERNAL_DIR}/json-3.10.4/include/nlohmann_json)
-#LIST(APPEND MUSHROOM_LIBRARIES  nlohmann_json::nlohmann_json)
+set(ASSIMP ${EXTERNAL_DIR}/assimp/)
+	add_subdirectory(${ASSIMP})
+	include_directories(${ASSIMP})
+	LIST(APPEND MUSHROOM_LIBRARIES assimp)
 
-
-# FreeType
-#set(FREETYPE_INCLUDE_DIRS ${EXTERNAL_DIR}/freetype2/include/)
+#FreeType
 set(FREETYPE ${EXTERNAL_DIR}/freetype2/)
 add_subdirectory(${FREETYPE})
-#find_package(Freetype REQUIRED)
-#target_link_libraries(main PRIVATE ${FREETYPE_LIBRARIES})
-#target_include_directories(MUSHROOM_COMMON PRIVATE ${FREETYPE_INCLUDE_DIRS})
 LIST(APPEND MUSHROOM_LIBRARIES freetype)
+
+
+#IMGUI SDL
+set(SDL_IMGUI ${EXTERNAL_DIR}/imgui-sdl/)
+set(IMGUI_ROOT ${EXTERNAL_DIR}/imgui/)
+set(SDL_ROOT ${EXTERNAL_DIR}/SDL2/)
+add_subdirectory(${SDL_IMGUI})
+include_directories(${IMGUI_ROOT} ${SDL_IMGUI})
+LIST(APPEND MUSHROOM_LIBRARIES imgui-sdl)
+
+
+
 
 #MUSHROOM_CORE
 if(NOT WIN32)
@@ -126,12 +278,15 @@ file(GLOB TEST_FILES ${MUSHROOM_TEST_DIR}/*.cpp )
 add_executable(MUSHROOM_TEST ${TEST_FILES} tests/test.cpp)
 target_link_libraries(MUSHROOM_TEST MUSHROOM_COMMON)
 
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+
+
 # add the executable
 add_executable(MUSHROOM src/main.cpp)
 target_compile_definitions(MUSHROOM PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLEW)
 MESSAGE("MUSHROOM_COMMON: " ${MUSHROOM_LIBRARIES})
 target_link_libraries(MUSHROOM PUBLIC MUSHROOM_COMMON)
-
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/shader/
         DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/shader/)

@@ -4,8 +4,8 @@
 #include <core/config.h>
 #include "editor/editor.h"
 
-
-int main() {
+int main()
+{
 	emp::Mode mode = emp::Mode::Editor;
 	
     emp::ConfigEngine* config = new emp::ConfigEngine("Mushroom Engine", mode);
