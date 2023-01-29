@@ -7,8 +7,11 @@
 
 <h1>Credit</h1>
 OpenGl : https://www.opengl.org/
-GLFW : https://www.glfw.org/
+SDL : https://www.libsdl.org/
 Glew: https://github.com/nigels-com/glew
 GLM: https://github.com/g-truc/glm
 ImGui : https://github.com/ocornut/imgui
 FreeType: https://freetype.org/
+
+<h1>Galery</h1>
+![](https://github.com/AbominableSandwish/EMP/blob/main/gif/Sphere_5.gif)
