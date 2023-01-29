@@ -14,4 +14,4 @@ ImGui : https://github.com/ocornut/imgui
 FreeType: https://freetype.org/
 
 <h1>Galery</h1>
-![](https://github.com/AbominableSandwish/EMP/blob/main/gif/Sphere_5.gif)
+<img src="https://github.com/AbominableSandwish/EMP/blob/main/gif/Sphere_5.gif" width="40" height="40" />
