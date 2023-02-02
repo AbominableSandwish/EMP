@@ -25,9 +25,16 @@ set(CMAKE_DEBUG_POSTFIX d)
 set(SDL_STATIC ON CACHE BOOL "" FORCE )
 set(SDL_SHARED OFF CACHE BOOL "" FORCE )
 find_package(SDL2 REQUIRED)
+#add_subdirectory(${EXTERNAL_DIR}/PrivateSdlFunctions)
 add_subdirectory(${EXTERNAL_DIR}/sdl2)
 include_directories(${SDL2_INCLUDE_DIR})
-LIST(APPEND MUSHROOM_LIBRARIES SDL2main SDL2-static)
+
+include(FeatureSummary)
+set(SDL2_MIXER ${EXTERNAL_DIR}/sdl2_mixer/)
+#add_subdirectory(${SDL2_MIXER})
+#include_directories(${SDL2_MIXER}/include)
+#find_package(SDL2_mixer REQUIRED CONFIG)
+LIST(APPEND MUSHROOM_LIBRARIES SDL2::SDL2-static)
 
 
 option (BUILD_UTILS "utilities" ON)
@@ -209,7 +216,7 @@ LIST(APPEND MUSHROOM_LIBRARIES freetype)
 
 #IMGUI SDL
 set(SDL_IMGUI ${EXTERNAL_DIR}/imgui-sdl/)
-set(IMGUI_ROOT ${EXTERNAL_DIR}/imgui/)
+set(IMGUI_ROOT ${EXTERNAL_DIR}/imgui-docking/)
 set(SDL_ROOT ${EXTERNAL_DIR}/SDL2/)
 add_subdirectory(${SDL_IMGUI})
 include_directories(${IMGUI_ROOT} ${SDL_IMGUI})
@@ -237,22 +244,39 @@ SET_SOURCE_FILES_PROPERTIES( ${MUSHROOM_SRC} PROPERTIES
 				
 file(GLOB_RECURSE CORE_HEAD	src/core/*.cpp include/core/*.h include/core/*.tpp)
 source_group("Core" FILES ${CORE_HEAD})
+List(APPEND MUSHROOM_SRC  	${CORE_HEAD})
+
 file(GLOB_RECURSE COMMON_HEAD src/common/*.cpp include/common/*.h)
 source_group("Common" FILES ${COMMON_HEAD})
+List(APPEND MUSHROOM_SRC ${COMMON_HEAD})
+
 file(GLOB_RECURSE EDITOR_HEAD	src/editor/*.cpp include/editor/*.h)
 source_group("Editor" FILES ${EDITOR_HEAD})
+List(APPEND MUSHROOM_SRC ${EDITOR_HEAD})
+
 file(GLOB_RECURSE TOOL_HEAD	src/tool/*.cpp include/tool/*.h)
 source_group("Tool" FILES ${TOOL_HEAD})
+List(APPEND MUSHROOM_SRC ${TOOL_HEAD})
+
 file(GLOB_RECURSE GRAPHIC_HEAD	src/graphic/*.cpp include/graphic/*.h)
 source_group("Graphic" FILES ${GRAPHIC_HEAD})
+List(APPEND MUSHROOM_SRC ${GRAPHIC_HEAD})
+
 file(GLOB_RECURSE COMPONENT_HEAD src/components/*.cpp include/components/*.h)
 source_group("Components" FILES ${COMPONENT_HEAD})
+List(APPEND MUSHROOM_SRC ${COMPONENT_HEAD})
+
 file(GLOB_RECURSE PHYSIC_HEAD src/physic/*.cpp include/physic/*.h)
 source_group("Physic" FILES ${PHYSIC_HEAD})
+List(APPEND MUSHROOM_SRC ${PHYSIC_HEAD})
+
 file(GLOB_RECURSE MATH_HEAD src/math/*.cpp include/math/*.h)
 source_group("Math" FILES ${MATH_HEAD})
+List(APPEND MUSHROOM_SRC  ${MATH_HEAD})
 
-List(APPEND MUSHROOM_SRC  ${CORE_HEAD} ${COMMON_HEAD} ${EDITOR_HEAD} ${TOOL_HEAD} ${GRAPHIC_HEAD} ${COMPONENT_HEAD} ${PHYSIC_HEAD} ${MATH_HEAD})
+file(GLOB_RECURSE AUDIO_HEAD src/audio/*.cpp include/audio/*.h)
+source_group("Audio" FILES ${AUDIO_HEAD})
+List(APPEND MUSHROOM_SRC ${AUDIO_HEAD})
 
 if(NOT WIN32)
 LIST(APPEND MUSHROOM_LIBRARIES

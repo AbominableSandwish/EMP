@@ -42,7 +42,8 @@ namespace emp
 		PROFILER,  // todo
                 HIERARCHY, 
                 INSPECTOR, // todo
-                VIEW,      // todo
+        SCENE,
+        VIEW,
 		HEIGHT
 	};
 

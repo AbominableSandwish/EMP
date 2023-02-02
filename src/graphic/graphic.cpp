@@ -12,10 +12,9 @@
 #include "components/line.h"
 #include "components/light.h"
 #include "components/model.h"
-
+#include <core/file.h>
 #include "components/camera.h"
 #include "glm/gtx/transform.hpp"
-#include "SDL.h"
 
 
 namespace emp {
@@ -116,7 +115,7 @@ namespace emp {
 	GLint gVertexPos2DLocation = -1;
 	GLuint gVBO = 0;
 	GLuint gIBO = 0;
-	SDL_GLContext gContext;
+	
 
 
 	bool initGL()
@@ -261,8 +260,12 @@ namespace emp {
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
+			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+			SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
 			//Create window
-			this->window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 1000, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+			this->window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 1000, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 			if (this->window == NULL)
 			{
 				printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -311,15 +314,69 @@ namespace emp {
 	
 		//Init others Sub-Systems Graphic
 		//m_sprite->Init();
-		//m_square->Init();
-		//m_circle->Init();
-		//m_triangle->Init();
+		m_square->Init();
+		m_circle->Init();
+		m_triangle->Init();
 		m_cube->Init();
 		m_sphere->Init();
 		m_model->Init();
-		//m_light->Init();
+		m_light->Init();
 
 
+
+		std::string vertexShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.vs");
+		std::string fragmentShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.fs");  //multiplelight  
+
+		this->shader = new Shader();
+		bool warning = this->shader->Init(vertexShaderSource, fragmentShaderSource);
+		if (warning) {
+			LOG::Warning(name + " help!");
+		}
+
+		float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates. NOTE that this plane is now much smaller and at the top of the screen
+			// positions   // texCoords
+			-0.3f,  1.0f,  0.0f, 1.0f,
+			-0.3f,  0.7f,  0.0f, 0.0f,
+			 0.3f,  0.7f,  1.0f, 0.0f,
+
+			-0.3f,  1.0f,  0.0f, 1.0f,
+			 0.3f,  0.7f,  1.0f, 0.0f,
+			 0.3f,  1.0f,  1.0f, 1.0f
+		};
+
+		// screen quad VAO
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+		// framebuffer configuration
+		// -------------------------
+		this->shader->UseProgram();
+		this->shader->SetInt("screenTexture", 0);
+		glGenFramebuffers(1, &framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		// create a color attachment texture
+		glGenTextures(1, &textureColorbuffer);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1000, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL); /// MAGIC !!!!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+		// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+		glGenRenderbuffers(1, &rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1000, 1000); // use a single renderbuffer object for both a depth AND stencil buffer. MAGIC
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+		// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		//lineX = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0.12f, 0, 0));
 		//lineY = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
 
@@ -328,6 +385,8 @@ namespace emp {
 
 	bool pause = false;
 	float timer = 0.0f;
+
+
 
 	void GraphicManager::Update(float dt)
 	{
@@ -350,15 +409,36 @@ namespace emp {
 			case SDL_QUIT:
 				exit(0);
 				break;
+			case SDL_WINDOWEVENT:
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					
+					int w, h;
+					SDL_GetWindowSize(this->window, &w , &h);
+					LOG::Info("Resizing window w: " + std::to_string(w) + " h: " + std::to_string(h) + "\n");
+					
+				}
+				break;
 
 			default:
 				break;
 			}
 		}
 
+		/*if (sdl_set->GetMainEvent()->type == SDL_WINDOWEVENT)
+		{
+			if (sdl_set->GetMainEvent()->window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				ScreenWidth = sdl_set->GetMainEvent()->window.data1;
+				ScreenHeight = sdl_set->GetMainEvent()->window.data2;
+				cout << "Window Resized!" << endl;
+			}
+		}*/
+
+		m_triangle->Update(dt);
 		m_cube->Update(dt);
 		m_sphere->Update(dt);
-		//m_light->Update(dt);
+		m_light->Update(dt);
 		////m_sprite->Update(dt);
 		m_model->Update(dt);
 
@@ -369,6 +449,15 @@ namespace emp {
 
 	void GraphicManager::Draw()
 	{
+		// enable depth testing (is disabled for rendering screen-space quad)
+		// first render pass: mirror texture.
+	    // bind to framebuffer and draw to color texture as we normally 
+	    // would, but with the view camera reversed.
+	    // bind to framebuffer and draw scene as we normally would to color texture 
+	    // ------------------------------------------------------------------------
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		if (WireframeView) {
 			// Turn on wireframe mode
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -378,17 +467,41 @@ namespace emp {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-/*		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/ // also clear the depth buffer now!
 
 		//m_sprite->Draw();
-		//m_square->Draw();
-		//m_circle->Draw();
-		////m_triangle->Draw();
+		m_square->Draw();
+		m_circle->Draw();
+		m_triangle->Draw();
 		m_cube->Draw();
 		m_sphere->Draw();
 		m_model->Draw();
-		//m_light->Draw();
+
+
+		m_light->Draw();
+		// second render pass: draw
+		//  as normal
+		// ----------------------------------
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+/*		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/ // also clear the depth buffer now!
+
+
+		//m_sprite->Draw();
+		m_square->Draw();
+		m_circle->Draw();
+		m_triangle->Draw();
+		m_cube->Draw();
+		m_sphere->Draw();
+		m_model->Draw();
+
+		  // --------------------------------------------
+		glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
+
+		this->shader->UseProgram();
+		glBindVertexArray(quadVAO);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);	// use the color attachment texture as the texture of the quad plane
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		/*for (auto& element : grid_line)
 		{
@@ -407,6 +520,21 @@ namespace emp {
 		
 	}
 
+	void saveImage(char* filepath, SDL_Window* w) {
+		//int width, height;
+	 //   //glfwGetFramebufferSize(w, &width, &height);
+		//SDL_GL_GetDrawableSize(w, &width, &height);
+		//GLsizei nrChannels = 3;
+		//GLsizei stride = nrChannels * width;
+		//stride += (stride % 4) ? (4 - stride % 4) : 0;
+		//GLsizei bufferSize = stride * height;
+		//std::vector<char> buffer(bufferSize);
+		//glPixelStorei(GL_PACK_ALIGNMENT, 4);
+		//glReadBuffer(GL_FRONT);
+		//glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+		//stbi_flip_vertically_on_write(true);
+		//stbi_write_png(filepath, width, height, nrChannels, buffer.data(), stride);
+	}
 
 	void GraphicManager::Destroy()
 	{

@@ -7,12 +7,10 @@
 #include <core/system.h>
 #include <graphic/screen.h>
 #include <glm/gtc/type_ptr.hpp>
+#include "SDL.h"
 
-
-	class SDL_Window;
-	class SDL_Renderer;
 namespace emp {
-	
+	class Shader;
 	class SpriteManager;
 	class ComponentManager;
 	class SquareManager;
@@ -79,8 +77,16 @@ namespace emp {
 		//GLFWwindow& GetWindow();
 		SDL_Window* window = nullptr;
 		SDL_Renderer* renderer = nullptr;
+		SDL_GLContext gContext;
+
+		unsigned int quadVAO, quadVBO;
+		unsigned int framebuffer;
+		unsigned int textureColorbuffer;
+		unsigned int rbo;
 	protected:
-		
+
+
+		Shader* shader;
 		ConfigGraphic* config = nullptr;
         //std::vector<GraphicComponent*> components;
 		Screen screen;

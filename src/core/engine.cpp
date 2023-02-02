@@ -131,11 +131,14 @@ namespace emp
         int i;
         float dt = 0.0f;
         this->m_graphic->Update(dt);
-
-   
-        int entity = this->m_entity->CreateEntity("Triangle").id;
-        this->m_component->AddComponent(entity, Transform(05, 0, 0, 0, 0, 0, 0.3f, 0.3f, 0.3f));
-        this->m_component->AddComponent(entity, Triangle(entity));//, 0.66f, 0.66f, 0.66f
+        int entity;
+        for (int i = 0; i < 40; i++) {
+            for (int j = 0; j < 20; j++) {
+                entity = this->m_entity->CreateEntity("Triangle_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+                this->m_component->AddComponent(entity, Transform(i * 200 + 75 -4000, j * 200, -2500, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+                this->m_component->AddComponent(entity, Triangle(entity));//, 0.66f, 0.66f, 0.66f
+            }
+        }
 
         entity = this->m_entity->CreateEntity("Square").id;
         this->m_component->AddComponent(entity, Transform(0, -65, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
@@ -147,7 +150,7 @@ namespace emp
 
         for (int i = 0; i < 25; i++ ) {
             for (int j = 0; j < 25; j++) {
-                entity = this->m_entity->CreateEntity("sphere_" +  std::to_string(this->m_entity->GetEntitesCount())).id;
+                entity = this->m_entity->CreateEntity("Sphere_" +  std::to_string(this->m_entity->GetEntitesCount())).id;
                 this->m_component->AddComponent(entity, Transform(i * 200 + 75, -125, j * 200 - 2400 , 0, 0, 0, 1.0f, 1.0f, 1.0f));
                 this->m_component->AddComponent(entity, Sphere(entity));
             }
@@ -155,7 +158,7 @@ namespace emp
 
         for (int i = 0; i < 25; i++) {
             for (int j = 0; j < 25; j++) {
-                entity = this->m_entity->CreateEntity("cube_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+                entity = this->m_entity->CreateEntity("Cube_" + std::to_string(this->m_entity->GetEntitesCount())).id;
                 this->m_component->AddComponent(entity, Transform(i * -200 - 75, -125, j * 200 - 2400, 0, 0, 0, 1.0f, 1.0f, 1.0f));
                 this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
             }
@@ -191,7 +194,7 @@ namespace emp
         this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled2.obj"));
 
         entity = this->m_entity->CreateEntity("Main_Camera").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, -3));
+        this->m_component->AddComponent(entity, Transform(0, -10, -50));
         this->m_component->AddComponent(entity, Camera(entity, this->m_component->GetComponent<Transform>(entity), 45.0f));
 
 

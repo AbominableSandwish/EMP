@@ -26,6 +26,7 @@ namespace emp {
             color = color;
         }
     };
+
     class ConfigGraphic;
     class ComponentManager;
     class TriangleManager : public System
@@ -35,7 +36,7 @@ namespace emp {
 
         void Init();
 
-        void Update(float dt) {};
+        void Update(float dt);
 
         void Destroy();
 
@@ -45,7 +46,12 @@ namespace emp {
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
 
-        Shader* shaderProgram;
+        unsigned int diffuse_map;
+        unsigned int specular_map;
+
+        Shader* shader;
+
+        float time = 0.0f;
         float pi = 3.1415926f;
     };
 }

@@ -7,8 +7,10 @@
 #include "tool/hierarchy.h"
 #include "core/entity.h"
 #include "tool/inspector.h"
+#include "tool/scene.h"
+#include "tool/view.h"
 #include "GL/glew.h"
-#include "imgui_impl_sdl.h"
+#include "SDL.h"
 
 namespace emp
 {
@@ -20,20 +22,36 @@ namespace emp
 	float menuBarHeight;
 
 
-
 	void Editor::Init()
 	{
 		graphic = m_engine->GetGraphicManager();
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
+
+		const char* glsl_version = "#version 330";
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//io.ConfigViewportsNoAutoMerge = true;
+		//io.ConfigViewportsNoTaskBarIcon = true;
+		// 
 		// Setup Platform/Renderer bindings
-		ImGui_ImplSDL2_InitForOpenGL((m_engine->GetGraphicManager()->window), 0);
+		ImGui_ImplSDL2_InitForOpenGL((m_engine->GetGraphicManager()->window), m_engine->GetGraphicManager()->window);
 		//ImGui_ImplGlfw_InitForOpenGL((m_engine->GetGraphicManager()->window), true);
-		ImGui_ImplOpenGL3_Init();
+		ImGui_ImplOpenGL3_Init(glsl_version);
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
 
 		Newtool(ToolType::HIERARCHY);
 		Newtool(ToolType::INSPECTOR);
@@ -56,20 +74,25 @@ namespace emp
 	
 	void Editor::Draw()
 	{
+
 		// feed inputs to dear imgui, start new frame
 		ImGui_ImplOpenGL3_NewFrame();
 		//ImGui_ImplGlfw_NewFrame();
 		ImGui_ImplSDL2_NewFrame(m_engine->GetGraphicManager()->window);
 		ImGui::NewFrame();
 
+		
 		ImGuiWindowFlags window_flags = 0
 			//| ImGuiWindowFlags_NoDocking 
 			| ImGuiWindowFlags_NoTitleBar
 			| ImGuiWindowFlags_NoResize
 			| ImGuiWindowFlags_NoMove
 			| ImGuiWindowFlags_NoScrollbar
-			| ImGuiWindowFlags_NoSavedSettings;
+			| ImGuiWindowFlags_NoSavedSettings
+			| ImGuiWindowFlags_NoBackground;
 
+		ImGui::SetNextWindowSize(ImVec2(1000, 1000), ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_FirstUseEver);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0);
 		ImGui::Begin("TOOLBAR", NULL, window_flags);
 		ImGui::PopStyleVar();
@@ -84,7 +107,7 @@ namespace emp
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Spore"))
-			{
+			{	
 				if (ImGui::MenuItem("New Spore"))
 				{
 					//auto entity = this->m_engine->GetEntityManager()->CreateEntity();
@@ -109,6 +132,14 @@ namespace emp
 				if (ImGui::MenuItem("Inspector"))
 				{
 					Newtool(ToolType::INSPECTOR);
+				}
+				if (ImGui::MenuItem("Scene"))
+				{
+					Newtool(ToolType::SCENE);
+				}
+				if (ImGui::MenuItem("View"))
+				{
+					Newtool(ToolType::VIEW);
 				}
 				if (ImGui::MenuItem("Demo"))
 				{
@@ -187,7 +218,23 @@ namespace emp
 
 		// Render dear imgui into screen
 		ImGui::Render();
+		ImGuiIO& io = ImGui::GetIO();
+		glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
+		// Update and Render additional Platform Windows
+		// (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+		//  For this specific demo app we could also call SDL_GL_MakeCurrent(window, gl_context) directly)
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+		}
+
 		m_engine->GetGraphicManager()->Swap();
 	}
 
@@ -218,6 +265,16 @@ namespace emp
 		case ToolType::INSPECTOR:
 
 			tool = new Inspector(*(this->m_engine), "Inspector");
+			tool->Init();
+			break;
+		case ToolType::SCENE:
+
+			tool = new Scene(*(this->m_engine), "Scene");
+			tool->Init();
+			break;
+		case ToolType::VIEW:
+
+			tool = new View(*(this->m_engine), "View");
 			tool->Init();
 			break;
 		}
