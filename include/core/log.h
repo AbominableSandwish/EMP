@@ -30,7 +30,7 @@ namespace  emp
 		string msg;
 	};
 	
-	static LogManager* instance;
+	static LogManager* instance_log;
 	class LogManager : public System
 	{
 	public:

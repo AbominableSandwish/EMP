@@ -4,87 +4,144 @@
 #include <iostream>
 #include <core/engine.h>
 #include <sdl.h>
+#include <core/log.h>
 
 namespace emp {
-    std::vector<KeyInput*> KeyInput::_instances;
+  InputSystem::InputSystem() { instance_input = this; }
 
-    KeyInput::KeyInput(std::vector<int> keysToMonitor) : _isEnabled(true) {
-        for (int key : keysToMonitor) {
-            _keys[key] = false;
-        }
-        // Add this instance to the list of instances
-        KeyInput::_instances.push_back(this);
-    }
-
-    KeyInput::~KeyInput() {
-        // Remove this instance from the list of instances
-        _instances.erase(std::remove(_instances.begin(), _instances.end(), this), _instances.end());
-    }
-
-    bool KeyInput::getIsKeyDown(int key) {
-        bool result = false;
-        if (_isEnabled) {
-            std::map<int, bool>::iterator it = _keys.find(key);
-            if (it != _keys.end()) {
-                result = _keys[key];
-            }
-        }
-        return result;
-    }
-
-    void KeyInput::setIsKeyDown(int key, bool isDown) {
-        std::map<int, bool>::iterator it = _keys.find(key);
-        if (it != _keys.end()) {
-            _keys[key] = isDown;
-        }
-    }
-
-
-    
-    void key_callback(SDL_Window* window, int key, int scancode, int action, int mods)
-    {
-   /*     SDL_key
-        if (key == GLFW_KEY_E && action == GLFW_PRESS)
-            std::cout << "E";
-        if (key == GLFW_KEY_Q && action == GLFW_PRESS)
-            std::cout << "Q";
-    		
-        if (key == GLFW_KEY_LEFT_ALT && action == GLFW_PRESS)
-            std::cout << "Alt";
-        if (key == GLFW_KEY_I && action == GLFW_PRESS)
-            std::cout << "I";
-        if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-            std::cout << "Left";
-        if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-            std::cout << "Right";
-        if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-            std::cout << "Up";
-        if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-            std::cout << "Down";*/
-        // action == GLFW_RELEASE
-    }
+  InputSystem::InputSystem(Engine& engine, string name) : System(engine, name) { instance_input = this; }
 
     void InputSystem::Init()
     {
-       // glfwSetKeyCallback(engine->GetGraphicManager()->window, key_callback);
-        
+    }
+
+    void InputSystem::Destroy()
+    {
     }
 
     void InputSystem::Update(float)
     {
-        //glfwPollEvents();
+        //Event handler
+        SDL_Event e;
+        //Handle events on queue
+        while (SDL_PollEvent(&e) != 0)
+        {
+            switch (e.type)
+            {
+            case SDL_QUIT:
+                exit(0);
+                break;
+            case SDL_WINDOWEVENT:
+                if (e.window.event == SDL_WINDOWEVENT_RESIZED)
+                {
+
+                    int w, h;
+                    SDL_GetWindowSize(this->engine->GetGraphicManager()->window, &w, &h);
+                    LOG::Info("Resizing window w: " + std::to_string(w) + " h: " + std::to_string(h) + "\n");
+
+                }
+                break;
+                //User presses a key
+            case SDL_KEYDOWN:
+            {
+                //Select surfaces based on key press
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_UP:
+                    isPress_up = true;
+                    break;
+
+                case SDLK_DOWN:
+                    isPress_down = true;
+                    break;
+
+                case SDLK_LEFT:
+                    isPress_left = true;
+                    break;
+
+                case SDLK_RIGHT:
+                    isPress_right = true;
+                    break;
+
+                case SDLK_SPACE:
+                    isPress_space = true;
+                    break;
+
+                case SDL_SCANCODE_KP_ENTER:
+                    isPress_enter = true;
+                    break;
+
+                case SDLK_LCTRL:
+                    isPress_ctrl_l = true;
+                    break;
+
+                case SDLK_ESCAPE:
+                    isPress_escape = true;
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            break;
+
+            //User presses a key
+            case  SDL_KEYUP:
+            {
+                //Select surfaces based on key press
+                switch (e.key.keysym.sym)
+                {
+                case SDLK_UP:
+                    isPress_up = false;
+                    break;
+
+                case SDLK_DOWN:
+                    isPress_down = false;
+                    break;
+
+                case SDLK_LEFT:
+                    isPress_left = false;
+                    break;
+
+                case SDLK_RIGHT:
+                    isPress_right = false;
+                    break;
+
+                case SDLK_SPACE:
+                    isPress_space = false;
+                    break;
+
+                case SDL_SCANCODE_KP_ENTER:
+                    isPress_enter = false;
+                    break;
+
+                case SDLK_LCTRL:
+                    isPress_ctrl_l = false;
+                    break;
+
+                case SDLK_ESCAPE:
+                    isPress_escape = false;
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            break;
+            }
+        }
+
+        //LOG::Error(std::to_string(GetCounterKeyPress()));
+    }
+    
+
+    InputSystem* InputSystem::GetInstance()
+    {
+        if (instance_input == nullptr)
+        {
+            instance_input = new InputSystem();
+        }
+        return instance_input;
     }
 
- 
-
-    //void KeyInput::setupKeyInputs(GLFWwindow& window) {
-    //   // glfwSetKeyCallback(&window, KeyInput::callback);
-    //}
-
-    //void KeyInput::callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    //    // Send key event to all KeyInput instances
-    //    for (KeyInput* keyInput : _instances) {
-    //        keyInput->setIsKeyDown(key, action != GLFW_RELEASE);
-    //    }
-    //}
 }

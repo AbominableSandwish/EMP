@@ -55,6 +55,7 @@ namespace emp
 
 		Newtool(ToolType::HIERARCHY);
 		Newtool(ToolType::INSPECTOR);
+		Newtool(ToolType::VIEW);
 	}
 	float deltaTime;
 	float counterTime;

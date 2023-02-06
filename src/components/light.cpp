@@ -145,13 +145,14 @@ namespace emp {
         {
             glm::mat4 transf = m_component->GetComponent<Transform>(element.entity).matrice->GetMatrice();
             auto& list_camera = m_component->GetComponents<Camera>();
-            glm::mat4 view = glm::mat4(1.0f);
+            auto& MainCamera = list_camera[0];
             // draw our first triangle
             this->shader->UseProgram();
 
             // get matrix's uniform location and set matrix
             this->shader->SetMat4("transform", transf);
-            this->shader->SetMat4("view", glm::translate(view, list_camera[0].GetPosition()));
+            glm::mat4 view = MainCamera.GetView();
+            this->shader->SetMat4("view", view);
             this->shader->SetMat4("projection", list_camera[0].projection);
 
             this->shader->SetVec3("color", glm::vec3(element.specular.r, element.specular.g, element.specular.b));

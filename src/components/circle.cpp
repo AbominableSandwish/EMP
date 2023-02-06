@@ -169,11 +169,12 @@ namespace emp {
 
         glm::vec3 pos = MainCamera.GetPosition();
         this->shader->SetVec3("viewPos", pos);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), pos);
 
         glm::mat4 projection = MainCamera.projection;
         // get matrix's uniform location and set matrix
+        glm::mat4 view = MainCamera.GetView();
         this->shader->SetMat4("view", view);
+
         this->shader->SetMat4("projection", projection);
 
         // render boxes

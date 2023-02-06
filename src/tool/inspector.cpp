@@ -151,9 +151,9 @@ namespace emp {
             if (value_changed) {
                 tranform.Reset();
                 tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
-                tranform.SetRotation(input_rotation[0] * 3.14f * 5.5f, emp::Vector3(1, 0, 0));
-                tranform.SetRotation(input_rotation[1] * 3.14f * 5.5f, emp::Vector3(0, 1, 0));
-                tranform.SetRotation(input_rotation[2] * 3.14f * 5.5f, emp::Vector3(0, 0, 1));
+                tranform.SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
+                tranform.SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
+                tranform.SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
                 value_changed = false;
             }
 
@@ -186,9 +186,9 @@ namespace emp {
             if (value_changed) {
                 tranform.Reset();
                 tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
-                tranform.SetRotation(input_rotation[0] * 3.14f * 5.5f, emp::Vector3(1, 0, 0));
-                tranform.SetRotation(input_rotation[1] * 3.14f * 5.5f, emp::Vector3(0, 1, 0));
-                tranform.SetRotation(input_rotation[2] * 3.14f * 5.5f, emp::Vector3(0, 0, 1));
+                tranform.SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
+                tranform.SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
+                tranform.SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
                 tranform.SetScale(input_scale[0], input_scale[1], input_scale[2]);
             }
 

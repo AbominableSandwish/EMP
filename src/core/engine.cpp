@@ -22,6 +22,7 @@
 #include <components/light.h>
 #include <components/model.h>
 #include <components/camera.h>
+#include <components/script.h>
 // External
 #include <iostream>
 #include <ctime>
@@ -86,6 +87,10 @@ namespace emp
 
         //Entity
         m_rigidbody= this->m_systems->RegisterSystem<RigidBody2DManager>(*this, "Rigid Manager");
+
+        
+        m_script = this->m_systems->RegisterSystem<ScriptSystem>(*this, "Script Manager");
+        m_script->Init();
         
     	//Graphic
         emp::ConfigGraphic* configGraphic = new emp::ConfigGraphic("Configuration Graphic", config->mode);
@@ -105,6 +110,9 @@ namespace emp
         this->m_component->RegisterComponent<Camera>();
 
         this->m_component->RegisterComponent<RigidBody2D>();
+
+        this->m_component->RegisterComponent<Script>();
+        this->m_component->RegisterComponent<PlayerScript>();
         this->m_graphic->Init();
 
         m_input = this->m_systems->RegisterSystem<InputSystem>(*this, "Input System");
@@ -132,13 +140,13 @@ namespace emp
         float dt = 0.0f;
         this->m_graphic->Update(dt);
         int entity;
-        for (int i = 0; i < 40; i++) {
-            for (int j = 0; j < 20; j++) {
-                entity = this->m_entity->CreateEntity("Triangle_" + std::to_string(this->m_entity->GetEntitesCount())).id;
-                this->m_component->AddComponent(entity, Transform(i * 200 + 75 -4000, j * 200, -2500, 0, 0, 0, 2.0f, 2.0f, 2.0f));
-                this->m_component->AddComponent(entity, Triangle(entity));//, 0.66f, 0.66f, 0.66f
-            }
-        }
+        //for (int i = 0; i < 40; i++) {
+        //    for (int j = 0; j < 20; j++) {
+        //        entity = this->m_entity->CreateEntity("Triangle_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+        //        this->m_component->AddComponent(entity, Transform(i * 200 + 75 -4000, j * 200, -2500, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        //        this->m_component->AddComponent(entity, Triangle(entity));//, 0.66f, 0.66f, 0.66f
+        //    }
+        //}
 
         entity = this->m_entity->CreateEntity("Square").id;
         this->m_component->AddComponent(entity, Transform(0, -65, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
@@ -148,7 +156,7 @@ namespace emp
         this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 1.0f));
         this->m_component->AddComponent(entity, Circle(entity));//, 0.66f, 0.66f, 0
 
-        for (int i = 0; i < 25; i++ ) {
+      /*  for (int i = 0; i < 25; i++ ) {
             for (int j = 0; j < 25; j++) {
                 entity = this->m_entity->CreateEntity("Sphere_" +  std::to_string(this->m_entity->GetEntitesCount())).id;
                 this->m_component->AddComponent(entity, Transform(i * 200 + 75, -125, j * 200 - 2400 , 0, 0, 0, 1.0f, 1.0f, 1.0f));
@@ -162,7 +170,7 @@ namespace emp
                 this->m_component->AddComponent(entity, Transform(i * -200 - 75, -125, j * 200 - 2400, 0, 0, 0, 1.0f, 1.0f, 1.0f));
                 this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
             }
-        }
+        }*/
      
         entity = this->m_entity->CreateEntity("Directional_Light").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 40, 0, 0, 0, 2.0f, 2.0f, 2.0f));
@@ -189,9 +197,15 @@ namespace emp
         this->m_component->AddComponent(entity, SpotLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f))));
 
 
-         entity = this->m_entity->CreateEntity("Model").id;
-        this->m_component->AddComponent(entity, Transform(0, -165, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
-        this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled2.obj"));
+         entity = this->m_entity->CreateEntity("Player").id;
+        this->m_component->AddComponent(entity, Transform(0, -165, 0, 0, 40, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
+        this->m_component->AddComponent(entity, PlayerScript(*this, entity));
+
+        entity = this->m_entity->CreateEntity("Loic").id;
+        this->m_component->AddComponent(entity, Transform(0, -165, 0, 0, 40, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/Omnit/OmnitWithLoic.obj"));
+        this->m_component->AddComponent(entity, PlayerScript(*this, entity));
 
         entity = this->m_entity->CreateEntity("Main_Camera").id;
         this->m_component->AddComponent(entity, Transform(0, -10, -50));
@@ -222,6 +236,7 @@ namespace emp
             this->m_file->Update(dt);
 
             this->m_input->Update(dt);
+            this->m_script->Update(dt);
             this->m_rigidbody->Update(dt);
             this->m_graphic->Update(dt);
         	
@@ -250,6 +265,8 @@ namespace emp
         this->m_entity->Destroy();
         this->m_entity = nullptr;
         this->m_file = nullptr;
+        this->m_script->Destroy();
+        this->m_script = nullptr;
 	}
 
     LogManager* Engine::GetLogManager()
