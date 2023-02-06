@@ -66,6 +66,13 @@ namespace emp {
 		this->matrice->SetPosition(position);
 	}
 
+	void Transform::SetPosition(glm::vec3 position)
+	{
+		this->position = new Vector4(position.x, position.y, position.z, 0);
+		this->matrice->SetPosition(Vector3(position.x, position.y, position.z));
+	}
+
+
 	void Transform::SetPosition(float x, float y)
 	{
 		this->position = new Vector4(x, y, 0, 0);
@@ -77,15 +84,15 @@ namespace emp {
 		return Vector3(0,0,0);
 	}
 
-	void Transform::SetRotation(float radiant, Vector3 axis)
+	void Transform::SetRotation(float degree, Vector3 axis)
 	{
 		if (axis.x == 1)
-			this->angle_x = radiant / (3.14 * 5.5f);
+			this->angle_x = degree;
 		if (axis.y == 1)
-			this->angle_y = radiant / (3.14 * 5.5f);
+			this->angle_y = degree;
 		if (axis.z == 1)
-			this->angle_z = radiant / (3.14 * 5.5f);
-		Matrice4 rotation = RotationMatrixFrom(radiant, axis);
+			this->angle_z = degree;
+		Matrice4 rotation = RotationMatrixFrom(degree * (3.14 / 180), axis);
 		Matrice4 matrice = this->matrice->matrice4;
 		this->matrice->SetMatrice(rotation);
 	}
@@ -140,8 +147,8 @@ namespace emp {
 
 	Matrice4  Transform::RotationMatrixFrom(const float angle, Vector3 axis)
 	{
-		float c = cos(angle / 1000);
-		float s = sin(angle / 1000);
+		float c = cos(angle);
+		float s = sin(angle);
 		const Vector3 normalizedAxis = axis.Normalized();
 	
 		Vector3 temp((1.0f - c) * axis.x, (1.0f - c) * axis.y, (1.0f - c) * axis.z);

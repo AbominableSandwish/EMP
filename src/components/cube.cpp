@@ -189,7 +189,8 @@ namespace emp {
         Camera &MainCamera = list_camera[0];
         glm::vec3 pos = MainCamera.GetPosition();
         this->shader->SetVec3("viewPos", pos);
-        this->shader->SetMat4("view", glm::translate(glm::mat4(1.0f), pos));
+        glm::mat4 view = MainCamera.GetView();
+        this->shader->SetMat4("view", view);
         this->shader->SetMat4("projection", MainCamera.projection);
 
         // render boxes

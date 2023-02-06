@@ -24,6 +24,7 @@ namespace emp {
 		glm::vec3 Position();
 		Vector4 GetPositionPosition();
 
+		void SetPosition(glm::vec3);
 		void SetPosition(Vector3 position);
 		void SetPosition(float x, float y);
 

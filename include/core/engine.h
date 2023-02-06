@@ -13,6 +13,7 @@ namespace emp
     class ComponentManager;
     class InputSystem;
     class RigidBody2DManager;
+    class ScriptSystem;
 
 	class Engine
 	{
@@ -48,6 +49,7 @@ namespace emp
         std::shared_ptr<GraphicManager> m_graphic;
         std::unique_ptr<ComponentManager> m_component;
         std::shared_ptr<InputSystem> m_input;
+        std::shared_ptr<ScriptSystem> m_script;
         SystemManager* m_systems = nullptr;
 	private:
         double fps = 0.0;

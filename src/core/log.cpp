@@ -4,11 +4,11 @@
 
 namespace emp
 {
-	LogManager::LogManager() : System() { instance = this; }
+	LogManager::LogManager() : System() { instance_log = this; }
 
-	LogManager::LogManager(Engine& engine, string name) : System(engine, name) { instance = this; }
+	LogManager::LogManager(Engine& engine, string name) : System(engine, name) { instance_log = this; }
 
-	void LogManager::Init() { instance = this; }
+	void LogManager::Init() { instance_log = this; }
 
 	void LogManager::Update(float dt) {}
 
@@ -16,11 +16,11 @@ namespace emp
 
 	LogManager* LogManager::GetInstance()
 	{
-		if (instance == nullptr)
+		if (instance_log == nullptr)
 		{
-			instance = new LogManager();
+			instance_log = new LogManager();
 		}
-		return instance;
+		return instance_log;
 	}
 
 	void LogManager::AddLog(Log log)

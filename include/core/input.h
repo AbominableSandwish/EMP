@@ -5,84 +5,117 @@
 #include <core/system.h>
 
 namespace emp {
-    class Window
-    {
-    public:
-        using Callback = function<void()>;
-
-        void addBinding(int key, const Callback& callback)
-        {
-            m_Callbacks[key].push_back(callback);
-        }
-
-        void onKeyPress(int key)
-        {
-            for (Callback& callback : m_Callbacks[key])
-            {
-                callback();
-            }
-        }
-    	
-    private:
-        std::map<int, std::vector<Callback>> m_Callbacks;
+    class InputSystem;
+    enum MushKey {
+        UP, 
+        DOWN,
+        LEFT,
+        RIGHT,
+        SPACE,
+        ENTER,
+        CTRL_L,
+        ESCAPE
     };
-	
-    class KeyInput {
-        // Main KeyInput functionality
-    public:
-        // Takes a list of which keys to keep state for
-        KeyInput(std::vector<int> keysToMonitor);
-        ~KeyInput();
-        // If this KeyInput is enabled and the given key is monitored,
-        // returns pressed state.  Else returns false.
-        bool getIsKeyDown(int key);
-        // See _isEnabled for details
-        bool getIsEnabled() { return _isEnabled; }
-        void setIsEnabled(bool value) { _isEnabled = value; }
-    private:
-        // Used internally to update key states.  Called by the GLFW callback.
-        void setIsKeyDown(int key, bool isDown);
-        // Map from monitored keyes to their pressed states
-        std::map<int, bool> _keys;
-        // If disabled, KeyInput.getIsKeyDown always returns false
-        bool _isEnabled;
-
-        // Workaround for C++ class using a c-style-callback
-    public:
-        // Must be called before any KeyInput instances will work
-        //todo static void setupKeyInputs(GLFWwindow& window);
-    private:
-        // The GLFW callback for key events.  Sends events to all KeyInput instances
-        //todo static void callback(
-           //todo GLFWwindow* window, int key, int scancode, int action, int mods);
-        // Keep a list of all KeyInput instances and notify them all of key events
-        static std::vector<KeyInput*> _instances;
-    };
-	
+   
+    static InputSystem* instance_input;
     class InputSystem : public System
     {
     public:
-    	InputSystem()
-    	{
-    		
-    	}
-
-        InputSystem(Engine& engine, string name): System(engine, name)
-    	{
-    	}
+        InputSystem();
+        InputSystem(Engine& engine, string name);
 
     	~InputSystem()
     	{
     		
+            instance_input = this;
     	}
 
+        static InputSystem* GetInstance();
+
+        bool IsPress(MushKey key) {
+            bool isPress = false;
+            switch (key)
+            {
+            case MushKey::UP:
+                if (this->isPress_up)
+                    isPress = true;
+                break;
+            case MushKey::DOWN:
+                if (isPress_down)
+                    isPress = true;
+                break;
+            case MushKey::LEFT:
+                if (isPress_left)
+                    isPress = true;
+                break;
+            case MushKey::RIGHT:
+                if (isPress_right)
+                    isPress = true;
+                break;
+            case MushKey::SPACE:
+                if (isPress_space)
+                    isPress = true;
+                break;
+            case MushKey::ENTER:
+                if (isPress_enter)
+                    isPress = true;
+                break;
+            case MushKey::CTRL_L:
+                if (isPress_ctrl_l)
+                    isPress = true;
+                break;
+            case MushKey::ESCAPE:
+                if (isPress_escape)
+                    isPress = true;
+                break;
+            default:
+                break;
+            }
+            return isPress;
+        }
+
     	void Init() override;
-    	void Destroy() override
-    	{
-    		
-    	}
+        void Destroy() override;
         void Update(float) override;
     private:
+        bool isPress_up = false;
+        bool isPress_down = false;
+        bool isPress_left = false;
+        bool isPress_right = false;
+        bool isPress_space = false;
+        bool isPress_enter = false;
+        bool isPress_ctrl_l = false;
+        bool isPress_escape = false;
+
+        int GetCounterKeyPress() {
+            int count = 0;
+            if (isPress_up)
+                count++;
+            if(isPress_down)
+                count++;
+            if(isPress_left)
+                count++;
+            if(isPress_right)
+                count++;
+            if(isPress_space)
+                count++;
+            if(isPress_enter)
+                count++;
+            if(isPress_ctrl_l)
+                count++;
+            if(isPress_escape)
+                count++;
+            return count;
+        }
     	
     };
+
+    namespace Input
+    {
+        static bool IsKeyDown(MushKey key)
+        {
+            return InputSystem::GetInstance()->IsPress(key);
+        }
+    }
+
 }

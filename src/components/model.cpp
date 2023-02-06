@@ -103,13 +103,13 @@ namespace emp {
             auto& list_camera = m_component->GetComponents<Camera>();
             Camera& MainCamera = list_camera[0];
           
-            glm::mat4 view = glm::mat4(1.0f);
-            auto& transf_camera = m_component->GetComponent<Transform>(MainCamera.entity);
-            view = glm::translate(view, glm::vec3(transf_camera.position->r, transf_camera.position->g, transf_camera.position->b));
+            
+            glm::mat4 view = MainCamera.GetView();
+            this->shader->SetMat4("view", view);
+            
            
             glm::mat4 projection = MainCamera.projection;
-           
-            this->shader->SetMat4("view", view);
+
             this->shader->SetMat4("projection", projection);
 
             glBindVertexArray(this->shader->VAO);

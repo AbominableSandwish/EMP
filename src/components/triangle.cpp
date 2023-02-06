@@ -143,18 +143,15 @@ namespace emp {
         //CAMERA
         auto& list_camera = m_component->GetComponents<Camera>();
         Camera& MainCamera = list_camera[0];
-        unsigned int viewPosLoc = glGetUniformLocation(this->shader->shaderProgram, "viewPos");
         glm::vec3 pos = MainCamera.GetPosition();
-        glUniform3f(viewPosLoc, pos.x, pos.y, pos.z);
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, pos);
+     
+        glm::mat4 view = MainCamera.GetView();
+        this->shader->SetMat4("view", view);
 
         glm::mat4& projection = MainCamera.projection;
         // get matrix's uniform location and set matrix
         unsigned int transformLoc = glGetUniformLocation(this->shader->shaderProgram, "transform");
-        unsigned int viewLoc = glGetUniformLocation(this->shader->shaderProgram, "view");
 
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(this->shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 
         // render boxes

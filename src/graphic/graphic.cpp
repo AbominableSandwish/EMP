@@ -400,31 +400,7 @@ namespace emp {
 			engine->Stop();
 		}
 		*/
-		SDL_Event event;
-
-		while (SDL_PollEvent(&event))
-		{
-			switch (event.type)
-			{
-			case SDL_QUIT:
-				exit(0);
-				break;
-			case SDL_WINDOWEVENT:
-				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-				{
-					
-					int w, h;
-					SDL_GetWindowSize(this->window, &w , &h);
-					LOG::Info("Resizing window w: " + std::to_string(w) + " h: " + std::to_string(h) + "\n");
-					
-				}
-				break;
-
-			default:
-				break;
-			}
-		}
-
+	
 		/*if (sdl_set->GetMainEvent()->type == SDL_WINDOWEVENT)
 		{
 			if (sdl_set->GetMainEvent()->window.event == SDL_WINDOWEVENT_RESIZED)
