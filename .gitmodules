@@ -4,6 +4,3 @@
 [submodule "external/assimp"]
 	path = external/assimp
 	url = https://github.com/assimp/assimp
-[submodule "external/SDL_mixer"]
-	path = external/SDL_mixer
-	url = https://github.com/libsdl-org/SDL_mixer/tree/SDL2
