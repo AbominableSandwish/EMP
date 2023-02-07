@@ -23,6 +23,7 @@
 #include <components/model.h>
 #include <components/camera.h>
 #include <components/script.h>
+#include <components/skybox.h>
 // External
 #include <iostream>
 #include <ctime>
@@ -148,9 +149,9 @@ namespace emp
         //    }
         //}
 
-        entity = this->m_entity->CreateEntity("Square").id;
-        this->m_component->AddComponent(entity, Transform(0, -65, 0, 0, 40, 0, 1.0f, 1.0f, 1.0f));
-        this->m_component->AddComponent(entity, Square(entity));//, 0.66f, 0.66f, 0
+        //entity = this->m_entity->CreateEntity("Square").id;
+        //this->m_component->AddComponent(entity, Transform(0, 0, -5000, 0, 0, 0, 500.0f, 500.0f, 500.0f));
+        //this->m_component->AddComponent(entity, Square(entity));//, 0.66f, 0.66f, 0
 
         entity = this->m_entity->CreateEntity("Circle").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 1.0f));
@@ -174,7 +175,7 @@ namespace emp
      
         entity = this->m_entity->CreateEntity("Directional_Light").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 40, 0, 0, 0, 2.0f, 2.0f, 2.0f));
-        this->m_component->AddComponent(entity, DirectionalLight(entity, glm::vec3(0.2f, 1.0f, 0.3f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+        this->m_component->AddComponent(entity, DirectionalLight(entity, glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.1f, 0.1f, 0.1f)));
 
         entity = this->m_entity->CreateEntity("Point_Light_1").id;
         this->m_component->AddComponent(entity, Transform(1000, 40, 1000,  0, 0, 0, 2.0f, 2.0f, 2.0f));
@@ -198,17 +199,37 @@ namespace emp
 
 
          entity = this->m_entity->CreateEntity("Player").id;
-        this->m_component->AddComponent(entity, Transform(0, -165, 0, 0, 40, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Transform(500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
         this->m_component->AddComponent(entity, PlayerScript(*this, entity));
 
         entity = this->m_entity->CreateEntity("Loic").id;
-        this->m_component->AddComponent(entity, Transform(0, -165, 0, 0, 40, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/Omnit/OmnitWithLoic.obj"));
-        this->m_component->AddComponent(entity, PlayerScript(*this, entity));
+
+        entity = this->m_entity->CreateEntity("Wheel").id;
+        this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/Mosqui/Wheel.obj"));
+
+        entity = this->m_entity->CreateEntity("mars").id;
+        this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Model(entity, "./data/model/planet/planet.obj"));
+
+
+        entity = this->m_entity->CreateEntity("Sphere_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+        this->m_component->AddComponent(entity, Transform(-305, 425, 13,0, 0, 0, 0.2f, 0.2f, 0.2f));
+        this->m_component->AddComponent(entity, Sphere(entity));
+
+        entity = this->m_entity->CreateEntity("Sphere_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+        this->m_component->AddComponent(entity, Transform(-305, 425, -16, 0, 0, 0, 0.2f, 0.2f, 0.2f));
+        this->m_component->AddComponent(entity, Sphere(entity));
+
+        entity = this->m_entity->CreateEntity("Cone_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+        this->m_component->AddComponent(entity, Transform(-305, 380, -4.0f, 0, 0, 0, 1.2f, 0.033f, 0.033f));
+        this->m_component->AddComponent(entity, Sphere(entity));
 
         entity = this->m_entity->CreateEntity("Main_Camera").id;
-        this->m_component->AddComponent(entity, Transform(0, -10, -50));
+        this->m_component->AddComponent(entity, Transform(0, -4, -50));
         this->m_component->AddComponent(entity, Camera(entity, this->m_component->GetComponent<Transform>(entity), 45.0f));
 
 

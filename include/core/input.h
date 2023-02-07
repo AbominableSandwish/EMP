@@ -14,7 +14,8 @@ namespace emp {
         SPACE,
         ENTER,
         CTRL_L,
-        ESCAPE
+        ESCAPE,
+        S
     };
    
     static InputSystem* instance_input;
@@ -68,6 +69,10 @@ namespace emp {
                 if (isPress_escape)
                     isPress = true;
                 break;
+            case MushKey::S:
+                if (isPress_s)
+                    isPress = true;
+                break;
             default:
                 break;
             }
@@ -86,6 +91,7 @@ namespace emp {
         bool isPress_enter = false;
         bool isPress_ctrl_l = false;
         bool isPress_escape = false;
+        bool isPress_s = false;
 
         int GetCounterKeyPress() {
             int count = 0;
@@ -104,6 +110,8 @@ namespace emp {
             if(isPress_ctrl_l)
                 count++;
             if(isPress_escape)
+                count++;
+            if(isPress_s)
                 count++;
             return count;
         }

@@ -20,6 +20,8 @@ namespace emp {
 	class SphereManager;
 	class LightManager;
 	class ModelManager;
+	class SkyboxManager;
+
 	class Camera;
 	/// Holds all state information relevant to a character as loaded using FreeType
     struct Character {
@@ -99,6 +101,7 @@ namespace emp {
 		SphereManager* m_sphere;
 		LightManager* m_light;
 		ModelManager* m_model;
+		SkyboxManager* m_skybox;
 		
 		std::vector<Camera> *camera_list;
 

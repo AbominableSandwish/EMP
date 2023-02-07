@@ -150,6 +150,11 @@ namespace emp
 			glUniform1f(viewPosLoc, f);
 		}
 
+		void SetVec2(std::string name, glm::vec2 vec) {
+			unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, name.c_str());
+			glUniform2f(viewPosLoc, vec.x, vec.y);
+		}
+
         void SetVec3(std::string name, glm::vec3 vec) {
             unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, name.c_str());
             glUniform3f(viewPosLoc, vec.x, vec.y, vec.z);

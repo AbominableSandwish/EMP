@@ -103,10 +103,8 @@ namespace emp {
             auto& list_camera = m_component->GetComponents<Camera>();
             Camera& MainCamera = list_camera[0];
           
-            
             glm::mat4 view = MainCamera.GetView();
             this->shader->SetMat4("view", view);
-            
            
             glm::mat4 projection = MainCamera.projection;
 
@@ -118,7 +116,7 @@ namespace emp {
 
             //OBJECT
             glm::mat4 transf = m_component->GetComponent<Transform>(element.entity).matrice->GetMatrice();
-            transf = glm::rotate(transf, glm::radians(time*50), glm::vec3(0.0f, 1.0f, 0.0f));
+           // transf = glm::rotate(transf, glm::radians(time*50), glm::vec3(0.0f, 1.0f, 0.0f));
             //transf = glm::rotate(transf, glm::radians(element.axis_x + time / 10), glm::vec3(0.0f, 1.0f, 0.0f));
 
             this->shader->SetMat4("transform", transf);

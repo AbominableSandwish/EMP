@@ -195,35 +195,35 @@ namespace emp {
 
             ImGui::Separator();
 
-            emp::Model& model = m_engine->GetComponentManager()->GetComponent<emp::Model>(Target);
-            if (model.entity == Target) {
-                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-                ImGui::Text(" Model: ");
-                ImGui::PopStyleColor();
-                float col1[3] = { model.color.r,  model.color.g,  model.color.b };
-                ImGui::Text("   Color:  ");
-                ImGui::SameLine();
-                value_changed = ImGui::ColorEdit3("", col1);
-                if (value_changed) {
-                    model.SetColor(glm::vec4(col1[0], col1[1], col1[2], 1));
-                    value_changed = false;
-                }
+            //emp::Model& model = m_engine->GetComponentManager()->GetComponent<emp::Model>(Target);
+            //if (model.entity == Target) {
+            //    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+            //    ImGui::Text(" Model: ");
+            //    ImGui::PopStyleColor();
+            //    float col1[3] = { model.color.r,  model.color.g,  model.color.b };
+            //    ImGui::Text("   Color:  ");
+            //    ImGui::SameLine();
+            //    value_changed = ImGui::ColorEdit3("", col1);
+            //    if (value_changed) {
+            //        model.SetColor(glm::vec4(col1[0], col1[1], col1[2], 1));
+            //        value_changed = false;
+            //    }
 
-                emp::Cube& cube = m_engine->GetComponentManager()->GetComponent<emp::Cube>(Target);
-                if (cube.entity == Target) {
-                    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-                    ImGui::Text(" Cube: ");
-                    ImGui::PopStyleColor();
-                    float col1[3] = { cube.color.r,  cube.color.g,  cube.color.b };
-                    ImGui::Text("   Color:  ");
-                    ImGui::SameLine();
-                    value_changed = ImGui::ColorEdit3("", col1);
-                    if (value_changed) {
-                        cube.SetColor(glm::vec4(col1[0], col1[1], col1[2], 1));
-                        value_changed = false;
-                    }
-                }
-            }
+            //    emp::Cube& cube = m_engine->GetComponentManager()->GetComponent<emp::Cube>(Target);
+            //    if (cube.entity == Target) {
+            //        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+            //        ImGui::Text(" Cube: ");
+            //        ImGui::PopStyleColor();
+            //        float col1[3] = { cube.color.r,  cube.color.g,  cube.color.b };
+            //        ImGui::Text("   Color:  ");
+            //        ImGui::SameLine();
+            //        value_changed = ImGui::ColorEdit3("", col1);
+            //        if (value_changed) {
+            //            cube.SetColor(glm::vec4(col1[0], col1[1], col1[2], 1));
+            //            value_changed = false;
+            //        }
+            //    }
+            //}
 
             emp::DirectionalLight& light = m_engine->GetComponentManager()->GetComponent<emp::DirectionalLight>(Target);
             if (light.entity == Target) {

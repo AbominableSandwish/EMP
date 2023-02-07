@@ -24,7 +24,7 @@ namespace emp {
         m_component = engine->GetComponentManager();
        
         std::string vertexShaderSource = FileSystem::ReadShader("./shader/model.vs");
-        std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/multiplelight2.fs");  //multiplelight  
+        std::string fragmentShaderSource = FileSystem::ReadShader("./shader/circle.fs");  //multiplelight  
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -140,20 +140,21 @@ namespace emp {
         glm::vec3 pos = MainCamera.GetPosition();
         glUniform3f(viewPosLoc, pos.x, pos.y, pos.z);
 
-        glm::mat4& projection = MainCamera.projection;
+        glm::mat4 projection = MainCamera.projection;
         // get matrix's uniform location and set matrix
         unsigned int transformLoc = glGetUniformLocation(this->shader->shaderProgram, "transform");
-        glUniformMatrix4fv(glGetUniformLocation(this->shader->shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
-
+        
+        this->shader->SetMat4("projection", projection);
         glm::mat4 view = MainCamera.GetView();
         this->shader->SetMat4("view", view);
-      
 
         // render boxes
         this->shader->BindVertexArray(this->shader->VAO);
 
         for (auto& element : arrayElement)
         {
+            this->shader->SetFloat("DeltaTime", time);
+            this->shader->SetVec2("iResolution", glm::vec2(800, 600));
             //Get Transform Data
             auto& transform = m_component->GetComponent<Transform>(element.entity);
             Vector3 position = transform.GetPosition();
@@ -165,7 +166,7 @@ namespace emp {
                 matrice[1].r, matrice[1].g, matrice[1].b, matrice[1].a,
                 matrice[2].r, matrice[2].g, matrice[2].b, matrice[2].a,
                 position.x / PixelPerSize, position.y / PixelPerSize, position.z / PixelPerSize, matrice[3].a);
-            transf = glm::rotate(transf, glm::radians(time * 50), glm::vec3(0.0f, 1.0f, 0.0f));
+           // transf = glm::rotate(transf, glm::radians(time * 50), glm::vec3(0.0f, 1.0f, 0.0f));
 
             //transf = glm::rotate(transf, glm::radians(sin(time)*180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             this->shader->SetMat4("transform", transf);
@@ -253,4 +254,5 @@ namespace emp {
         }
     }
 
+   
 }

@@ -1,15 +1,18 @@
-#include <core/system.h>
 #include "glm/gtx/transform.hpp"
+#include <core/system.h>
 
 namespace emp {
     class Shader;
-    class Square {
+    class Skybox {
     public:
-        Square(int entity)
+        Skybox(int entity)
         {
             this->entity = entity;
         }
         void Init();
+
+
+        unsigned int segment = 64;
 
         float axis_x = 0.0f;
         float axis_y = 0.0f;
@@ -17,6 +20,7 @@ namespace emp {
 
         int entity;
         glm::vec4 color;
+
         void SetColor(glm::vec4 color)
         {
             color = color;
@@ -24,19 +28,18 @@ namespace emp {
     };
 
     class ComponentManager;
-    class SquareManager : public System
+    class ConfigGraphic;
+
+    class SkyboxManager : public System
     {
     public:
-        SquareManager(Engine& engine, ConfigGraphic& config);
+        SkyboxManager(Engine& engine, ConfigGraphic& config);
 
         void Init();
 
-        void Update(float dt) {
-            deltaTime = dt;
-            time += dt;
-        };
-
         void Destroy();
+
+        void Update(float dt);
 
         void Draw();
     private:
@@ -46,8 +49,12 @@ namespace emp {
         unsigned int diffuse_map;
         unsigned int specular_map;
 
-        Shader* shader;
-        float deltaTime;
+        Shader* shader = nullptr;
+
         float time = 0.0f;
+        
+        unsigned int skyboxVAO, skyboxVBO;
+        unsigned int cubemapTexture;
+
     };
 }

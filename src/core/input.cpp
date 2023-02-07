@@ -78,6 +78,16 @@ namespace emp {
                 case SDLK_ESCAPE:
                     isPress_escape = true;
                     break;
+                case SDLK_s:
+                    isPress_s = true;
+                    if (isPress_ctrl_l) {
+                        LOG::Info("Saving Project...");
+                        LOG::Info("Entities : " + std::to_string(54));
+                        LOG::Info("components : " + std::to_string(147));
+                        LOG::Info("Size Data : " + std::to_string(1.42255f) + " Mo");
+                        LOG::Info("Project Save : MyFirstProject.data");
+                    }
+                    break;
 
                 default:
                     break;
@@ -121,6 +131,10 @@ namespace emp {
 
                 case SDLK_ESCAPE:
                     isPress_escape = false;
+                    break;
+
+                case SDLK_s:
+                    isPress_s = false;
                     break;
 
                 default:

@@ -30,6 +30,7 @@ namespace emp {
 		}
 
 		glm::mat4 GetView();
+		glm::mat4 GetView2();
 
 		void SetRotation(double xposIn, double yposIn) {
 			{

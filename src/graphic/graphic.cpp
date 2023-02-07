@@ -12,6 +12,7 @@
 #include "components/line.h"
 #include "components/light.h"
 #include "components/model.h"
+#include "components/skybox.h"
 #include <core/file.h>
 #include "components/camera.h"
 #include "glm/gtx/transform.hpp"
@@ -31,6 +32,7 @@ namespace emp {
 	
 		m_model = new ModelManager(engine, config);
 		m_light = new LightManager(engine, config);
+		m_skybox = new SkyboxManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -311,9 +313,10 @@ namespace emp {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
+
+
 		//Init others Sub-Systems Graphic
-		//m_sprite->Init();
+//m_sprite->Init();
 		m_square->Init();
 		m_circle->Init();
 		m_triangle->Init();
@@ -321,8 +324,7 @@ namespace emp {
 		m_sphere->Init();
 		m_model->Init();
 		m_light->Init();
-
-
+		m_skybox->Init();
 
 		std::string vertexShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.vs");
 		std::string fragmentShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.fs");  //multiplelight  
@@ -381,6 +383,7 @@ namespace emp {
 		//lineY = new Line(*this->config, glm::vec3(0, 0, 0), glm::vec3(0, 0.2f, 0));
 
 		//grid(*config);
+
 	}
 
 	bool pause = false;
@@ -410,13 +413,14 @@ namespace emp {
 				cout << "Window Resized!" << endl;
 			}
 		}*/
-
+		m_square->Update(dt);
 		m_triangle->Update(dt);
 		m_cube->Update(dt);
 		m_sphere->Update(dt);
 		m_light->Update(dt);
 		////m_sprite->Update(dt);
 		m_model->Update(dt);
+		m_skybox->Update(dt);
 
 		SDL_PollEvent(0);
 		//glfwPollEve0nts();
@@ -451,9 +455,8 @@ namespace emp {
 		m_cube->Draw();
 		m_sphere->Draw();
 		m_model->Draw();
-
-
 		m_light->Draw();
+		m_skybox->Draw();
 		// second render pass: draw
 		//  as normal
 		// ----------------------------------
@@ -469,6 +472,7 @@ namespace emp {
 		m_cube->Draw();
 		m_sphere->Draw();
 		m_model->Draw();
+		m_skybox->Draw();
 
 		  // --------------------------------------------
 		glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.

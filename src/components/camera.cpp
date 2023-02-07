@@ -18,4 +18,11 @@ namespace emp {
 		return view;
 	}
 
+	glm::mat4 Camera::GetView2()
+	{
+		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		//view = glm::translate(view, transform.Position());
+		return view;
+	}
+
 }
