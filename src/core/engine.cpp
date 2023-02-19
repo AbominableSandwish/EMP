@@ -24,12 +24,15 @@
 #include <components/camera.h>
 #include <components/script.h>
 #include <components/skybox.h>
+#include <components/map.h>
 // External
 #include <iostream>
 #include <ctime>
 
 namespace emp
 {
+
+
     constexpr int WIDTH = 1000000;
 
     int random(int min, int max) //range : [min, max]
@@ -110,7 +113,8 @@ namespace emp
         this->m_component->RegisterComponent<Model>();
         this->m_component->RegisterComponent<Camera>();
 
-        this->m_component->RegisterComponent<RigidBody2D>();
+        this->m_component->RegisterComponent<Map>();
+        this->m_component->RegisterComponent<RigidBody2D>(); 
 
         this->m_component->RegisterComponent<Script>();
         this->m_component->RegisterComponent<PlayerScript>();
@@ -164,34 +168,35 @@ namespace emp
                 this->m_component->AddComponent(entity, Sphere(entity));
             }
         }
+        */
 
-        for (int i = 0; i < 25; i++) {
-            for (int j = 0; j < 25; j++) {
-                entity = this->m_entity->CreateEntity("Cube_" + std::to_string(this->m_entity->GetEntitesCount())).id;
-                this->m_component->AddComponent(entity, Transform(i * -200 - 75, -125, j * 200 - 2400, 0, 0, 0, 1.0f, 1.0f, 1.0f));
-                this->m_component->AddComponent(entity, Cube(entity, 0.33f, 0.33f, 0.33f));
-            }
-        }*/
-     
+
+
+       
+
+        //entity = this->m_entity->CreateEntity("Map").id;
+        //this->m_component->AddComponent(entity, Transform(0, 0, 40, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        //this->m_component->AddComponent(entity, Map(entity));
+   
         entity = this->m_entity->CreateEntity("Directional_Light").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 40, 0, 0, 0, 2.0f, 2.0f, 2.0f));
         this->m_component->AddComponent(entity, DirectionalLight(entity, glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.1f, 0.1f, 0.1f), glm::vec3(0.1f, 0.1f, 0.1f)));
 
-        entity = this->m_entity->CreateEntity("Point_Light_1").id;
-        this->m_component->AddComponent(entity, Transform(1000, 40, 1000,  0, 0, 0, 2.0f, 2.0f, 2.0f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.8f, 0.8f, 0.0f, glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f));
+        const int MaxPointLight = 36;
+        for (size_t i = 0; i < MaxPointLight; i++)
+        {
+            int x = i % 6;
+            int y = i / 6;
 
-        entity = this->m_entity->CreateEntity("Point_Light_2").id;
-        this->m_component->AddComponent(entity, Transform(+1000, 40, -1000, 0, 0, 0, 2.0f, 2.0f, 2.0f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 1.0, 0.09f, 0.032f));
+            float r = std::rand()%2;
+            float g = std::rand()%2;
+            float b = std::rand()%2;
 
-        entity = this->m_entity->CreateEntity("Point_Light_3").id;
-        this->m_component->AddComponent(entity, Transform(-1000, 40, +1000, 0, 0, 0, 2.0f, 2.0f, 2.0f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0, 0.09f, 0.032f));
-        
-        entity = this->m_entity->CreateEntity("Point_Light_4").id;
-        this->m_component->AddComponent(entity, Transform(-1000, 40, -1000, 0, 0, 0, 2.0f, 2.0f, 2.0f));
-        this->m_component->AddComponent(entity, PointLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), 1.0, 0.09f, 0.032f));
+            entity = this->m_entity->CreateEntity("Point_Light_" + std::to_string(i)).id;
+            this->m_component->AddComponent(entity, Transform(x * 3500 - (3 * 3500), 50, y * 3500 - (3 * 3500), 0, 0, 0, 2.0f, 2.0f, 2.0f));
+            this->m_component->AddComponent(entity, PointLight(entity, r, g, b, glm::vec3(r, g, b), glm::vec3(r, g, b), glm::vec3(r, g, b), 1.0f, 0.09f, 0.032f));
+
+        }
         
         entity = this->m_entity->CreateEntity("SpotLight").id;
         this->m_component->AddComponent(entity, Transform(0, 400, 0, 0, 0, 0, 2.0f, 2.0f, 2.0f));
@@ -199,24 +204,24 @@ namespace emp
 
 
          entity = this->m_entity->CreateEntity("Player").id;
-        this->m_component->AddComponent(entity, Transform(500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Transform(0, 225, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
         this->m_component->AddComponent(entity, PlayerScript(*this, entity));
 
-        entity = this->m_entity->CreateEntity("Loic").id;
-        this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
+     /*   entity = this->m_entity->CreateEntity("Loic").id;
+        this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 2.0f, 2.0f, 2.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/Omnit/OmnitWithLoic.obj"));
 
         entity = this->m_entity->CreateEntity("Wheel").id;
-        this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 2.0f, 2.0f, 2.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/Mosqui/Wheel.obj"));
 
-        entity = this->m_entity->CreateEntity("mars").id;
+       entity = this->m_entity->CreateEntity("mars").id;
         this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
-        this->m_component->AddComponent(entity, Model(entity, "./data/model/planet/planet.obj"));
+        this->m_component->AddComponent(entity, Model(entity, "./data/model/planet/planet.obj"));*/
 
 
-        entity = this->m_entity->CreateEntity("Sphere_" + std::to_string(this->m_entity->GetEntitesCount())).id;
+      /*  entity = this->m_entity->CreateEntity("Sphere_" + std::to_string(this->m_entity->GetEntitesCount())).id;
         this->m_component->AddComponent(entity, Transform(-305, 425, 13,0, 0, 0, 0.2f, 0.2f, 0.2f));
         this->m_component->AddComponent(entity, Sphere(entity));
 
@@ -226,20 +231,22 @@ namespace emp
 
         entity = this->m_entity->CreateEntity("Cone_" + std::to_string(this->m_entity->GetEntitesCount())).id;
         this->m_component->AddComponent(entity, Transform(-305, 380, -4.0f, 0, 0, 0, 1.2f, 0.033f, 0.033f));
-        this->m_component->AddComponent(entity, Sphere(entity));
+        this->m_component->AddComponent(entity, Sphere(entity));*/
 
         entity = this->m_entity->CreateEntity("Main_Camera").id;
         this->m_component->AddComponent(entity, Transform(0, -4, -50));
-        this->m_component->AddComponent(entity, Camera(entity, this->m_component->GetComponent<Transform>(entity), 45.0f));
+        this->m_component->AddComponent(entity, Camera(*this, entity, this->m_component->GetComponent<Transform>(entity), 45.0f));
 
 
        /* entity = this->m_entity->CreateEntity("Model2").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0.5f));
         this->m_component->AddComponent(entity, Model(entity, "./data/backpack/backpack.obj"));*/
-
+        this->m_graphic->Start();
 
         this->is_running = true;
 	}
+
+    list<Transform*>* map = nullptr;
 
     void Engine::Update()
     {
@@ -252,6 +259,8 @@ namespace emp
             start = clock();
             float dt = float(start - end)/1000.0f;
             counter += dt;
+
+
             if(this->m_log != nullptr)
 				this->m_log->Update(dt); 
             this->m_file->Update(dt);
@@ -317,7 +326,6 @@ namespace emp
             return  this->m_component.get();
         return nullptr;
 	}
-
 }
 
 /*include  datetime import datetime

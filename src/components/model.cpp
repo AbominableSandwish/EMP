@@ -109,6 +109,7 @@ namespace emp {
             glm::mat4 projection = MainCamera.projection;
 
             this->shader->SetMat4("projection", projection);
+            glMatrixMode(GL_MODELVIEW);
 
             glBindVertexArray(this->shader->VAO);
             //CAMERA

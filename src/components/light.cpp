@@ -72,61 +72,174 @@ namespace emp {
 
     void LightManager::Init()
     {
+        bool warning = false;
         m_component = engine->GetComponentManager();
+
         {
+            std::string vertexShaderSource = FileSystem::ReadShader("./shader/model2.vs");
+            std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/light.fs");  //multiplelight  
 
-             this->shader = new Shader();
-
-            bool warning = this->shader->Init(FileSystem::ReadShader("./shader/light/light.vs"), FileSystem::ReadShader("./shader/light/light.fs"));
+            this->shader = new Shader();
+            warning = this->shader->Init(vertexShaderSource, fragmentShaderSource);
             if (warning) {
-                LOG::Warning(name + " Help!");
+                LOG::Warning(name + " help!");
             }
+
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
-                // positions       
-                 0.5f,  0.5f, -0.5f,
-                 0.5f, -0.5f, -0.5f,
-                -0.5f, -0.5f, -0.5f,
-                -0.5f,  0.5f, -0.5f,
+                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-                 0.5f,  0.5f, 0.5f,
-                 0.5f, -0.5f, 0.5f,
-                -0.5f, -0.5f, 0.5f,
-                -0.5f,  0.5f, 0.5f
-            };
+                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-            unsigned int indices[] = {
-                0, 1, 2, 1, 2, 4,
-                4, 5, 7, 5, 6, 7,
-                0, 1, 4, 4, 5, 1,
-                2, 3, 7, 6, 7, 2,
-                1, 2, 6, 5, 6, 1,
-                0, 3, 7, 7, 4, 0
+                -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+                -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+                -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+                -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+                 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+                 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
             };
 
             glGenVertexArrays(1, &this->shader->VAO);
             glGenBuffers(1, &this->shader->VBO);
-            glGenBuffers(1, &this->shader->EBO);
-            // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-            glBindVertexArray(this->shader->VAO);
+            // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s). 
 
             glBindBuffer(GL_ARRAY_BUFFER, this->shader->VBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->shader->EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            glBindVertexArray(this->shader->VAO);
+            // position attribute 
+            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+            // normal attribut; 
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(1);
+            //SALUT MON  pote 
+            glBindBuffer(GL_ARRAY_BUFFER, this->shader->VBO);
+            // note that we update the lamp's position attribute's stride to reflect the updated buffer data 
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
             glEnableVertexAttribArray(0);
 
+            // at init time.
+
+            glm::vec4 color = glm::vec4(1, 1, 1, 1);
+
+            glGenTextures(0, &diffuse_map);
+            glBindTexture(GL_TEXTURE_2D, diffuse_map);
+
+            // set texture wrap parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // set texture filter parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            // set image data
+            int size = 156;
+            unsigned char* data = new unsigned char[3 * size * size * sizeof(unsigned char)];
+            for (unsigned int i = 0; i < size * size; i++)
+            {
+                data[i * 3] = (unsigned char)(color.x * 255.0f);
+                data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
+                data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
+            }
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            delete[] data;
+
+            glGenTextures(1, &specular_map);
+            glBindTexture(GL_TEXTURE_2D, specular_map);
+
+            // set texture wrap parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            // set texture filter parameters
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
-           
+            data = new unsigned char[3 * size * size * sizeof(unsigned char)];
+            for (unsigned int i = 0; i < size * size; i++)
+            {
+                data[i * 3] = (unsigned char)(color.x * 255.0f);
+                data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
+                data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
+            }
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            delete[] data;
+
+            this->shader->UseProgram();
+
+            this->shader->SetInt("material.diffuse", 0);
+            this->shader->SetInt("material.specular", 1);
         }
+
     }
 
+    void LightManager::Start() {
+        this->uniformBlockIndex = glGetUniformBlockIndex(shader->shaderProgram, "Matrices");
+        // then we link each shader's uniform block to this uniform binding point
+        glUniformBlockBinding(shader->shaderProgram, uniformBlockIndex, 0);
+        // Now actually create the buffer
+        glGenBuffers(1, &uboMatrices);
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        // define the range of the buffer that links to a uniform binding point
+        glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
+        //CAMERA       
+        auto& list_camera = m_component->GetComponents<Camera>();
+        Camera& MainCamera = list_camera[0];
+        glm::mat4& view = MainCamera.GetView();
+        //this->shader->SetMat4("view", view);
+        //this->shader->SetMat4("projection", MainCamera.projection);
+
+        // set the view and projection matrix in the uniform block - we only have to do this once per loop iteration.
+        //glm::mat4 view = camera.GetViewMatrix();
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &view);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        // store the projection matrix
+        //glm::mat4 projection = glm::perspective(45.0f, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &MainCamera.projection);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
 
     void LightManager::Destroy()
     {
@@ -139,28 +252,47 @@ namespace emp {
 
     void LightManager::Draw()
     {
+        this->shader->UseProgram();
 
         auto& arrayElement = engine->GetComponentManager()->GetComponents<PointLight>();
+        // render boxes
+
+        auto& list_camera = m_component->GetComponents<Camera>();
+        Camera& MainCamera = list_camera[0];
+        glm::vec3 pos = MainCamera.GetPosition();
+        // this->shader->SetVec3("viewPos", pos);
+
+        this->shader->BindVertexArray(this->shader->VAO);
+
+        glm::mat4& view = MainCamera.GetView();
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &view);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
         for (auto& element : arrayElement)
         {
-            glm::mat4 transf = m_component->GetComponent<Transform>(element.entity).matrice->GetMatrice();
-            auto& list_camera = m_component->GetComponents<Camera>();
-            auto& MainCamera = list_camera[0];
-            // draw our first triangle
-            this->shader->UseProgram();
+            //Matrice Transform
+            glm::mat4& transf = m_component->GetComponent<Transform>(element.entity).matrice->GetMatrice();
+            // transf = glm::rotate(transf, glm::radians(time * 50), glm::vec3(0.0f, 1.0f, 0.0f));
 
-            // get matrix's uniform location and set matrix
-            this->shader->SetMat4("transform", transf);
-            glm::mat4 view = MainCamera.GetView();
-            this->shader->SetMat4("view", view);
-            this->shader->SetMat4("projection", list_camera[0].projection);
-
+            //transf = glm::rotate(transf, glm::radians(sin(time)*180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             this->shader->SetVec3("color", glm::vec3(element.specular.r, element.specular.g, element.specular.b));
-
-            // render container
-            this->shader->BindVertexArray(this->shader->VAO);
-            this->shader->DrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-            this->shader->BindVertexArray(0);
+            this->shader->SetMat4("transform", transf);
+            if (update) {
+               
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, diffuse_map);
+                // at init time.
+                //glm::vec4 whiteColor = glm::vec4(1, 1, 1, 1);    
+                glGenTextures(1, &specular_map);
+                glBindTexture(GL_TEXTURE_2D, specular_map);
+                // bind specular map
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, specular_map);
+               
+            }
+            this->shader->DrawArrays(GL_TRIANGLES, 0, 36);
         }
+        update = false;
     }
 }

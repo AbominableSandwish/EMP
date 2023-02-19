@@ -39,6 +39,8 @@ namespace emp
 		{
 			return Vector3(matrice4[3].r, matrice4[3].g, matrice4[3].b);
 		}
+
+
 		void SetPosition(Vector3 position)
 		{
 			this->matrice4[3].r = position.x;

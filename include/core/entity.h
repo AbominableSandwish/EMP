@@ -48,6 +48,7 @@ namespace emp
 		void MoveEntity(int, int);
 
 		void Init() override;
+		void Start() {}
 		void Update(float) override;
 		void Destroy() override;
 		

@@ -30,6 +30,7 @@ namespace emp {
         SquareManager(Engine& engine, ConfigGraphic& config);
 
         void Init();
+        void Start() {};
 
         void Update(float dt) {
             deltaTime = dt;

@@ -9,6 +9,7 @@ namespace emp {
 		RigidBody2DManager(Engine& engine, string name);
        
         void Init();
+        void Start() {}
 
         void Destroy() override;
 

@@ -2,32 +2,30 @@
 #include "glm/gtx/transform.hpp"
 namespace emp {
 	class Transform;
+	class GraphicManager;
+	class Engine;
+	class Engine;
 	class Camera {
 	public:
 		
 		int entity;
 
+		GraphicManager* m_graphic = nullptr;
 		Transform& transform;
 		glm::mat4 projection;
 		float angle_proj;
 
-		void SetProjection(float angle) {
-			this->angle_proj = angle;
-			this->projection = glm::mat4(1.0f);
-			projection = glm::perspective(glm::radians(angle), (float)800.0f / (float)600.0f, 0.1f, 1000.0f);
-		}
+		void SetProjection(float angle);
 
-		Camera(int entity, Transform& transform);
+		Camera(Engine& engine, int entity, Transform& transform);
 
-		Camera(int entity, Transform& transform, float projection) : entity(entity), transform(transform) {
-			SetProjection(projection);
-		}
+		Camera(Engine& engine, int entity, Transform& transform, float projection);
 
 		glm::vec3 GetPosition();
 
-		void Init() {
+		void Reset();
 
-		}
+		void Init();
 
 		glm::mat4 GetView();
 		glm::mat4 GetView2();

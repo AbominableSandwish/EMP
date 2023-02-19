@@ -47,20 +47,16 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
-//layout (std140) uniform Lights
-//{
-//    vec3 viewPos;
-//    DirLight dirLight;
-//    PointLight pointLights[NR_POINT_LIGHTS];
-//    SpotLight spotLight;
-//    Material material;
-//};
+layout (std140) uniform Lights
+{
+    vec3 viewPos;
+    DirLight dirLight;
+    PointLight pointLights[NR_POINT_LIGHTS];
+    SpotLight spotLight;
+}
 
-uniform vec3 viewPos;
-uniform DirLight dirLight;
-uniform PointLight pointLights[NR_POINT_LIGHTS];
-uniform SpotLight spotLight;
-uniform Material material;
+Material material;
+
 
 // function prototypes
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);

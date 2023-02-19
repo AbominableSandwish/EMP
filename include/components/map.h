@@ -5,10 +5,11 @@ namespace emp {
     class Engine;
     class ConfigGraphic;
     class Shader;
+    class Transform;
 
-    class Cube {
+    class Map {
     public:
-        Cube(int entity)
+        Map(int entity)
         {
             this->entity = entity;
 
@@ -19,7 +20,7 @@ namespace emp {
             this->color = glm::vec4(red, green, blue, 1.0f);
         }
 
-        Cube(int entity, float r, float g, float b);
+        Map(int entity, float r, float g, float b);
 
         void Init();
 
@@ -37,14 +38,16 @@ namespace emp {
 
 
     class ComponentManager;
-    class CubeManager : public System
+    class MapManager : public System
     {
     public:
-        CubeManager(Engine& engine, ConfigGraphic& config);
+        MapManager(Engine& engine, ConfigGraphic& config);
 
         void Init();
 
         void Start();
+
+        void Refresh();
 
         void Destroy() override;
 
@@ -66,5 +69,7 @@ namespace emp {
         unsigned int specular_map;
 
         float time = 0.0f;
+        bool update = true;
+        std::vector<Transform> *array = nullptr;
     };
 }

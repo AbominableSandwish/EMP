@@ -35,6 +35,7 @@ namespace emp {
         TriangleManager(Engine& engine, ConfigGraphic& config);
 
         void Init();
+        void Start() {}
 
         void Update(float dt);
 

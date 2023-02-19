@@ -81,6 +81,8 @@ namespace emp {
 			
 		}
 
+		void Start() override{}
+
 		template<typename T>
 		void RegisterComponent()
 		{

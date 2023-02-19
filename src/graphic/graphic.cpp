@@ -13,9 +13,10 @@
 #include "components/light.h"
 #include "components/model.h"
 #include "components/skybox.h"
+#include "components/map.h"
 #include <core/file.h>
 #include "components/camera.h"
-#include "glm/gtx/transform.hpp"
+#include "core/component.h";
 
 
 namespace emp {
@@ -33,6 +34,7 @@ namespace emp {
 		m_model = new ModelManager(engine, config);
 		m_light = new LightManager(engine, config);
 		m_skybox = new SkyboxManager(engine, config);
+		m_map = new MapManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -267,7 +269,8 @@ namespace emp {
 			SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
 			//Create window
-			this->window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 1000, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+			float delta = (float)width / (float)height;
+			this->window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width / delta, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 			if (this->window == NULL)
 			{
 				printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
@@ -316,7 +319,7 @@ namespace emp {
 
 
 		//Init others Sub-Systems Graphic
-//m_sprite->Init();
+		//m_sprite->Init();
 		m_square->Init();
 		m_circle->Init();
 		m_triangle->Init();
@@ -325,6 +328,7 @@ namespace emp {
 		m_model->Init();
 		m_light->Init();
 		m_skybox->Init();
+		m_map->Init();
 
 		std::string vertexShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.vs");
 		std::string fragmentShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.fs");  //multiplelight  
@@ -366,14 +370,15 @@ namespace emp {
 		// create a color attachment texture
 		glGenTextures(1, &textureColorbuffer);
 		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1000, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL); /// MAGIC !!!!
+		float delta = (float)width / (float)height;
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width/ delta, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL); /// MAGIC !!!!
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
 		// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
 		glGenRenderbuffers(1, &rbo);
 		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1000, 1000); // use a single renderbuffer object for both a depth AND stencil buffer. MAGIC
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width / delta, height); // use a single renderbuffer object for both a depth AND stencil buffer. MAGIC
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
 		// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -384,6 +389,18 @@ namespace emp {
 
 		//grid(*config);
 
+	}
+
+	void GraphicManager::Start() {
+		m_square->  Start();
+		m_circle->  Start();
+		m_triangle->Start();
+		m_cube->    Start();
+		m_sphere->  Start();
+		m_model->   Start();
+		m_light->   Start();
+		m_skybox->  Start();
+		m_map->Start();
 	}
 
 	bool pause = false;
@@ -413,6 +430,7 @@ namespace emp {
 				cout << "Window Resized!" << endl;
 			}
 		}*/
+		m_map->Update(dt);
 		m_square->Update(dt);
 		m_triangle->Update(dt);
 		m_cube->Update(dt);
@@ -421,6 +439,7 @@ namespace emp {
 		////m_sprite->Update(dt);
 		m_model->Update(dt);
 		m_skybox->Update(dt);
+		
 
 		SDL_PollEvent(0);
 		//glfwPollEve0nts();
@@ -449,6 +468,7 @@ namespace emp {
 
 
 		//m_sprite->Draw();
+		m_map->Draw();
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();
@@ -466,6 +486,7 @@ namespace emp {
 
 
 		//m_sprite->Draw();
+		m_map->Draw();
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();
@@ -473,6 +494,7 @@ namespace emp {
 		m_sphere->Draw();
 		m_model->Draw();
 		m_skybox->Draw();
+		
 
 		  // --------------------------------------------
 		glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
@@ -518,6 +540,7 @@ namespace emp {
 
 	void GraphicManager::Destroy()
 	{
+		
 		//glfwTerminate();
 		SDL_DestroyWindow(window);
 		SDL_Quit();
@@ -526,6 +549,12 @@ namespace emp {
 	Camera& GraphicManager::GetMainCamera()
 	{
 		return *camera_list->begin();
+	}
+
+	void GraphicManager::SetSizeWindow(int x, int y) {
+		this->width = x;
+		this->height = y;
+		this->engine->GetComponentManager()->GetComponents<Camera>().begin()->Reset();
 	}
 
 	/*GLFWwindow& GraphicManager::GetWindow()

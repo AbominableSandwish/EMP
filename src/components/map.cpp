@@ -1,4 +1,4 @@
-#include <components/cube.h>
+#include <components/map.h>
 #include <core/engine.h>
 #include <core/config.h>
 #include "core/component.h"
@@ -9,34 +9,110 @@
 #include <math/matrice.h>
 #include <graphic/shader.h>
 #include <core/file.h>
-
 namespace emp {
-    Cube::Cube(int entity, float r, float g, float b)
+    int numX = 512,
+        numY = 512,
+        numOctaves = 1;
+    double persistence = 0.3;
+
+ const int heiht_map = 64;
+
+#define maxPrimeIndex 10
+    int primeIndex = 0;
+
+    int primes[maxPrimeIndex][3] = {
+      { 995615039, 600173719, 701464987 },
+      { 831731269, 162318869, 136250887 },
+      { 174329291, 946737083, 245679977 },
+      { 362489573, 795918041, 350777237 },
+      { 457025711, 880830799, 909678923 },
+      { 787070341, 177340217, 593320781 },
+      { 405493717, 291031019, 391950901 },
+      { 458904767, 676625681, 424452397 },
+      { 531736441, 939683957, 810651871 },
+      { 997169939, 842027887, 423882827 }
+    };
+
+    double Noise(int i, int x, int y) {
+        int n = x + y * 57;
+        n = (n << 13) ^ n;
+        int a = primes[i][0], b = primes[i][1], c = primes[i][2];
+        int t = (n * (n * n * a + b) + c) & 0x7fffffff;
+        return 1.0 - (double)(t) / 1073741824.0;
+    }
+
+    double SmoothedNoise(int i, int x, int y) {
+        double corners = (Noise(i, x - 1, y - 1) + Noise(i, x + 1, y - 1) +
+            Noise(i, x - 1, y + 1) + Noise(i, x + 1, y + 1)) / 16,
+            sides = (Noise(i, x - 1, y) + Noise(i, x + 1, y) + Noise(i, x, y - 1) +
+                Noise(i, x, y + 1)) / 8,
+            center = Noise(i, x, y) / 4;
+        return corners + sides + center;
+    }
+
+    double Interpolate(double a, double b, double x) {  // cosine interpolation
+        double ft = x * 3.1415927,
+            f = (1 - cos(ft)) * 0.5;
+        return  a * (1 - f) + b * f;
+    }
+
+    double InterpolatedNoise(int i, double x, double y) {
+        int integer_X = x;
+        double fractional_X = x - integer_X;
+        int integer_Y = y;
+        double fractional_Y = y - integer_Y;
+
+        double v1 = SmoothedNoise(i, integer_X, integer_Y),
+            v2 = SmoothedNoise(i, integer_X + 1, integer_Y),
+            v3 = SmoothedNoise(i, integer_X, integer_Y + 1),
+            v4 = SmoothedNoise(i, integer_X + 1, integer_Y + 1),
+            i1 = Interpolate(v1, v2, fractional_X),
+            i2 = Interpolate(v3, v4, fractional_X);
+        return Interpolate(i1, i2, fractional_Y);
+    }
+
+    double ValueNoise_2D(double x, double y) {
+        double total = 0,
+            frequency = pow(2, numOctaves),
+            amplitude = 1;
+        for (int i = 0; i < numOctaves; ++i) {
+            frequency /= 0.7f;
+            amplitude *= persistence;
+            total += InterpolatedNoise((primeIndex + i) % maxPrimeIndex,
+                x / frequency, y / frequency) * amplitude;
+        }
+        return total / frequency;
+    }
+
+    float velocity = 0.01f;
+    glm::vec3 offset;
+    int seed;
+    Map::Map(int entity, float r, float g, float b)
     {
         this->entity = entity;
         this->color = glm::vec4(r, g, b, 1.0f);
     }
     //CUBE
-    void Cube::Init()
+    void Map::Init()
     {
 
     }
 
     //CUBEMANAGER
-    CubeManager::CubeManager(Engine& engine, ConfigGraphic& config) : System(engine, "CubeManager")
+    MapManager::MapManager(Engine& engine, ConfigGraphic& config) : System(engine, "CubeManager")
     {
         this->config = &config;
         m_component = engine.GetComponentManager();
     }
 
-    void CubeManager::Init()
+    void MapManager::Init()
     {
         bool warning = false;
         m_component = engine->GetComponentManager();
 
         {
             std::string vertexShaderSource = FileSystem::ReadShader("./shader/model2.vs");
-            std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/multiplelight2.fs");  //multiplelight  
+            std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/multiplelight2-5.fs");  //multiplelight  
 
             this->shader = new Shader();
             warning = this->shader->Init(vertexShaderSource, fragmentShaderSource);
@@ -170,7 +246,7 @@ namespace emp {
 
     }
 
-    void CubeManager::Start() {
+    void MapManager::Start() {
         this->uniformBlockIndex = glGetUniformBlockIndex(shader->shaderProgram, "Matrices");
         // then we link each shader's uniform block to this uniform binding point
         glUniformBlockBinding(shader->shaderProgram, uniformBlockIndex, 0);
@@ -199,24 +275,75 @@ namespace emp {
         glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4),  &MainCamera.projection);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+
+        seed = std::rand() / 500;
+        int size = heiht_map;
+        int level[heiht_map][heiht_map] = { 0 };
+        int turn = 8;
+        for (int t = 0; t < turn; t++) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    int up = seed;
+                    level[i][j] += up;
+                    double noise = ValueNoise_2D(i, j);
+                    level[i][j] = noise * 10000;
+
+                }
+            }
+        }
+
+        this->array = new  std::vector<Transform>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+
+                this->array->push_back(Transform(i * 300 - (size * 300 / 2), -1100 + level[i][j], j * 300 - (size * 300 / 2), 0, 0, 0, 3.0f, 3.0f, 3.0f));
+            }
+        }
     }
 
+    int move_x = 0;
+    void MapManager::Refresh() {
+        int size = heiht_map;
+        int level[heiht_map][heiht_map] = { 0 };
+        int turn = 8;
+        for (int t = 0; t < turn; t++) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    int up = seed;
+                    level[i][j] += up;
+                    double noise = ValueNoise_2D(i + offset.x, j);
+                    level[i][j] = noise * 10000;
+                }
+            }
+        }
 
-    void CubeManager::Destroy()
+        int i = 0;
+        for (std::vector<Transform>::iterator it = array->begin(); it < array->end(); it++)
+        {
+            int x = i % heiht_map;
+            int y = i / heiht_map;
+            glm::vec3 pos = glm::vec3(x * 300 - (size * 300 / 2), -700 + level[x][y], y * 300 - (size * 300 / 2));
+            it->SetPosition(pos);
+            i++;
+        }
+    }
+
+    void MapManager::Destroy()
     {
     }
 
-    void CubeManager::Update(float dt)
+
+    void MapManager::Update(float dt)
     {
         time += dt;
+        offset.x = time * 15;
     }
 
-    bool update = true;
-    void CubeManager::Draw()
+    void MapManager::Draw()
     {
         this->shader->UseProgram();
 
-        auto& arrayElement = engine->GetComponentManager()->GetComponents<Cube>();
+      
         // render boxes
 
         auto& list_camera = m_component->GetComponents<Camera>();
@@ -231,21 +358,21 @@ namespace emp {
         glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &view);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-        for (auto &element : arrayElement)
+        for (std::vector<Transform>::iterator it = array->begin(); it < array->end(); it++)
         {  
             //Matrice Transform
-            glm::mat4& transf = m_component->GetComponent<Transform>(element.entity).matrice->GetMatrice();
+            glm::mat4& transf = it->matrice->GetMatrice();
             // transf = glm::rotate(transf, glm::radians(time * 50), glm::vec3(0.0f, 1.0f, 0.0f));
 
             //transf = glm::rotate(transf, glm::radians(sin(time)*180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
             this->shader->SetMat4("transform", transf);
             if (update) {
-                this->shader->SetVec3("objectColor", glm::vec3(element.color.r, element.color.g, element.color.b));
+                this->shader->SetVec3("objectColor", glm::vec3(1, 1, 1));
 
                 //LIGHT
                 // Material properties
                 this->shader->SetFloat("material.shininess", this->shader->shininess);
-                this->shader->SetVec3("material.color", glm::vec3(element.color.r, element.color.g, element.color.b));
+                this->shader->SetVec3("material.color", glm::vec3(1, 1, 1));
 
                 auto& arrayDirLight = engine->GetComponentManager()->GetComponents<DirectionalLight>();
                 DirectionalLight& Dirlight = arrayDirLight[0];
@@ -257,7 +384,18 @@ namespace emp {
 
                 // PointLight properties
                 auto& arrayLight = engine->GetComponentManager()->GetComponents<PointLight>();
-                this->shader->SetVec3("pointLights[0].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[0].entity).Position() / 100.0f);
+                for (size_t i = 0; i < 36; i++)
+                {
+                    string id = std::to_string(i);
+                    this->shader->SetVec3("pointLights["+id+"].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[0].entity).Position() / 100.0f);
+                    this->shader->SetVec3("pointLights[" + id + "].ambient", arrayLight[i].ambient);
+                    this->shader->SetVec3("pointLights[" + id + "].diffuse", arrayLight[i].diffuse);
+                    this->shader->SetVec3("pointLights[" + id + "].specular", arrayLight[i].specular);
+                    this->shader->SetFloat("pointLights[" + id + "].constant", arrayLight[i].constant);
+                    this->shader->SetFloat("pointLights[" + id + "].linear", arrayLight[i].linear);
+                    this->shader->SetFloat("pointLights[" + id + "].quadratic", arrayLight[i].quadratic);
+                }
+               /* this->shader->SetVec3("pointLights[0].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[0].entity).Position() / 100.0f);
                 this->shader->SetVec3("pointLights[0].ambient", arrayLight[0].ambient);
                 this->shader->SetVec3("pointLights[0].diffuse", arrayLight[0].diffuse);
                 this->shader->SetVec3("pointLights[0].specular", arrayLight[0].specular);
@@ -284,7 +422,7 @@ namespace emp {
                 this->shader->SetVec3("pointLights[3].specular", arrayLight[3].specular);
                 this->shader->SetFloat("pointLights[3].constant", arrayLight[3].constant);
                 this->shader->SetFloat("pointLights[3].linear", arrayLight[3].linear);
-                this->shader->SetFloat("pointLights[3].quadratic", arrayLight[3].quadratic);
+                this->shader->SetFloat("pointLights[3].quadratic", arrayLight[3].quadratic);*/
                 // spotLight
                 auto& arraySpot = engine->GetComponentManager()->GetComponents<SpotLight>();
                 this->shader->SetVec3("spotLight.position", engine->GetComponentManager()->GetComponent<Transform>(arraySpot[0].entity).Position() / 100.0f);
@@ -305,11 +443,16 @@ namespace emp {
                 glGenTextures(1, &specular_map);
                 glBindTexture(GL_TEXTURE_2D, specular_map);
                 // bind specular map
-                glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, specular_map);
-                update = false;
+                //glActiveTexture(GL_TEXTURE1);
+               // glBindTexture(GL_TEXTURE_2D, specular_map);
+                
             }
             this->shader->DrawArrays(GL_TRIANGLES, 0, 36);
         }
+        update = false;
+      
+        Refresh();
+    
     }
+   
 }   

@@ -100,6 +100,7 @@ namespace emp
 	public:
 		FileManager(Engine&, string);
 		void Init() override;
+		void Start() {}
 		void Update(float) override;
 		void Destroy() override;
 		static FileManager* GetInstance();

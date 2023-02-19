@@ -1,5 +1,6 @@
 #include "editor/tool.h"
 
+
 namespace emp {
 	class EntityManager;
 }
@@ -11,6 +12,9 @@ public:
 	void Update(float) override;
 	void Draw() override;
 	void Destroy() override;
+	//format sauvegarde à définir
+	void SaveScene();
+	void LoadScene();
 protected:
 	emp::EntityManager* m_manager = nullptr;
 

@@ -43,6 +43,8 @@ namespace emp {
 
         void Init();
 
+        void Start() {}
+
         void Destroy();
 
         void Update(float dt);

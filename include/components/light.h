@@ -167,11 +167,20 @@ namespace emp {
 
         void Destroy() override;
 
+        void Start() override;
+
         void Update(float) override;
 
         void Draw();
 
         Shader* shader = nullptr;
+
+        // first. We get the relevant block indices
+        unsigned int uniformBlockIndex;
+        // Now actually create the buffer
+        unsigned int uboMatrices;
+        unsigned int diffuse_map;
+        unsigned int specular_map;
 
         std::string vertexCode;
         const char* vertexShaderSource;
@@ -187,5 +196,7 @@ namespace emp {
         float project = 45.0f;
 
         float time = 0.0f;;
+
+        bool update = true;
     };
 }

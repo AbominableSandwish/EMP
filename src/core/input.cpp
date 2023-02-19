@@ -6,12 +6,17 @@
 #include <sdl.h>
 #include <core/log.h>
 
+
 namespace emp {
   InputSystem::InputSystem() { instance_input = this; }
 
   InputSystem::InputSystem(Engine& engine, string name) : System(engine, name) { instance_input = this; }
 
     void InputSystem::Init()
+    {
+    }
+
+    void InputSystem::Start()
     {
     }
 
@@ -38,6 +43,8 @@ namespace emp {
                     int w, h;
                     SDL_GetWindowSize(this->engine->GetGraphicManager()->window, &w, &h);
                     LOG::Info("Resizing window w: " + std::to_string(w) + " h: " + std::to_string(h) + "\n");
+                    this->engine->GetGraphicManager()->SetSizeWindow(w, h);
+                   
 
                 }
                 break;

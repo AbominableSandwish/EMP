@@ -10,6 +10,8 @@ namespace emp
 
 	void LogManager::Init() { instance_log = this; }
 
+	void LogManager::Start() {}
+
 	void LogManager::Update(float dt) {}
 
 	void LogManager::Destroy() {}

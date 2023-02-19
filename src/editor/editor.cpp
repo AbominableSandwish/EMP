@@ -199,6 +199,8 @@ namespace emp
 			{
 				if (tool->is_open) {
 					// render your GUI
+					
+					//ImGui::SetNextWindowPos(ImVec2(0, 0));
 					ImGui::Begin(tool->name.c_str(), &(tool->is_open), ImGuiWindowFlags_MenuBar);
 					tool->Draw();
 					ImGui::End();
@@ -220,7 +222,8 @@ namespace emp
 		// Render dear imgui into screen
 		ImGui::Render();
 		ImGuiIO& io = ImGui::GetIO();
-		glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+		float delta = io.DisplaySize.x / io.DisplaySize.y;
+		glViewport(0, 0, (int)io.DisplaySize.x / delta, (int)io.DisplaySize.y);
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 

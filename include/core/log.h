@@ -39,6 +39,7 @@ namespace  emp
 		LogManager(Engine&, string);
 		//Function
 		void Init();
+		void Start();
 		void Update(float);
 		void Destroy();
 		static LogManager* GetInstance();

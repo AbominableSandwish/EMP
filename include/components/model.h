@@ -231,6 +231,8 @@ namespace emp {
 
         void Destroy() override;
 
+        void Start() {}
+
         void Update(float) override;
 
         void Draw();
@@ -240,6 +242,11 @@ namespace emp {
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
         float project = 45.0f;
+
+        // first. We get the relevant block indices
+        unsigned int uniformBlockIndex;
+        // Now actually create the buffer
+        unsigned int uboMatrices;
         unsigned int diffuse_map;
         unsigned int specular_map;
         float time = 0.0f;;

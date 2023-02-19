@@ -28,7 +28,6 @@ namespace emp
         bool is_open;
     protected:
         virtual ~Tool() {};
-       
         Engine* m_engine = nullptr;
     };
 	

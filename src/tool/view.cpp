@@ -51,8 +51,9 @@ namespace emp
         ImGui::BeginChild("GameRender");
         // Get the size of the child (i.e. the whole draw size of the windows).
         ImVec2 wsize = ImGui::GetWindowSize();
+        float delta = wsize.x / wsize.y;
         // Because I use the texture from OpenGL, I need to invert the V from the UV.
-        ImGui::Image((ImTextureID)this->m_engine->GetGraphicManager()->textureColorbuffer, wsize, ImVec2(0, 1), ImVec2(1, 0)); 
+        ImGui::Image((ImTextureID)this->m_engine->GetGraphicManager()->textureColorbuffer, ImVec2((int)wsize.x / delta, (int)wsize.y), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::EndChild();
 	}
 

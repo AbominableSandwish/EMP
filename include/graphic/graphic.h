@@ -21,6 +21,7 @@ namespace emp {
 	class LightManager;
 	class ModelManager;
 	class SkyboxManager;
+	class MapManager;
 
 	class Camera;
 	/// Holds all state information relevant to a character as loaded using FreeType
@@ -38,6 +39,7 @@ namespace emp {
         GraphicManager(Engine& engine, ConfigGraphic& config);
 		
         void Init() override;
+		void Start() override;
 		void Update(float) override;
 		void Draw();
 
@@ -85,6 +87,11 @@ namespace emp {
 		unsigned int framebuffer;
 		unsigned int textureColorbuffer;
 		unsigned int rbo;
+
+		int width = 1000;
+		int height = 1000;
+
+		void SetSizeWindow(int x, int y);
 	protected:
 
 
@@ -102,12 +109,9 @@ namespace emp {
 		LightManager* m_light;
 		ModelManager* m_model;
 		SkyboxManager* m_skybox;
+		MapManager* m_map;
 		
 		std::vector<Camera> *camera_list;
-
-
-		int width = 64;
-		int height = 64;
 	};
 }
 

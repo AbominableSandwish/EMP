@@ -14,6 +14,7 @@ namespace emp
     class InputSystem;
     class RigidBody2DManager;
     class ScriptSystem;
+    class Transform;
 
 	class Engine
 	{

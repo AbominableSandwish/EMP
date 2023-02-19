@@ -80,6 +80,7 @@ namespace emp {
         }
 
     	void Init() override;
+        void Start() override;
         void Destroy() override;
         void Update(float) override;
     private:
