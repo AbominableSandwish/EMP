@@ -387,7 +387,7 @@ namespace emp {
                 for (size_t i = 0; i < 36; i++)
                 {
                     string id = std::to_string(i);
-                    this->shader->SetVec3("pointLights["+id+"].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[0].entity).Position() / 100.0f);
+                    this->shader->SetVec3("pointLights["+id+"].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[i].entity).Position() / 100.0f);
                     this->shader->SetVec3("pointLights[" + id + "].ambient", arrayLight[i].ambient);
                     this->shader->SetVec3("pointLights[" + id + "].diffuse", arrayLight[i].diffuse);
                     this->shader->SetVec3("pointLights[" + id + "].specular", arrayLight[i].specular);
