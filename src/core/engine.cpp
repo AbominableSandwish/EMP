@@ -25,9 +25,11 @@
 #include <components/script.h>
 #include <components/skybox.h>
 #include <components/map.h>
+#include <components/chunck.h>
 // External
 #include <iostream>
 #include <ctime>
+
 
 namespace emp
 {
@@ -193,7 +195,7 @@ namespace emp
             float b = std::rand()%2;
 
             entity = this->m_entity->CreateEntity("Point_Light_" + std::to_string(i)).id;
-            this->m_component->AddComponent(entity, Transform(x * 3500 - (3 * 3500), 50, y * 3500 - (3 * 3500), 0, 0, 0, 2.0f, 2.0f, 2.0f));
+            this->m_component->AddComponent(entity, Transform(x * 3500 - (3 * 3500), -250, y * 3500 - (3 * 3500), 0, 0, 0, 2.0f, 2.0f, 2.0f));
             this->m_component->AddComponent(entity, PointLight(entity, r, g, b, glm::vec3(r, g, b), glm::vec3(r, g, b), glm::vec3(r, g, b), 1.0f, 0.09f, 0.032f));
 
         }
@@ -204,7 +206,7 @@ namespace emp
 
 
          entity = this->m_entity->CreateEntity("Player").id;
-        this->m_component->AddComponent(entity, Transform(0, 225, 0, 0, 0, 0, 5.0f, 5.0f, 5.0f));
+        this->m_component->AddComponent(entity, Transform(0, 225, -5000, 0, 0, 0, 5.0f, 5.0f, 5.0f));
         this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
         this->m_component->AddComponent(entity, PlayerScript(*this, entity));
 

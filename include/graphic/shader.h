@@ -139,6 +139,11 @@ namespace emp
 			glDrawArrays(mode, first, count);
 		}
 
+
+		void DrawArraysInstanced(GLenum mode, GLint first, GLsizei count, GLsizei primcount) {
+			glDrawArraysInstanced(mode, first, count, primcount);
+		}
+
 		void SetInt(std::string name, int i) {
 			unsigned int viewPosLoc = glGetUniformLocation(shaderProgram, name.c_str());
 			glUniform1i(viewPosLoc, i);

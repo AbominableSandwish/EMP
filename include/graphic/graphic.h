@@ -22,6 +22,7 @@ namespace emp {
 	class ModelManager;
 	class SkyboxManager;
 	class MapManager;
+	class ChunckManager;
 
 	class Camera;
 	/// Holds all state information relevant to a character as loaded using FreeType
@@ -110,6 +111,7 @@ namespace emp {
 		ModelManager* m_model;
 		SkyboxManager* m_skybox;
 		MapManager* m_map;
+		ChunckManager* m_chunck;
 		
 		std::vector<Camera> *camera_list;
 	};

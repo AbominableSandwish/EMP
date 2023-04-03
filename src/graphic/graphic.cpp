@@ -14,6 +14,7 @@
 #include "components/model.h"
 #include "components/skybox.h"
 #include "components/map.h"
+#include "components/chunck.h"
 #include <core/file.h>
 #include "components/camera.h"
 #include "core/component.h";
@@ -34,7 +35,8 @@ namespace emp {
 		m_model = new ModelManager(engine, config);
 		m_light = new LightManager(engine, config);
 		m_skybox = new SkyboxManager(engine, config);
-		m_map = new MapManager(engine, config);
+		//m_map = new MapManager(engine, config);
+		m_chunck = new ChunckManager(engine, config);
 	}
 	
 	Line* lineX;
@@ -328,7 +330,8 @@ namespace emp {
 		m_model->Init();
 		m_light->Init();
 		m_skybox->Init();
-		m_map->Init();
+		//m_map->Init();
+		m_chunck->Init();
 
 		std::string vertexShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.vs");
 		std::string fragmentShaderSource = FileSystem::ReadShader("./shader/framebuffer/framebuffer.fs");  //multiplelight  
@@ -400,7 +403,10 @@ namespace emp {
 		m_model->   Start();
 		m_light->   Start();
 		m_skybox->  Start();
-		m_map->Start();
+
+		//In Progress
+		//m_map->Start();
+		m_chunck->Start();
 	}
 
 	bool pause = false;
@@ -430,7 +436,8 @@ namespace emp {
 				cout << "Window Resized!" << endl;
 			}
 		}*/
-		m_map->Update(dt);
+		//m_map->Update(dt);
+		m_chunck->Update(dt);
 		m_square->Update(dt);
 		m_triangle->Update(dt);
 		m_cube->Update(dt);
@@ -468,7 +475,8 @@ namespace emp {
 
 
 		//m_sprite->Draw();
-		m_map->Draw();
+		//m_map->Draw();
+		m_chunck->Draw();
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();
@@ -486,7 +494,8 @@ namespace emp {
 
 
 		//m_sprite->Draw();
-		m_map->Draw();
+		//m_map->Draw();
+		m_chunck->Draw();
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();

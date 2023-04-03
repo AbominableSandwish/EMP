@@ -30,7 +30,7 @@ namespace emp {
 
     void CircleManager::Init()
     {
-        std::string vertexShaderSource = FileSystem::ReadShader("./shader/model.vs");
+        std::string vertexShaderSource = FileSystem::ReadShader("./shader/model2.vs");
         std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/multiplelight2.fs");  //multiplelight  
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
