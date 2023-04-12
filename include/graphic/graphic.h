@@ -110,7 +110,7 @@ namespace emp {
 		LightManager* m_light;
 		ModelManager* m_model;
 		SkyboxManager* m_skybox;
-		MapManager* m_map;
+		//MapManager* m_map;
 		ChunckManager* m_chunck;
 		
 		std::vector<Camera> *camera_list;

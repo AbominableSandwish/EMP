@@ -88,5 +88,6 @@ namespace emp {
         glm::vec3 offset;
         int seed;
         glm::mat4* transformMatrices;
+        const unsigned int amount = 4096;
     };
 }

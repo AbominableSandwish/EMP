@@ -25,10 +25,45 @@ namespace emp {
 	}
 
 	void ScriptSystem::Update(float dt) {
-		auto& arrayElementPlayer = this->engine->GetComponentManager()->GetComponents<PlayerScript>();
-		auto& elementPlayer = arrayElementPlayer[0];
-		if (&elementPlayer != nullptr) {
-			elementPlayer.Update(dt);
+		//auto& arrayElementPlayer = this->engine->GetComponentManager()->GetComponents<PlayerScript>();
+		//auto& elementPlayer = arrayElementPlayer[0];
+		//if (&elementPlayer != nullptr) {
+		//	elementPlayer.Update(dt);
+		//}
+
+		float cameraSpeedTranslationCurrent = static_cast<float>(cameraSpeedTranslation * dt);
+		float cameraSpeedRotationCurrent = static_cast<float>(cameraSpeedRotation * dt);
+
+		if (main_camera == nullptr)
+			main_camera = &(engine->GetComponentManager()->GetComponents<Camera>()[0]);
+
+		if (Input::IsKeyDown(MushKey::UP)) {
+			glm::vec3 position = main_camera->transform.Position();
+			main_camera->transform.SetPosition(position - cameraSpeedTranslationCurrent * main_camera->cameraFront);
+		}
+		if (Input::IsKeyDown(MushKey::DOWN)) {
+			glm::vec3 position = main_camera->transform.Position();
+			main_camera->transform.SetPosition(position + cameraSpeedTranslationCurrent * main_camera->cameraFront);
+		}
+		if (Input::IsKeyDown(MushKey::LEFT)) {
+			glm::vec3 position = main_camera->transform.Position();
+			main_camera->transform.SetPosition(position + glm::normalize(glm::cross(main_camera->cameraFront, main_camera->cameraUp)) * cameraSpeedTranslationCurrent);
+			//Rotation Left
+		}
+		if (Input::IsKeyDown(MushKey::RIGHT)) {
+			glm::vec3 position = main_camera->transform.Position();
+			main_camera->transform.SetPosition(position - glm::normalize(glm::cross(main_camera->cameraFront, main_camera->cameraUp)) * cameraSpeedTranslationCurrent);
+			//Rotation Right
+		}
+		if (Input::IsKeyDown(MushKey::SPACE)) {
+			main_camera->transform.angle_x = main_camera->transform.angle_x + cameraSpeedRotationCurrent;
+			main_camera->SetRotation(main_camera->transform.angle_x, 0);
+			//Up;
+		}
+		if (Input::IsKeyDown(MushKey::CTRL_L)) {
+			main_camera->transform.angle_x = main_camera->transform.angle_x - cameraSpeedRotationCurrent;
+			main_camera->SetRotation(main_camera->transform.angle_x, 0);
+			//Down;
 		}
 	}
 

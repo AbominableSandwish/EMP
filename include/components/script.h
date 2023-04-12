@@ -33,6 +33,8 @@ namespace emp {
         void Update(float dt) override;
         void Destroy() override;
         Camera* main_camera = nullptr;
+
+       
     };
 
     class ComponentManager;
@@ -53,6 +55,8 @@ namespace emp {
 
         float time = 0.0f;
 
-
+        Camera* main_camera = nullptr;
+        const float cameraSpeedTranslation = 25.0f;
+        const float cameraSpeedRotation = 250.0f;
     };
 }

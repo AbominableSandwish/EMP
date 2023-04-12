@@ -70,19 +70,13 @@ namespace emp {
                 LOG::Warning(name + " help!");
             }
 
-            unsigned int amount = 10;
 
-            transformMatrices = new glm::mat4[amount];
-            for (unsigned int i = 0; i < amount; i++) {
-                transformMatrices[i] = glm::mat4(1.0f);
-                transformMatrices[i] = glm::translate(transformMatrices[i], glm::vec3(i, i , 0));
-            }
 
-            unsigned int buffer;
-            glGenBuffers(1, &buffer);
-            glBindBuffer(GL_ARRAY_BUFFER, buffer);
-            glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &transformMatrices[0], GL_STATIC_DRAW);
+           
 
+        
+
+           
 
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
@@ -147,34 +141,50 @@ namespace emp {
             glEnableVertexAttribArray(1);
             glBindVertexArray(0);
             //////SALUT MON  pote 
-            glBindBuffer(GL_ARRAY_BUFFER, this->shader->VBO);
-            ////// note that we update the lamp's position attribute's stride to reflect the updated buffer data 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
+            //glBindBuffer(GL_ARRAY_BUFFER, this->shader->VBO);
+            //////// note that we update the lamp's position attribute's stride to reflect the updated buffer data 
+            //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+            //glEnableVertexAttribArray(0);
+            
+            unsigned int buffer;
+            glGenBuffers(1, &buffer);
+            glBindBuffer(GL_ARRAY_BUFFER, buffer);
+            //float mat[amount * 16];
+            //for (int matrix_id = 0; matrix_id < amount; matrix_id++) {
+            //    // Spiral arrangement of triangles
+            //    float pos_x = 0.002f * matrix_id * cos(40 * M_PI * matrix_id / amount);
+            //    float pos_y = 0.002f * matrix_id * sin(40 * M_PI * matrix_id / amount);
+            //    float scale = 0.0004f * matrix_id;
+            //    int i = 16 * matrix_id;
+            //    mat[i + 0] = scale; mat[i + 4] = 6.0f * matrix_id;  mat[i + 8] = 1.0f;  mat[i + 12] = pos_x;
+            //    mat[i + 1] = 1.0f;  mat[i + 5] = scale; mat[i + 9] = 1.0f;  mat[i + 13] = pos_y;
+            //    mat[i + 2] = 1.0f;  mat[i + 6] = 1.0f;  mat[i + 10] = scale; mat[i + 14] = 1.0f;
+            //    mat[i + 3] = 1.0f;  mat[i + 7] = 1.0f;  mat[i + 11] = 1.0f;  mat[i + 15] = 1.0f;
+            //}
+
+            transformMatrices = new glm::mat4[amount];
+            
+            for (unsigned int x = 0; x < 64; x++) {
+                for (unsigned int y = 0; y < 64; y++) {
+                    transformMatrices[x*64+y] = glm::mat4(5.0f);
+                    transformMatrices[x*64+y] = glm::translate(transformMatrices[x * 64 + y], glm::vec3(1 * x, -2, 1 * y));
+                }
+            }
+            glBufferData(GL_ARRAY_BUFFER, amount * 16 * sizeof(float), transformMatrices, GL_DYNAMIC_DRAW);
 
 
-            //unsigned int VAO = this->shader->VAO;
+            int transform_location = glGetAttribLocation(this->shader->shaderProgram, "aTransform");
             glBindVertexArray(this->shader->VAO);
-            // set attribute pointers for matrix (4 times vec4)
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-            glEnableVertexAttribArray(4);
-            glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-            glEnableVertexAttribArray(5);
-            glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-            glEnableVertexAttribArray(6);
-            glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
-            glVertexAttribDivisor(3, 1);
-            glVertexAttribDivisor(4, 1);
-            glVertexAttribDivisor(5, 1);
-            glVertexAttribDivisor(6, 1);
+            for (unsigned int i = 0; i < 4; i++) {
+                glEnableVertexAttribArray(transform_location + i);
+                glVertexAttribPointer(transform_location + i, 4, GL_FLOAT, GL_FALSE,
+                    16 * sizeof(float),
+                    (const GLvoid*)(sizeof(GLfloat) * i * 4));
+                glVertexAttribDivisor(transform_location + i, 1);
+            }
 
             glBindVertexArray(0);
-
-
-
-               
+            
             // at init time
             glm::vec4 color = glm::vec4(1, 1, 1, 1);
 
@@ -345,7 +355,7 @@ namespace emp {
 
 
         glBindVertexArray(this->shader->VAO);
-        this->shader->DrawArraysInstanced(GL_TRIANGLES, 0, 36, 20);
+        this->shader->DrawArraysInstanced(GL_TRIANGLES, 0, 36, amount);
         glBindVertexArray(0);
     }
 }   

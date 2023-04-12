@@ -159,9 +159,9 @@ namespace emp
         //this->m_component->AddComponent(entity, Transform(0, 0, -5000, 0, 0, 0, 500.0f, 500.0f, 500.0f));
         //this->m_component->AddComponent(entity, Square(entity));//, 0.66f, 0.66f, 0
 
-        entity = this->m_entity->CreateEntity("Circle").id;
-        this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 1.0f));
-        this->m_component->AddComponent(entity, Circle(entity));//, 0.66f, 0.66f, 0
+        //entity = this->m_entity->CreateEntity("Circle").id;
+        //this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 1.0f, 1.0f, 1.0f));
+        //this->m_component->AddComponent(entity, Circle(entity));//, 0.66f, 0.66f, 0
 
       /*  for (int i = 0; i < 25; i++ ) {
             for (int j = 0; j < 25; j++) {
@@ -205,10 +205,10 @@ namespace emp
         this->m_component->AddComponent(entity, SpotLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f))));
 
 
-         entity = this->m_entity->CreateEntity("Player").id;
-        this->m_component->AddComponent(entity, Transform(0, 225, -5000, 0, 0, 0, 5.0f, 5.0f, 5.0f));
-        this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
-        this->m_component->AddComponent(entity, PlayerScript(*this, entity));
+        // entity = this->m_entity->CreateEntity("Player").id;
+        //this->m_component->AddComponent(entity, Transform(0, 225, -5000, 0, 0, 0, 5.0f, 5.0f, 5.0f));
+        //this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
+        //this->m_component->AddComponent(entity, PlayerScript(*this, entity));
 
      /*   entity = this->m_entity->CreateEntity("Loic").id;
         this->m_component->AddComponent(entity, Transform(-500, -165, 0, 0, 0, 0, 2.0f, 2.0f, 2.0f));
