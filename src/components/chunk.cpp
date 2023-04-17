@@ -17,7 +17,7 @@ namespace emp {
         numY = 512,
         numOctaves = 1;
     double persistence = 0.3;
-    const int heiht_map = 32;
+    const int heiht_map = 16;
 
 #define maxPrimeIndex 10
     int primeIndex = 0;
@@ -201,13 +201,14 @@ namespace emp {
                 }
             }*/
 
+            int i = 0;
             for each (auto cell in first_chunck)
             {
                 const int x = cell.x;
                 const int y = cell.z;
-                transformMatrices[x * size + y] = glm::mat4(3.0f);
-                transformMatrices[x * size + y] = glm::translate(transformMatrices[x * size + y], cell);
-                
+                transformMatrices[i] = glm::mat4(3.0f);
+                transformMatrices[i] = glm::translate(transformMatrices[i], cell);
+                i++;
             }
 
             glBufferData(GL_ARRAY_BUFFER, amount * 16 * sizeof(float), transformMatrices, GL_DYNAMIC_DRAW);
@@ -284,25 +285,26 @@ namespace emp {
     std::vector<glm::vec3> ChunckManager::LoadChunck(int x, int y) {
         seed = std::rand() / 500;
         int size = heiht_map;
+
+        std::vector<glm::vec3> chunck = std::vector<glm::vec3>();
         int level[heiht_map][heiht_map] = { 0 };
-        int turn = 8;
-        for (int t = 0; t < turn; t++) {
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    int up = seed;
-                    level[i][j] += up;
                     double noise = ValueNoise_2D(i + x, j + y);
-                    level[i][j] = noise * 50;
-
+                    level[i][j] = noise * 250;
                 }
             }
-        }
 
         std::vector<glm::vec3> array = std::vector<glm::vec3>();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-
-                array.push_back(glm::vec3(i , level[i][j], j));
+                int height = level[i][j];
+                while (height >= -1)
+                {
+                    array.push_back(glm::vec3(i, height, j));
+                    height--;
+                }
+              
             }
         }
 
