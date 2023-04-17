@@ -19,7 +19,7 @@ namespace emp {
 
 	void ModelManager::Init() {
         std::string vertexShaderSource = FileSystem::ReadShader("./shader/model.vs");
-        std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/multiplelight2.fs");
+        std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/multiplelight2-5.fs");
 
         this->shader = new Shader();
         bool warning = this->shader->Init(vertexShaderSource, fragmentShaderSource);
@@ -122,7 +122,6 @@ namespace emp {
 
             this->shader->SetMat4("transform", transf);
 
-            if (updat) {
                 this->shader->SetVec3("objectColor", glm::vec3(element.color.r, element.color.g, element.color.b));
 
                 // Material properties
@@ -139,34 +138,17 @@ namespace emp {
 
                 // PointLight properties
                 auto& arrayLight = engine->GetComponentManager()->GetComponents<PointLight>();
-                this->shader->SetVec3("pointLights[0].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[0].entity).Position() / 100.0f);
-                this->shader->SetVec3("pointLights[0].ambient", arrayLight[0].ambient);
-                this->shader->SetVec3("pointLights[0].diffuse", arrayLight[0].diffuse);
-                this->shader->SetVec3("pointLights[0].specular", arrayLight[0].specular);
-                this->shader->SetFloat("pointLights[0].constant", arrayLight[0].constant);
-                this->shader->SetFloat("pointLights[0].linear", arrayLight[0].linear);
-                this->shader->SetFloat("pointLights[0].quadratic", arrayLight[0].quadratic);
-                this->shader->SetVec3("pointLights[1].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[1].entity).Position() / 100.0f);
-                this->shader->SetVec3("pointLights[1].ambient", arrayLight[1].ambient);
-                this->shader->SetVec3("pointLights[1].diffuse", arrayLight[1].diffuse);
-                this->shader->SetVec3("pointLights[1].specular", arrayLight[1].specular);
-                this->shader->SetFloat("pointLights[1].constant", arrayLight[1].constant);
-                this->shader->SetFloat("pointLights[1].linear", arrayLight[1].linear);
-                this->shader->SetFloat("pointLights[1].quadratic", arrayLight[1].quadratic);
-                this->shader->SetVec3("pointLights[2].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[2].entity).Position() / 100.0f);
-                this->shader->SetVec3("pointLights[2].ambient", arrayLight[2].ambient);
-                this->shader->SetVec3("pointLights[2].diffuse", arrayLight[2].diffuse);
-                this->shader->SetVec3("pointLights[2].specular", arrayLight[2].specular);
-                this->shader->SetFloat("pointLights[2].constant", arrayLight[2].constant);
-                this->shader->SetFloat("pointLights[2].linear", arrayLight[2].linear);
-                this->shader->SetFloat("pointLights[2].quadratic", arrayLight[2].quadratic);
-                this->shader->SetVec3("pointLights[3].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[3].entity).Position() / 100.0f);
-                this->shader->SetVec3("pointLights[3].ambient", arrayLight[3].ambient);
-                this->shader->SetVec3("pointLights[3].diffuse", arrayLight[3].diffuse);
-                this->shader->SetVec3("pointLights[3].specular", arrayLight[3].specular);
-                this->shader->SetFloat("pointLights[3].constant", arrayLight[3].constant);
-                this->shader->SetFloat("pointLights[3].linear", arrayLight[3].linear);
-                this->shader->SetFloat("pointLights[3].quadratic", arrayLight[3].quadratic);
+                for (size_t i = 0; i < 36; i++)
+                {
+                    string id = std::to_string(i);
+                    this->shader->SetVec3("pointLights[" + id + "].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[i].entity).Position() / 100.0f);
+                    this->shader->SetVec3("pointLights[" + id + "].ambient", arrayLight[i].ambient);
+                    this->shader->SetVec3("pointLights[" + id + "].diffuse", arrayLight[i].diffuse);
+                    this->shader->SetVec3("pointLights[" + id + "].specular", arrayLight[i].specular);
+                    this->shader->SetFloat("pointLights[" + id + "].constant", arrayLight[i].constant);
+                    this->shader->SetFloat("pointLights[" + id + "].linear", arrayLight[i].linear);
+                    this->shader->SetFloat("pointLights[" + id + "].quadratic", arrayLight[i].quadratic);
+                }
                 // spotLight
                 auto& arraySpot = engine->GetComponentManager()->GetComponents<SpotLight>();
                 this->shader->SetVec3("spotLight.position", engine->GetComponentManager()->GetComponent<Transform>(arraySpot[0].entity).Position() / 100.0f);
@@ -190,8 +172,6 @@ namespace emp {
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, specular_map);
 
-                updat = false;
-            }
 
             element.Draw(this->shader->shaderProgram);
         }

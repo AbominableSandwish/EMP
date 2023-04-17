@@ -172,10 +172,6 @@ namespace emp
         }
         */
 
-
-
-       
-
         //entity = this->m_entity->CreateEntity("Map").id;
         //this->m_component->AddComponent(entity, Transform(0, 0, 40, 0, 0, 0, 2.0f, 2.0f, 2.0f));
         //this->m_component->AddComponent(entity, Map(entity));
@@ -195,7 +191,7 @@ namespace emp
             float b = std::rand()%2;
 
             entity = this->m_entity->CreateEntity("Point_Light_" + std::to_string(i)).id;
-            this->m_component->AddComponent(entity, Transform(x * 3500 - (3 * 3500), -250, y * 3500 - (3 * 3500), 0, 0, 0, 2.0f, 2.0f, 2.0f));
+            this->m_component->AddComponent(entity, Transform(x * 2500 - (3 * 2500), -250, y * 2500 - (3 * 2500), 0, 0, 0, 2.0f, 2.0f, 2.0f));
             this->m_component->AddComponent(entity, PointLight(entity, r, g, b, glm::vec3(r, g, b), glm::vec3(r, g, b), glm::vec3(r, g, b), 1.0f, 0.09f, 0.032f));
 
         }
@@ -205,7 +201,7 @@ namespace emp
         this->m_component->AddComponent(entity, SpotLight(entity, 0.0f, 0.0f, 0.8f, glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f))));
 
 
-        // entity = this->m_entity->CreateEntity("Player").id;
+        //entity = this->m_entity->CreateEntity("Player").id;
         //this->m_component->AddComponent(entity, Transform(0, 225, -5000, 0, 0, 0, 5.0f, 5.0f, 5.0f));
         //this->m_component->AddComponent(entity, Model(entity, "./data/byke2/untitled.obj"));
         //this->m_component->AddComponent(entity, PlayerScript(*this, entity));
@@ -235,6 +231,23 @@ namespace emp
         this->m_component->AddComponent(entity, Transform(-305, 380, -4.0f, 0, 0, 0, 1.2f, 0.033f, 0.033f));
         this->m_component->AddComponent(entity, Sphere(entity));*/
 
+
+      /*  for (size_t i = 0; i < 24; i++)
+        {
+            int pos = (i * 500) - (24/2*500);
+            entity = this->m_entity->CreateEntity("tree_" + to_string(i)).id;
+            this->m_component->AddComponent(entity, Transform(pos, -500, pos, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+            this->m_component->AddComponent(entity, Model(entity, "./data/model/tree/tree.obj"));
+        }*/
+
+        //for (size_t i = 0; i < 24; i++)
+        //{
+        //    int pos = (i * 500) - (24 / 2 * 500);
+        //    entity = this->m_entity->CreateEntity("Stone_" + to_string(i)).id;
+        //    this->m_component->AddComponent(entity, Transform(pos, -500, pos, 0, 0, 0, 2.0f, 2.0f, 2.0f));
+        //    this->m_component->AddComponent(entity, Model(entity, "./data/model/stones/stone_1.obj"));
+        //}
+
         entity = this->m_entity->CreateEntity("Main_Camera").id;
         this->m_component->AddComponent(entity, Transform(0, -4, -50));
         this->m_component->AddComponent(entity, Camera(*this, entity, this->m_component->GetComponent<Transform>(entity), 45.0f));
@@ -243,6 +256,9 @@ namespace emp
        /* entity = this->m_entity->CreateEntity("Model2").id;
         this->m_component->AddComponent(entity, Transform(0, 0, 0, 0, 0, 0, 0.5f, 0.5f, 0.5f));
         this->m_component->AddComponent(entity, Model(entity, "./data/backpack/backpack.obj"));*/
+
+    
+
         this->m_graphic->Start();
 
         this->is_running = true;
@@ -365,4 +381,3 @@ class Engine :
         #self._engine._run = False
         #return
         */
-

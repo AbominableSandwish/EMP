@@ -331,7 +331,7 @@ namespace emp {
                 }
             }
 
-            emp::Circle& circle = m_engine->GetComponentManager()->GetComponent<emp::Circle>(Target);
+           /* emp::Circle& circle = m_engine->GetComponentManager()->GetComponent<emp::Circle>(Target);
             if (circle.entity == Target) {
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
                 ImGui::Text(" Circle: ");
@@ -344,7 +344,7 @@ namespace emp {
                     circle.SetSegment(segment);
                     value_changed = false;
                 }
-            }
+            }*/
         }
     }
 

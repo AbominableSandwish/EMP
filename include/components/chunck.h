@@ -62,6 +62,8 @@ namespace emp {
 
         void Refresh();
 
+        std::vector<glm::vec3> LoadChunck(int x, int y);
+
         void Destroy() override;
 
         void Update(float) override;
@@ -84,10 +86,9 @@ namespace emp {
 
         float time = 0.0f;
         bool update = true;
-        std::vector<Transform> *array = nullptr;
         glm::vec3 offset;
         int seed;
         glm::mat4* transformMatrices;
-        const unsigned int amount = 4096;
+        const unsigned int amount = 1024;
     };
 }

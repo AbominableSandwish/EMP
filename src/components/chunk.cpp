@@ -13,7 +13,81 @@
 #include <stdlib.h>
 
 namespace emp {
+    int numX = 512,
+        numY = 512,
+        numOctaves = 1;
+    double persistence = 0.3;
     const int heiht_map = 32;
+
+#define maxPrimeIndex 10
+    int primeIndex = 0;
+
+    int primes[maxPrimeIndex][3] = {
+      { 995615039, 600173719, 701464987 },
+      { 831731269, 162318869, 136250887 },
+      { 174329291, 946737083, 245679977 },
+      { 362489573, 795918041, 350777237 },
+      { 457025711, 880830799, 909678923 },
+      { 787070341, 177340217, 593320781 },
+      { 405493717, 291031019, 391950901 },
+      { 458904767, 676625681, 424452397 },
+      { 531736441, 939683957, 810651871 },
+      { 997169939, 842027887, 423882827 }
+    };
+
+    double Noise(int i, int x, int y) {
+        int n = x + y * 57;
+        n = (n << 13) ^ n;
+        int a = primes[i][0], b = primes[i][1], c = primes[i][2];
+        int t = (n * (n * n * a + b) + c) & 0x7fffffff;
+        return 1.0 - (double)(t) / 1073741824.0;
+    }
+
+    double SmoothedNoise(int i, int x, int y) {
+        double corners = (Noise(i, x - 1, y - 1) + Noise(i, x + 1, y - 1) +
+            Noise(i, x - 1, y + 1) + Noise(i, x + 1, y + 1)) / 16,
+            sides = (Noise(i, x - 1, y) + Noise(i, x + 1, y) + Noise(i, x, y - 1) +
+                Noise(i, x, y + 1)) / 8,
+            center = Noise(i, x, y) / 4;
+        return corners + sides + center;
+    }
+
+    double Interpolate(double a, double b, double x) {  // cosine interpolation
+        double ft = x * 3.1415927,
+            f = (1 - cos(ft)) * 0.5;
+        return  a * (1 - f) + b * f;
+    }
+
+    double InterpolatedNoise(int i, double x, double y) {
+        int integer_X = x;
+        double fractional_X = x - integer_X;
+        int integer_Y = y;
+        double fractional_Y = y - integer_Y;
+
+        double v1 = SmoothedNoise(i, integer_X, integer_Y),
+            v2 = SmoothedNoise(i, integer_X + 1, integer_Y),
+            v3 = SmoothedNoise(i, integer_X, integer_Y + 1),
+            v4 = SmoothedNoise(i, integer_X + 1, integer_Y + 1),
+            i1 = Interpolate(v1, v2, fractional_X),
+            i2 = Interpolate(v3, v4, fractional_X);
+        return Interpolate(i1, i2, fractional_Y);
+    }
+
+    double ValueNoise_2D(double x, double y) {
+        double total = 0,
+            frequency = pow(2, numOctaves),
+            amplitude = 1;
+        for (int i = 0; i < numOctaves; ++i) {
+            frequency /= 0.7f;
+            amplitude *= persistence;
+            total += InterpolatedNoise((primeIndex + i) % maxPrimeIndex,
+                x / frequency, y / frequency) * amplitude;
+        }
+        return total / frequency;
+    }
+
+
+
    
     Chunck::Chunck(int entity, float r, float g, float b)
     {
@@ -34,30 +108,8 @@ namespace emp {
     }
     glm::mat4* two_d_array;    // the type is a pointer to an int (the element type)
     void ChunckManager::Init()
-    {
-       // new glm::mat4[heiht_map * heiht_map];
-       // modelMatrices = new glm::mat4[heiht_map][heiht_map];
-
-       // x , y = 32
-       // tableau[x + y * 32] = 1024ieme element  [1 ... 1024]  
-       // tableau[x][y] = 1024ieme element [1 ... 32][1 ... 32]
-
-        
-        //// allocate in a single malloc of N x M int-sized elements:
-        //two_d_array = (glm::mat4*)malloc(sizeof(glm::mat4) * ROWS * COLS);
-
-        //if (two_d_array == NULL) {
-        //    printf("ERROR: malloc failed!\n");
-        //    exit(1);
-        //}
-
-        //int i, j;
-        //for (i = 0; i < ROWS; i++)
-        //    for (j = 0; j < COLS; j++)
-        //        (*(two_d_array + i * COLS + j)) = glm::translate(glm::mat4(10.0f), glm::vec3(i , 0, j));
-        
+    {   
         bool warning = false;
-
 
         m_component = engine->GetComponentManager();
         {
@@ -69,14 +121,6 @@ namespace emp {
             if (warning) {
                 LOG::Warning(name + " help!");
             }
-
-
-
-           
-
-        
-
-           
 
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
@@ -140,39 +184,33 @@ namespace emp {
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
             glEnableVertexAttribArray(1);
             glBindVertexArray(0);
-            //////SALUT MON  pote 
-            //glBindBuffer(GL_ARRAY_BUFFER, this->shader->VBO);
-            //////// note that we update the lamp's position attribute's stride to reflect the updated buffer data 
-            //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-            //glEnableVertexAttribArray(0);
-            
+            //buffer transform array
             unsigned int buffer;
             glGenBuffers(1, &buffer);
             glBindBuffer(GL_ARRAY_BUFFER, buffer);
-            //float mat[amount * 16];
-            //for (int matrix_id = 0; matrix_id < amount; matrix_id++) {
-            //    // Spiral arrangement of triangles
-            //    float pos_x = 0.002f * matrix_id * cos(40 * M_PI * matrix_id / amount);
-            //    float pos_y = 0.002f * matrix_id * sin(40 * M_PI * matrix_id / amount);
-            //    float scale = 0.0004f * matrix_id;
-            //    int i = 16 * matrix_id;
-            //    mat[i + 0] = scale; mat[i + 4] = 6.0f * matrix_id;  mat[i + 8] = 1.0f;  mat[i + 12] = pos_x;
-            //    mat[i + 1] = 1.0f;  mat[i + 5] = scale; mat[i + 9] = 1.0f;  mat[i + 13] = pos_y;
-            //    mat[i + 2] = 1.0f;  mat[i + 6] = 1.0f;  mat[i + 10] = scale; mat[i + 14] = 1.0f;
-            //    mat[i + 3] = 1.0f;  mat[i + 7] = 1.0f;  mat[i + 11] = 1.0f;  mat[i + 15] = 1.0f;
-            //}
 
             transformMatrices = new glm::mat4[amount];
-            
-            for (unsigned int x = 0; x < 64; x++) {
-                for (unsigned int y = 0; y < 64; y++) {
-                    transformMatrices[x*64+y] = glm::mat4(5.0f);
-                    transformMatrices[x*64+y] = glm::translate(transformMatrices[x * 64 + y], glm::vec3(1 * x, -2, 1 * y));
+
+            std::vector<glm::vec3> first_chunck  = this->LoadChunck(0, 0);
+            const int size = std::sqrt(amount);
+             /* const float offset = size / 1.5f;
+                for (unsigned int x = 0; x < size; x++) {
+                for (unsigned int y = 0; y < size; y++) {
+                    transformMatrices[x* size +y] = glm::mat4(3.0f);
+                    transformMatrices[x* size +y] = glm::translate(transformMatrices[x * size + y], glm::vec3((- offset) + 1 * x, -2,(- offset) + 1 * y));
                 }
+            }*/
+
+            for each (auto cell in first_chunck)
+            {
+                const int x = cell.x;
+                const int y = cell.z;
+                transformMatrices[x * size + y] = glm::mat4(3.0f);
+                transformMatrices[x * size + y] = glm::translate(transformMatrices[x * size + y], cell);
+                
             }
+
             glBufferData(GL_ARRAY_BUFFER, amount * 16 * sizeof(float), transformMatrices, GL_DYNAMIC_DRAW);
-
-
             int transform_location = glGetAttribLocation(this->shader->shaderProgram, "aTransform");
             glBindVertexArray(this->shader->VAO);
             for (unsigned int i = 0; i < 4; i++) {
@@ -199,16 +237,16 @@ namespace emp {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             // set image data
-            int size = 156;
-            unsigned char* data = new unsigned char[3 * size * size * sizeof(unsigned char)];
-            for (unsigned int i = 0; i < size * size; i++)
+            const int pixel_size = 156;
+            unsigned char* data = new unsigned char[3 * pixel_size * pixel_size * sizeof(unsigned char)];
+            for (unsigned int i = 0; i < pixel_size * pixel_size; i++)
             {
                 data[i * 3] = (unsigned char)(color.x * 255.0f);
                 data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
                 data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
             }
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixel_size, pixel_size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
             delete[] data;
 
@@ -223,18 +261,17 @@ namespace emp {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
-            data = new unsigned char[3 * size * size * sizeof(unsigned char)];
-            for (unsigned int i = 0; i < size * size; i++)
+            data = new unsigned char[3 * pixel_size * pixel_size * sizeof(unsigned char)];
+            for (unsigned int i = 0; i < pixel_size * pixel_size; i++)
             {
                 data[i * 3] = (unsigned char)(color.x * 255.0f);
                 data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
                 data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
             }
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, size, size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixel_size, pixel_size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
             delete[] data;
-
 
             this->shader->UseProgram();
 
@@ -244,12 +281,8 @@ namespace emp {
 
     }
 
-    void ChunckManager::Start() {
-       
-
-    }
-
-    void ChunckManager::Refresh() {
+    std::vector<glm::vec3> ChunckManager::LoadChunck(int x, int y) {
+        seed = std::rand() / 500;
         int size = heiht_map;
         int level[heiht_map][heiht_map] = { 0 };
         int turn = 8;
@@ -258,21 +291,30 @@ namespace emp {
                 for (int j = 0; j < size; j++) {
                     int up = seed;
                     level[i][j] += up;
-                    double noise = 0;
-                    level[i][j] = noise * 10000;
+                    double noise = ValueNoise_2D(i + x, j + y);
+                    level[i][j] = noise * 50;
+
                 }
             }
         }
 
-        int i = 0;
-        for (std::vector<Transform>::iterator it = array->begin(); it < array->end(); it++)
-        {
-            int x = i % heiht_map;
-            int y = i / heiht_map;
-            glm::vec3 pos = glm::vec3(x * 300 - (size * 300 / 2), -700 + level[x][y], y * 300 - (size * 300 / 2));
-            it->SetPosition(pos);
-            i++;
+        std::vector<glm::vec3> array = std::vector<glm::vec3>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+
+                array.push_back(glm::vec3(i , level[i][j], j));
+            }
         }
+
+        return array;
+    }
+
+    void ChunckManager::Start() {
+       
+
+    }
+
+    void ChunckManager::Refresh() {
     }
 
     void ChunckManager::Destroy()
@@ -352,7 +394,6 @@ namespace emp {
         // bind specular map
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, specular_map);
-
 
         glBindVertexArray(this->shader->VAO);
         this->shader->DrawArraysInstanced(GL_TRIANGLES, 0, 36, amount);
