@@ -89,29 +89,47 @@ namespace emp {
 
 
    
-    Chunck::Chunck(int entity, float r, float g, float b)
+    Chunck::Chunck(int entity, int x, int y)
     {
+
         this->entity = entity;
-        this->color = glm::vec4(r, g, b, 1.0f);
+
+        this->position = glm::vec2(x, y);
     }
     //CUBE
+
+    std::vector<glm::vec3> Chunck::LoadChunck(int x, int y) {
+        // seed = std::rand() / 500;
+        int size = heiht_map;
+
+        std::vector<glm::vec3> chunck = std::vector<glm::vec3>();
+        int level[heiht_map][heiht_map] = { 0 };
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                double noise = ValueNoise_2D(i + x, j + y);
+                level[i][j] = noise * 100;
+            }
+        }
+
+        std::vector<glm::vec3> array = std::vector<glm::vec3>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                int height = level[i][j];
+                while (height >= -1)
+                {
+                    array.push_back(glm::vec3(i + x, height, j + y));
+                    height--;
+                }
+
+            }
+        }
+
+        return array;
+    }
+
     void Chunck::Init()
     {
-
-    }
-
-    //CUBEMANAGER
-    ChunckManager::ChunckManager(Engine& engine, ConfigGraphic& config) : System(engine, "Chunck Manager")
-    {
-        this->config = &config;
-        m_component = engine.GetComponentManager();
-    }
-    glm::mat4* two_d_array;    // the type is a pointer to an int (the element type)
-    void ChunckManager::Init()
-    {   
         bool warning = false;
-
-        m_component = engine->GetComponentManager();
         {
             std::string vertexShaderSource = FileSystem::ReadShader("./shader/model2-5.vs");
             std::string fragmentShaderSource = FileSystem::ReadShader("./shader/light/multiplelight2-5.fs");  //multiplelight  
@@ -119,7 +137,7 @@ namespace emp {
             this->shader = new Shader();
             warning = this->shader->Init(vertexShaderSource, fragmentShaderSource);
             if (warning) {
-                LOG::Warning(name + " help!");
+                LOG::Warning("Chunck  help!");
             }
 
             // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -191,15 +209,15 @@ namespace emp {
 
             transformMatrices = new glm::mat4[amount];
 
-            std::vector<glm::vec3> first_chunck  = this->LoadChunck(0, 0);
+            std::vector<glm::vec3> first_chunck = this->LoadChunck(position.x, position.y);
             const int size = std::sqrt(amount);
-             /* const float offset = size / 1.5f;
-                for (unsigned int x = 0; x < size; x++) {
-                for (unsigned int y = 0; y < size; y++) {
-                    transformMatrices[x* size +y] = glm::mat4(3.0f);
-                    transformMatrices[x* size +y] = glm::translate(transformMatrices[x * size + y], glm::vec3((- offset) + 1 * x, -2,(- offset) + 1 * y));
-                }
-            }*/
+            /* const float offset = size / 1.5f;
+               for (unsigned int x = 0; x < size; x++) {
+               for (unsigned int y = 0; y < size; y++) {
+                   transformMatrices[x* size +y] = glm::mat4(3.0f);
+                   transformMatrices[x* size +y] = glm::translate(transformMatrices[x * size + y], glm::vec3((- offset) + 1 * x, -2,(- offset) + 1 * y));
+               }
+           }*/
 
             int i = 0;
             for each (auto cell in first_chunck)
@@ -223,7 +241,7 @@ namespace emp {
             }
 
             glBindVertexArray(0);
-            
+
             // at init time
             glm::vec4 color = glm::vec4(1, 1, 1, 1);
 
@@ -279,36 +297,28 @@ namespace emp {
             this->shader->SetInt("material.diffuse", 0);
             this->shader->SetInt("material.specular", 1);
         }
-
     }
 
-    std::vector<glm::vec3> ChunckManager::LoadChunck(int x, int y) {
-        seed = std::rand() / 500;
-        int size = heiht_map;
+    //CUBEMANAGER
+    ChunckManager::ChunckManager(Engine& engine, ConfigGraphic& config) : System(engine, "Chunck Manager")
+    {
+        this->config = &config;
+        m_component = engine.GetComponentManager();
+    }
+    glm::mat4* two_d_array;    // the type is a pointer to an int (the element type)
+    void ChunckManager::Init()
+    {   
+        m_component = engine->GetComponentManager();
+        this->chuncks =  std::vector<Chunck>();
 
-        std::vector<glm::vec3> chunck = std::vector<glm::vec3>();
-        int level[heiht_map][heiht_map] = { 0 };
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    double noise = ValueNoise_2D(i + x, j + y);
-                    level[i][j] = noise * 250;
-                }
-            }
-
-        std::vector<glm::vec3> array = std::vector<glm::vec3>();
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                int height = level[i][j];
-                while (height >= -1)
-                {
-                    array.push_back(glm::vec3(i, height, j));
-                    height--;
-                }
-              
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                this->chuncks.push_back(Chunck(-1, i*16-32, j*16-32));
+                this->chuncks[this->chuncks.size() - 1].Init();
             }
         }
-
-        return array;
     }
 
     void ChunckManager::Start() {
@@ -330,9 +340,8 @@ namespace emp {
         offset.x = time * 15;
     }
 
-    void ChunckManager::Draw()
-    {
-        int PixelPerSize = config->PixelSize;
+    void Chunck::Draw(ComponentManager* m_component) {
+        int PixelPerSize = 100;
         this->shader->UseProgram();
 
         //CAMERA
@@ -353,7 +362,7 @@ namespace emp {
         this->shader->SetFloat("material.shininess", this->shader->shininess);
         this->shader->SetVec3("material.color", glm::vec3(1, 1, 1));
 
-        auto& arrayDirLight = engine->GetComponentManager()->GetComponents<DirectionalLight>();
+        auto& arrayDirLight = m_component->GetComponents<DirectionalLight>();
         DirectionalLight& Dirlight = arrayDirLight[0];
         // Dirlight properties
         this->shader->SetVec3("dirLight.direction", Dirlight.direction);
@@ -362,11 +371,11 @@ namespace emp {
         this->shader->SetVec3("dirLight.specular", Dirlight.specular);
 
         // PointLight properties
-        auto& arrayLight = engine->GetComponentManager()->GetComponents<PointLight>();
+        auto& arrayLight = m_component->GetComponents<PointLight>();
         for (size_t i = 0; i < 36; i++)
         {
             string id = std::to_string(i);
-            this->shader->SetVec3("pointLights[" + id + "].position", engine->GetComponentManager()->GetComponent<Transform>(arrayLight[i].entity).Position() / 100.0f);
+            this->shader->SetVec3("pointLights[" + id + "].position", m_component->GetComponent<Transform>(arrayLight[i].entity).Position() / 100.0f);
             this->shader->SetVec3("pointLights[" + id + "].ambient", arrayLight[i].ambient);
             this->shader->SetVec3("pointLights[" + id + "].diffuse", arrayLight[i].diffuse);
             this->shader->SetVec3("pointLights[" + id + "].specular", arrayLight[i].specular);
@@ -375,8 +384,8 @@ namespace emp {
             this->shader->SetFloat("pointLights[" + id + "].quadratic", arrayLight[i].quadratic);
         }
 
-        auto& arraySpot = engine->GetComponentManager()->GetComponents<SpotLight>();
-        this->shader->SetVec3("spotLight.position", engine->GetComponentManager()->GetComponent<Transform>(arraySpot[0].entity).Position() / 100.0f);
+        auto& arraySpot = m_component->GetComponents<SpotLight>();
+        this->shader->SetVec3("spotLight.position", m_component->GetComponent<Transform>(arraySpot[0].entity).Position() / 100.0f);
         this->shader->SetVec3("spotLight.direction", arraySpot[0].direction);
         this->shader->SetVec3("spotLight.ambient", arraySpot[0].ambient);
         this->shader->SetVec3("spotLight.diffuse", arraySpot[0].diffuse);
@@ -400,5 +409,14 @@ namespace emp {
         glBindVertexArray(this->shader->VAO);
         this->shader->DrawArraysInstanced(GL_TRIANGLES, 0, 36, amount);
         glBindVertexArray(0);
+    }
+
+    void ChunckManager::Draw()
+    {
+        for each (auto chunck in chuncks)
+        {
+            chunck.Draw(m_component);
+        }
+       
     }
 }   

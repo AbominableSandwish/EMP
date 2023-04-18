@@ -9,13 +9,13 @@ namespace emp {
 		this->angle_proj = angle;
 		this->projection = glm::mat4(1.0f);
 		float delta = (float)m_graphic->width / (float)m_graphic->height;
-		projection = glm::perspective(glm::radians(angle), (float)(m_graphic->width/ delta) / (float)m_graphic->height, 0.1f, 300.0f);
+		projection = glm::perspective(glm::radians(angle), (float)(m_graphic->width/ delta) / (float)m_graphic->height, 0.1f, 600.0f);
 	}
 
 	void Camera::Reset(){
 		this->projection = glm::mat4(1.0f);
 		float delta = (float)m_graphic->width / (float)m_graphic->height;
-		projection = glm::perspective(glm::radians(this->angle_proj), (float)(m_graphic->width / delta) / (float)m_graphic->height, 0.1f, 300.0f);
+		projection = glm::perspective(glm::radians(this->angle_proj), (float)(m_graphic->width / delta) / (float)m_graphic->height, 0.1f, 600.0f);
 	}
 
 	Camera::Camera(Engine& engine, int entity, Transform& transform) : transform(transform)

@@ -15,7 +15,7 @@ namespace emp {
 
 
 
-
+    class ComponentManager;
     class Chunck {
 
 
@@ -23,32 +23,34 @@ namespace emp {
         Chunck(int entity)
         {
             this->entity = entity;
-
-            float red = 1.0f; // (std::rand() % 10);
-            float green = 1.0f; // (std::rand() % 10);
-            float blue = 1.0f; // (std::rand() % 10);
-
-            this->color = glm::vec4(red, green, blue, 1.0f);
         }
 
-        Chunck(int entity, float r, float g, float b);
+        Chunck(int entity, int x, int y);
+
+        std::vector<glm::vec3> LoadChunck(int x, int y);
 
         void Init();
 
-        float axis_x = 0.0f;
-        float axis_y = 0.0f;
-        float axis_z = 0.0f;
+        void Draw(ComponentManager* m_component);
 
+        const unsigned int amount = 2048;
         int entity;
-        glm::vec4 color;
-        void SetColor(glm::vec4 color)
-        {
-            this->color = color;
-        }
+
+        Shader* shader = nullptr;
+        glm::mat4* transformMatrices;
+        // first. We get the relevant block indices
+        unsigned int uniformBlockIndex;
+        // Now actually create the buffer
+        unsigned int uboMatrices;
+        unsigned int diffuse_map;
+        unsigned int specular_map;
+
+        glm::vec2 position;
+
     };
 
 
-    class ComponentManager;
+  
 
 
     class ChunckManager : public System
@@ -62,8 +64,6 @@ namespace emp {
 
         void Refresh();
 
-        std::vector<glm::vec3> LoadChunck(int x, int y);
-
         void Destroy() override;
 
         void Update(float) override;
@@ -74,21 +74,14 @@ namespace emp {
         ComponentManager* m_component = nullptr;
         ConfigGraphic* config = nullptr;
 
-        Shader* shader = nullptr;
+        std::vector<Chunck> chuncks;
         float project = 45.0f;
-
-        // first. We get the relevant block indices
-        unsigned int uniformBlockIndex;
-        // Now actually create the buffer
-        unsigned int uboMatrices;
-        unsigned int diffuse_map;
-        unsigned int specular_map;
 
         float time = 0.0f;
         bool update = true;
         glm::vec3 offset;
         int seed;
-        glm::mat4* transformMatrices;
-        const unsigned int amount = 2048;
+
+
     };
 }
