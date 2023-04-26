@@ -64,7 +64,7 @@ namespace emp
 	void Editor::Update(float dt)
 	{
 		counterTime += dt;
-		if(counterTime >= 0.25f){
+		if(counterTime >= 1.0f){
 			counterTime = 0.0f;
 			refresh = true;
 		}

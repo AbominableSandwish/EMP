@@ -143,47 +143,56 @@ namespace emp {
             // set up vertex data (and buffer(s)) and configure vertex attributes
             // ------------------------------------------------------------------
             float vertices[] = {
-                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-                 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-                -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+                //back
+                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v1
+                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v3
+                 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v2
+                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v4
+                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v6
+                -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v5
+               
 
+                //front
                 -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
                  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
                  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
                  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
                 -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
                 -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
+                //left
                 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-                 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-                 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+                //right
+                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //v1
+                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, //v3
+                 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f, //v2
+              
+                 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, //v4
+                 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //v6
+                 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //v5
+                
+                 //bottom
+                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 
                  0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
                  0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
                  0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
                 -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
                 -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-                 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-                -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+               
+                //up
+                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, //v1
+                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //v3
+                 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, //v2
+               
+                
+               
+                -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //v5
+                 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //v4
+                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f  //v6
             };
 
             glGenVertexArrays(1, &this->shader->VAO);
@@ -211,25 +220,21 @@ namespace emp {
 
             std::vector<glm::vec3> first_chunck = this->LoadChunck(position.x, position.y);
             const int size = std::sqrt(amount);
-            /* const float offset = size / 1.5f;
-               for (unsigned int x = 0; x < size; x++) {
-               for (unsigned int y = 0; y < size; y++) {
-                   transformMatrices[x* size +y] = glm::mat4(3.0f);
-                   transformMatrices[x* size +y] = glm::translate(transformMatrices[x * size + y], glm::vec3((- offset) + 1 * x, -2,(- offset) + 1 * y));
-               }
-           }*/
 
             int i = 0;
             for each (auto cell in first_chunck)
             {
                 const int x = cell.x;
                 const int y = cell.z;
+
+                LOG::Debug("x: " + std::to_string(cell.x) + "\n");
                 transformMatrices[i] = glm::mat4(3.0f);
                 transformMatrices[i] = glm::translate(transformMatrices[i], cell);
                 i++;
             }
+            number = i;
 
-            glBufferData(GL_ARRAY_BUFFER, amount * 16 * sizeof(float), transformMatrices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, amount * 16 * sizeof(float), transformMatrices, GL_STATIC_DRAW);
             int transform_location = glGetAttribLocation(this->shader->shaderProgram, "aTransform");
             glBindVertexArray(this->shader->VAO);
             for (unsigned int i = 0; i < 4; i++) {
@@ -310,12 +315,12 @@ namespace emp {
     {   
         m_component = engine->GetComponentManager();
         this->chuncks =  std::vector<Chunck>();
-
-        for (int i = 0; i < 3; i++)
+                
+        for (int i = 0; i < 4; i++)
         {
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < 4; j++)
             {
-                this->chuncks.push_back(Chunck(-1, i*16-32, j*16-32));
+                this->chuncks.push_back(Chunck(-1, i * 16 - 32, j * 16 - 32));
                 this->chuncks[this->chuncks.size() - 1].Init();
             }
         }
@@ -407,7 +412,7 @@ namespace emp {
         glBindTexture(GL_TEXTURE_2D, specular_map);
 
         glBindVertexArray(this->shader->VAO);
-        this->shader->DrawArraysInstanced(GL_TRIANGLES, 0, 36, amount);
+        this->shader->DrawArraysInstanced(GL_TRIANGLES, 0, 36, number);
         glBindVertexArray(0);
     }
 

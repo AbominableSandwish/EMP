@@ -270,6 +270,9 @@ namespace emp {
 			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 			SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
+
+
+
 			//Create window
 			float delta = (float)width / (float)height;
 			this->window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width / delta, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
@@ -318,6 +321,8 @@ namespace emp {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glEnable(GL_CULL_FACE);
 
 
 		//Init others Sub-Systems Graphic
@@ -480,10 +485,10 @@ namespace emp {
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();
-		m_cube->Draw();
+		//m_cube->Draw();
 		m_sphere->Draw();
 		m_model->Draw();
-		m_light->Draw();
+		//m_light->Draw();
 		m_skybox->Draw();
 		// second render pass: draw
 		//  as normal
@@ -499,7 +504,7 @@ namespace emp {
 		m_square->Draw();
 		m_circle->Draw();
 		m_triangle->Draw();
-		m_cube->Draw();
+		//m_cube->Draw();
 		m_sphere->Draw();
 		m_model->Draw();
 		m_skybox->Draw();

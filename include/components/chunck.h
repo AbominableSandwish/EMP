@@ -46,7 +46,7 @@ namespace emp {
         unsigned int specular_map;
 
         glm::vec2 position;
-
+        int number;
     };
 
 
