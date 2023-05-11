@@ -18,7 +18,6 @@ namespace emp {
         numOctaves = 1;
     double persistence = 0.3;
     const int heiht_map = 16;
-
 #define maxPrimeIndex 10
     int primeIndex = 0;
 
@@ -85,9 +84,6 @@ namespace emp {
         }
         return total / frequency;
     }
-
-
-
    
     Chunck::Chunck(int entity, int x, int y)
     {
@@ -96,35 +92,73 @@ namespace emp {
 
         this->position = glm::vec2(x, y);
     }
+
+    Chunck::Chunck(int entity, int x, int y, int seed)
+    {
+        this->entity = entity;
+        this->position = glm::vec2(x, y);
+        this->seed = seed;
+    }
+
+    Chunck::~Chunck() {
+        this->Destroy();
+    }
     //CUBE
 
     std::vector<glm::vec3> Chunck::LoadChunck(int x, int y) {
-        // seed = std::rand() / 500;
         int size = heiht_map;
-
         std::vector<glm::vec3> chunck = std::vector<glm::vec3>();
         int level[heiht_map][heiht_map] = { 0 };
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                double noise = ValueNoise_2D(i + x, j + y);
+                double noise = ValueNoise_2D(i + x + seed, j + y + seed);
                 level[i][j] = noise * 100;
             }
         }
 
-        std::vector<glm::vec3> array = std::vector<glm::vec3>();
+        std::vector<glm::vec3> vector = std::vector<glm::vec3>();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 int height = level[i][j];
-                while (height >= -1)
-                {
-                    array.push_back(glm::vec3(i + x, height, j + y));
+                while (height >= 0 ) {
+                    vector.push_back(glm::vec3(i + x, height, j + y));
                     height--;
                 }
 
             }
         }
 
-        return array;
+        return vector;
+    }
+
+    //std::queue<glm::vec3> Chunck::LoadChunck(glm::vec3 pos, glm::vec2 parent) {
+
+    //    position = pos;
+    //    distance = pos.z;
+    //    //LoadMeshRenderer
+
+    //    //ChildChunk
+    //    std::queue<glm::vec3> vector = std::queue<glm::vec3>();
+    //    for (size_t x = -1; x <= 1; x++)
+    //    {
+    //        if (x != 0) {
+    //            for (size_t y = -1; y <= 1; y++)
+    //            {
+    //                if (y != 0) {
+    //                    glm::vec2 child(pos.x + x, pos.y + y);            
+    //                    if (child != parent) {
+    //                        if (distance > field_of_view)
+    //                            vector.push(glm::vec3(child.x, child.y, distance + 1));
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    return vector;
+    //}
+
+    void Chunck::Destroy() {
+        this->shader->Free();
     }
 
     void Chunck::Init()
@@ -138,27 +172,25 @@ namespace emp {
             warning = this->shader->Init(vertexShaderSource, fragmentShaderSource);
             if (warning) {
                 LOG::Warning("Chunck  help!");
-            }
-
-            // set up vertex data (and buffer(s)) and configure vertex attributes
-            // ------------------------------------------------------------------
-            float vertices[] = {
-                //back
-                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v1
-                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v3
-                 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v2
-                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v4
-                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v6
-                -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, //v5
-               
+            } 
+            std::vector<float> vertices = {
+                //back                                    
+                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+                 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+                 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+                -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+                
 
                 //front
-                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-                 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-                 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-                -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //v1
+                0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //v3
+                0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //v2
+                0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //v4
+                -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //v6
+                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //v5
+
                 //left
                 -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
                 -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
@@ -170,51 +202,28 @@ namespace emp {
                  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //v1
                  0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, //v3
                  0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f, //v2
-              
                  0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f, //v4
                  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //v6
                  0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //v5
-                
                  //bottom
-                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, 
+                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
                  0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
                  0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
                  0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
                 -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
                 -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-               
                 //up
                 -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, //v1
                  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //v3
                  0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, //v2
-               
-                
-               
                 -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //v5
                  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //v4
                 -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f  //v6
             };
-
-            glGenVertexArrays(1, &this->shader->VAO);
-            glGenBuffers(1, &this->shader->VBO);
-            // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s). 
-
-            glBindBuffer(GL_ARRAY_BUFFER, this->shader->VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-            glBindVertexArray(this->shader->VAO);
-            // position attribute 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-            glEnableVertexAttribArray(0);
-            // normal attribut; 
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-            glBindVertexArray(0);
-            //buffer transform array
-            unsigned int buffer;
-            glGenBuffers(1, &buffer);
-            glBindBuffer(GL_ARRAY_BUFFER, buffer);
+            
+            shader->GenVertexArrays();
+            shader->GenBuffers();
+            shader->SetVertexArrays(vertices);
 
             transformMatrices = new glm::mat4[amount];
 
@@ -226,83 +235,20 @@ namespace emp {
             {
                 const int x = cell.x;
                 const int y = cell.z;
-
-                LOG::Debug("x: " + std::to_string(cell.x) + "\n");
-                transformMatrices[i] = glm::mat4(3.0f);
+                transformMatrices[i] = glm::mat4(1.0f);
                 transformMatrices[i] = glm::translate(transformMatrices[i], cell);
                 i++;
             }
             number = i;
 
-            glBufferData(GL_ARRAY_BUFFER, amount * 16 * sizeof(float), transformMatrices, GL_STATIC_DRAW);
-            int transform_location = glGetAttribLocation(this->shader->shaderProgram, "aTransform");
-            glBindVertexArray(this->shader->VAO);
-            for (unsigned int i = 0; i < 4; i++) {
-                glEnableVertexAttribArray(transform_location + i);
-                glVertexAttribPointer(transform_location + i, 4, GL_FLOAT, GL_FALSE,
-                    16 * sizeof(float),
-                    (const GLvoid*)(sizeof(GLfloat) * i * 4));
-                glVertexAttribDivisor(transform_location + i, 1);
-            }
-
-            glBindVertexArray(0);
-
-            // at init time
-            glm::vec4 color = glm::vec4(1, 1, 1, 1);
-
-            glGenTextures(0, &diffuse_map);
-            glBindTexture(GL_TEXTURE_2D, diffuse_map);
-
-            // set texture wrap parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            // set texture filter parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            // set image data
-            const int pixel_size = 156;
-            unsigned char* data = new unsigned char[3 * pixel_size * pixel_size * sizeof(unsigned char)];
-            for (unsigned int i = 0; i < pixel_size * pixel_size; i++)
-            {
-                data[i * 3] = (unsigned char)(color.x * 255.0f);
-                data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
-                data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
-            }
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixel_size, pixel_size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-            delete[] data;
-
-            glGenTextures(1, &specular_map);
-            glBindTexture(GL_TEXTURE_2D, specular_map);
-
-            // set texture wrap parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            // set texture filter parameters
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-            data = new unsigned char[3 * pixel_size * pixel_size * sizeof(unsigned char)];
-            for (unsigned int i = 0; i < pixel_size * pixel_size; i++)
-            {
-                data[i * 3] = (unsigned char)(color.x * 255.0f);
-                data[i * 3 + 1] = (unsigned char)(color.y * 255.0f);
-                data[i * 3 + 2] = (unsigned char)(color.z * 255.0f);
-            }
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, pixel_size, pixel_size, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-            delete[] data;
-
-            this->shader->UseProgram();
-
-            this->shader->SetInt("material.diffuse", 0);
-            this->shader->SetInt("material.specular", 1);
+            this->shader->SetBuffetDataMat4("aTransform", *transformMatrices);
+            this->shader->BindVertexArray(0);
+            this->shader->GenerateTexture();
         }
+
+        loaded = true;
     }
+
 
     //CUBEMANAGER
     ChunckManager::ChunckManager(Engine& engine, ConfigGraphic& config) : System(engine, "Chunck Manager")
@@ -313,36 +259,37 @@ namespace emp {
     glm::mat4* two_d_array;    // the type is a pointer to an int (the element type)
     void ChunckManager::Init()
     {   
-        m_component = engine->GetComponentManager();
-        this->chuncks =  std::vector<Chunck>();
-                
+        this->seed = std::rand() % 500;
+        this->chunks =  std::vector<Chunck*>();
         for (int i = 0; i < 4; i++)
         {
-            for (int j = 0; j < 4; j++)
-            {
-                this->chuncks.push_back(Chunck(-1, i * 16 - 32, j * 16 - 32));
-                this->chuncks[this->chuncks.size() - 1].Init();
-            }
+                this->chunks.push_back(std::move(new Chunck(-1, i * 16 - 32, 1 * 16 - 32, seed)));
+                this->chunks[this->chunks.size() - 1]->Init();
         }
     }
 
-    void ChunckManager::Start() {
-       
-
-    }
+    void ChunckManager::Start() {}
 
     void ChunckManager::Refresh() {
     }
 
-    void ChunckManager::Destroy()
-    {
+    
+    void ChunckManager::Destroy(){
+        for each (auto & var in  this->chunks)
+        {
+              delete(var);
+        }
+          this->chunks.clear();
     }
-
 
     void ChunckManager::Update(float dt)
     {
         time += dt;
         offset.x = time * 15;
+        if (time >= 5.5f) {
+            time = 0.0f;
+            refresh = true;
+        }
     }
 
     void Chunck::Draw(ComponentManager* m_component) {
@@ -352,7 +299,6 @@ namespace emp {
         //CAMERA
         auto& list_camera = m_component->GetComponents<Camera>();
         Camera& MainCamera = list_camera[0];
-
 
         glm::mat4 projection = MainCamera.projection;
         // get matrix's uniform location and set matrix
@@ -401,27 +347,17 @@ namespace emp {
         this->shader->SetFloat("spotLight.cutOff", arraySpot[0].cutOff);
         this->shader->SetFloat("spotLight.outerCutOff", arraySpot[0].outerCutOff);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuse_map);
-        // at init time.
-        //glm::vec4 whiteColor = glm::vec4(1, 1, 1, 1);    
-        glGenTextures(1, &specular_map);
-        glBindTexture(GL_TEXTURE_2D, specular_map);
-        // bind specular map
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, specular_map);
-
-        glBindVertexArray(this->shader->VAO);
+        this->shader->BindTexture();
+        this->shader->BindVertexArray();
         this->shader->DrawArraysInstanced(GL_TRIANGLES, 0, 36, number);
-        glBindVertexArray(0);
+        this->shader->BindVertexArray(0);       
     }
 
     void ChunckManager::Draw()
     {
-        for each (auto chunck in chuncks)
+        for each (auto& chunck in chunks)
         {
-            chunck.Draw(m_component);
+            chunck->Draw(m_component);
         }
-       
     }
-}   
+}

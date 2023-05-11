@@ -400,14 +400,14 @@ namespace emp {
 	}
 
 	void GraphicManager::Start() {
-		m_square->  Start();
-		m_circle->  Start();
-		m_triangle->Start();
-		m_cube->    Start();
-		m_sphere->  Start();
-		m_model->   Start();
-		m_light->   Start();
-		m_skybox->  Start();
+		m_square->       Start();
+		m_circle->       Start();
+		m_triangle->     Start();
+		m_cube->         Start();
+		m_sphere->       Start();
+		m_model->        Start();
+		m_light->        Start();
+		m_skybox->       Start();
 
 		//In Progress
 		//m_map->Start();
@@ -417,14 +417,17 @@ namespace emp {
 	bool pause = false;
 	float timer = 0.0f;
 
-
-
+	const float time_to_refresh = 5.0f;
 	void GraphicManager::Update(float dt)
 	{
 		if (pause) {
 			return;
 		}
 		timer += dt;
+		if (timer >= time_to_refresh) {
+			timer = 0;
+			refresh = true;
+		}
 		
 		/*if (glfwWindowShouldClose(this->window))
 		{
@@ -455,8 +458,9 @@ namespace emp {
 
 		SDL_PollEvent(0);
 		//glfwPollEve0nts();
-		timer = 0.0f;
+
 	}
+
 
 	void GraphicManager::Draw()
 	{
@@ -466,64 +470,67 @@ namespace emp {
 	    // would, but with the view camera reversed.
 	    // bind to framebuffer and draw scene as we normally would to color texture 
 	    // ------------------------------------------------------------------------
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		if (WireframeView) {
-			// Turn on wireframe mode
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-		else {
-			// Turn off wireframe 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
+			glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+			glEnable(GL_DEPTH_TEST); // enable depth testing (is disabled for rendering screen-space quad)
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			if (WireframeView) {
+				// Turn on wireframe mode
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			}
+			else {
+				// Turn off wireframe 
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			}
+
+			m_chunck->Refresh();
 
 
-		//m_sprite->Draw();
-		//m_map->Draw();
-		m_chunck->Draw();
-		m_square->Draw();
-		m_circle->Draw();
-		m_triangle->Draw();
-		//m_cube->Draw();
-		m_sphere->Draw();
-		m_model->Draw();
-		//m_light->Draw();
-		m_skybox->Draw();
-		// second render pass: draw
-		//  as normal
-		// ----------------------------------
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-/*		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/ // also clear the depth buffer now!
+			//m_sprite->Draw();
+			//m_map->Draw();
+			m_chunck->Draw();
+			m_square->Draw();
+			m_circle->Draw();
+			m_triangle->Draw();
+			m_cube->Draw();
+			m_sphere->Draw();
+			m_model->Draw();
+			//m_light->Draw();
+			m_skybox->Draw();
+			// second render pass: draw
+			//  as normal
+			// ----------------------------------
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			/*		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/ // also clear the depth buffer now!
 
 
-		//m_sprite->Draw();
-		//m_map->Draw();
-		m_chunck->Draw();
-		m_square->Draw();
-		m_circle->Draw();
-		m_triangle->Draw();
-		//m_cube->Draw();
-		m_sphere->Draw();
-		m_model->Draw();
-		m_skybox->Draw();
-		
+					//m_sprite->Draw();
+					//m_map->Draw();
+			m_chunck->Draw();
+			m_square->Draw();
+			m_circle->Draw();
+			m_triangle->Draw();
+			m_cube->Draw();
+			m_sphere->Draw();
+			m_model->Draw();
+			m_skybox->Draw();
 
-		  // --------------------------------------------
-		glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
 
-		this->shader->UseProgram();
-		glBindVertexArray(quadVAO);
-		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);	// use the color attachment texture as the texture of the quad plane
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			// --------------------------------------------
+			glDisable(GL_DEPTH_TEST); // disable depth test so screen-space quad isn't discarded due to depth test.
 
-		/*for (auto& element : grid_line)
-		{
-			element->Draw();
-		}*/
-		//Update the surface
+			this->shader->UseProgram();
+			glBindVertexArray(quadVAO);
+			glBindTexture(GL_TEXTURE_2D, textureColorbuffer);	// use the color attachment texture as the texture of the quad plane
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			/*for (auto& element : grid_line)
+			{
+				element->Draw();
+			}*/
+			//Update the surface
+			
 	}
 
 
@@ -593,7 +600,7 @@ namespace emp {
 	//       int x, y;
 	//       int size_x, size_y;
 	//   };
-	   //
+	   //a
 	//   GraphicComponent::GraphicComponent(Entity& entity, string name)
 	//   {
 	//       this->entity = &entity;

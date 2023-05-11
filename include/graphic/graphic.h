@@ -93,6 +93,8 @@ namespace emp {
 		int height = 1000;
 
 		void SetSizeWindow(int x, int y);
+
+		bool refresh = false;
 	protected:
 
 
