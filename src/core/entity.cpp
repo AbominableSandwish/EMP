@@ -9,25 +9,26 @@ namespace emp
 		this->name = "";
 		this->id = -1;
 		this->parent = -1;
+		components = std::vector<string>();
 	}
 
 	Entity::~Entity()
 	{
-		components = std::vector<Component*>();
+		components = std::vector<string>();
 	}
 	
 	Entity::Entity(int id)
 	{
 		this->id = id;
 		this->name = "Spore_" + std::to_string(id);
-		components = std::vector<Component*>();
+		components = std::vector<string>();
 	}
 
 	Entity::Entity(int id, std::string name)
 	{
 		this->id = id;
 		this->name = name;
-		this->components = std::vector<Component*>();
+		components = std::vector<string>();
 	}
 
 	/*void Entity::operator=(Entity entity)
@@ -57,9 +58,14 @@ namespace emp
 		this->parent = parent;
 	}
 
-	void Entity::AddComponent(Component* c)
+	void Entity::AddComponent(string type)
 	{
-		components.push_back(c);
+
+	}
+
+	vector<string> Entity::GetComponents()
+	{
+		return components;
 	}
 
 	void EntityManager::MoveEntity(int from_to, int move_to)
@@ -127,6 +133,11 @@ namespace emp
 
 	void EntityManager::Destroy()
 	{
+	}
+
+	vector<string> EntityManager::GetEntityComponents(int entity)
+	{
+		return this->entities[entity]->GetComponents();
 	}
 
 	Entity* EntityManager::GetEntity(int id)

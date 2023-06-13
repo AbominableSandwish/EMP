@@ -23,9 +23,9 @@ namespace emp
 		void SetParent(int);
 		int GetParent();
 		
-		//Todo
-		std::vector<Component*> components;
 		void AddComponent(Component* c);
+		void AddComponent(string type);
+		vector<string> GetComponents();
 
 
 		//void AddComponent(Component);
@@ -35,6 +35,7 @@ namespace emp
 		//std::vector<Component> components;
 		std::string name = "";
 		int parent = -1;
+		std::vector<string> components;
 	};
 
 	class EntityManager : public System
@@ -51,6 +52,7 @@ namespace emp
 		void Start() {}
 		void Update(float) override;
 		void Destroy() override;
+		vector<string> GetEntityComponents(int entity);
 		
 		Entity* GetEntity(int);
 		std::vector<Entity*> GetEntities();

@@ -21,6 +21,10 @@ namespace emp {
             color = glm::vec4(red / 10, green / 10, blue / 10, 1.0f);
     }
 
+    void Triangle::Inspect()
+    {
+    }
+
     TriangleManager::TriangleManager(Engine& engine, ConfigGraphic& config) : System(engine, "TriangleManager")
     {
         this->config = &config;

@@ -3,14 +3,16 @@
 //	Transform = 0,
 //	Sprite2D = 1
 //};
+#pragma once
 #include <unordered_map>
 #include <memory>
 #include <core/system.h>
 
 namespace emp {
-	class Component {
+	class Component{
 	public:
 		Component() = default;
+		void virtual Inspect() = 0;
 	};
 
 	class IComponent
@@ -109,6 +111,12 @@ namespace emp {
 		{
 			return GetComponentArray<T>()->GetComponent(entity);
 		}
+
+		//template<typename T>
+		//T* GetComponent(int entity)
+		//{
+		//	return GetComponentArray<T>()->GetComponent(entity)
+		//}
 		
 		
 	private:

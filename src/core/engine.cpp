@@ -6,7 +6,6 @@
 #include <editor/editor.h>
 #include <core/file.h>
 #include <core/entity.h>
-#include <core/component.h>
 #include <core/config.h>
 // Graphic
 #include <graphic/sprite.h>

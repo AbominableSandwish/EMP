@@ -1,11 +1,12 @@
 #include <core/system.h>
 #include "glm/gtx/transform.hpp"
+#include <core/component.h>
 
 
 namespace emp {
     class Shader;
 
-    class Triangle {
+    class Triangle : public Component{
     public:
         Triangle(int entity)
         {
@@ -25,6 +26,8 @@ namespace emp {
         {
             color = color;
         }
+
+        void Inspect();
     };
 
     class ConfigGraphic;

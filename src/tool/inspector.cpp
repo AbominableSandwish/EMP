@@ -10,6 +10,7 @@
 #include <components/circle.h>
 #include <components/model.h>
 #include <components/light.h>
+#include <components/triangle.h>
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -52,6 +53,28 @@ namespace emp {
     {
     }
 
+    //Get all Component
+    std::vector<emp::Component*> GetAllComponent(int entity, emp::Engine* m_engine)
+    {
+        std::vector<emp::Component*> vector = std::vector<emp::Component*>();
+        //get list of components
+        std::vector<string> components = m_engine->GetEntityManager()->GetEntityComponents(entity-1);
+
+        for each (string component in components)
+        {
+            if (component.c_str() == "Transform") {
+                emp::Transform& transform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(entity);
+                vector.push_back(&transform);
+            }
+            if (component.c_str() == "Triangle") {
+                //
+                emp::Triangle& triangle = m_engine->GetComponentManager()->GetComponent<emp::Triangle>(entity);
+                vector.push_back(&triangle);
+            }
+        }
+        return vector;
+    }
+
     float col2[4] = { 0, 0, 0.0f, 0.0f };
 
     void Inspector::Draw()
@@ -74,124 +97,15 @@ namespace emp {
                 entity->SetName(buffer);
             }
 
-            ImGui::Separator();
-            emp::Transform& tranform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
-
-            float angle_x = tranform.angle_x;
-            float angle_y = tranform.angle_y;
-            float angle_z = tranform.angle_z;
-
-            emp::Vector3 position = tranform.GetPosition();
-            emp::Vector3 scale = tranform.GetScale();
-            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-            ImGui::Text(" Transform: ");
-            ImGui::PopStyleColor();
-            int input_position[3] = { position.x, position.y, position.z};
-            int input_rotation[3] = { angle_x , angle_y, angle_z };
-            float input_scale[3] = { scale.x, scale.y, scale.z };
-          
-
             bool value_changed = false;
-         
-            const char* format[3] = { "X:%1d",  "Y:%1d",  "Z:%1d" };
-            static const char* fmt_table_float[3]= { "%0.1f",   "%0.1f",   "%0.1f" }; // Short display 
-            ImGui::BeginGroup();
-            ImGui::Text("   Position: ");
-            ImGui::SameLine();
-
-
+            static const char* fmt_table_float[3] = { "%0.1f",   "%0.1f",   "%0.1f" }; // Short display 
             ImGuiContext& g = *GImGui;
-            ImGui::PushID("##Position");
-            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-            for (int i = 0; i < 3; i++)
-            {
-                ImGui::PushID(i);
-                if (i > 0)
-                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
-                value_changed |= ImGui::DragInt("", &input_position[i], 1.0f, -1000, 1000, format[i]);
-                ImGui::PopID();
-                ImGui::PopItemWidth();
-            }
-            ImGui::PopID();
-            const char* label_end = ImGui::FindRenderedTextEnd("##Position");
-            if ("##Position" != label_end)
-            {
-                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-                ImGui::TextEx("##Position", label_end);
-            }
-            ImGui::EndGroup();
 
-
-            ImGui::BeginGroup();
-            ImGui::Text("   Rotation: ");
-            ImGui::SameLine();
-
-
-            ImGui::PushID("##Rotation");
-            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-            for (int i = 0; i < 3; i++)
-            {
-                ImGui::PushID(i);
-                if (i > 0)
-                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
-                value_changed |= ImGui::DragInt("", &input_rotation[i], 1.0f, 0, 360, format[i]);
-                ImGui::PopID();
-                ImGui::PopItemWidth();
-            }
-            ImGui::PopID();
-            label_end = ImGui::FindRenderedTextEnd("##Rotation");
-            if ("##Rotation" != label_end)
-            {
-                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-                ImGui::TextEx("##Rotation", label_end);
-            }
-
-            ImGui::EndGroup();
-
-            if (value_changed) {
-                tranform.Reset();
-                tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
-                tranform.SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
-                tranform.SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
-                tranform.SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
-                value_changed = false;
-            }
-
-            ImGui::BeginGroup();
-            ImGui::Text("   Scale:    ");
-            ImGui::SameLine();
-
-
-            ImGui::PushID("##Scale");
-            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-            for (int i = 0; i < 3; i++)
-            {
-                ImGui::PushID(i);
-                if (i > 0)
-                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
-                value_changed |= ImGui::DragFloat("", &input_scale[i], 0.1f, -10.0f, 10.0f, fmt_table_float[i]);
-                ImGui::PopID();
-                ImGui::PopItemWidth();
-            }
-            ImGui::PopID();
-            label_end = ImGui::FindRenderedTextEnd("##Scale");
-            if ("##Scale" != label_end)
-            {
-                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-                ImGui::TextEx("##Scale", label_end);
-            }
-
-            ImGui::EndGroup();
-
-            if (value_changed) {
-                tranform.Reset();
-                tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
-                tranform.SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
-                tranform.SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
-                tranform.SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
-                tranform.SetScale(input_scale[0], input_scale[1], input_scale[2]);
-            }
-
+            ImGui::Separator();
+          /*  emp::Transform& transform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
+            transform.Inspect();*/
+           
+            GetAllComponent(Target, m_engine);
 
             ImGui::Separator();
 
@@ -255,7 +169,7 @@ namespace emp {
                     ImGui::PopItemWidth();
                 }
                 ImGui::PopID();
-                label_end = ImGui::FindRenderedTextEnd("##Direction");
+                const char* label_end = ImGui::FindRenderedTextEnd("##Direction");
                 if ("##Direction" != label_end)
                 {
                     ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
