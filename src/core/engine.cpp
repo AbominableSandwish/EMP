@@ -6,7 +6,6 @@
 #include <editor/editor.h>
 #include <core/file.h>
 #include <core/entity.h>
-#include <core/component.h>
 #include <core/config.h>
 // Graphic
 #include <graphic/sprite.h>
@@ -75,9 +74,15 @@ namespace emp
     void Engine::Init(ConfigEngine* config)
 	{    
         m_config = config;
+       
+        m_systems = new SystemManager();
+
+        //Entity
+        m_entity = this->m_systems->RegisterSystem<EntityManager>(*this, "Entity Manager");
+        m_entity->Init();
 
     	m_component = std::make_unique<ComponentManager>();
-        m_systems = new SystemManager();
+        m_component->Init(*this);
 
     	//File
         m_file = this->m_systems->RegisterSystem <FileManager>(*this, "File Manager");
@@ -87,9 +92,7 @@ namespace emp
         m_log = this->m_systems->RegisterSystem<LogManager>(*this, "Log Manager");
         m_log->Init();
 
-    	//Entity
-        m_entity = this->m_systems->RegisterSystem<EntityManager>(*this, "Entity Manager");
-        m_entity->Init();
+    	
 
         //Entity
         m_rigidbody= this->m_systems->RegisterSystem<RigidBody2DManager>(*this, "Rigid Manager");

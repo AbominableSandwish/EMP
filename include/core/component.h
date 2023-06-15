@@ -3,14 +3,17 @@
 //	Transform = 0,
 //	Sprite2D = 1
 //};
+#pragma once
 #include <unordered_map>
 #include <memory>
 #include <core/system.h>
+#include <core/entity.h>
 
 namespace emp {
-	class Component {
+	class Component{
 	public:
 		Component() = default;
+		void virtual Inspect() = 0;
 	};
 
 	class IComponent
@@ -61,14 +64,16 @@ namespace emp {
 		// Total size of valid entries in the array.
 		size_t mSize;
 	};
-	
+	class EntityManager;
 	class ComponentManager : public System
 	{
 	public:
 
+		void Init(Engine& engine);
+
 		void Init() override
 		{
-			
+
 		}
 
 		void Update(float) override
@@ -91,12 +96,7 @@ namespace emp {
 		}
 		
 		template<typename T>
-		void AddComponent(int entity,  T component)
-		{
-			component.Init();
-			GetComponentArray<T>()->InsertData(entity, component);
-			
-		}
+		void AddComponent(int entity, T component);
 
 		template<typename T>
 		std::vector<T>& GetComponents()
@@ -109,9 +109,16 @@ namespace emp {
 		{
 			return GetComponentArray<T>()->GetComponent(entity);
 		}
+
+		//template<typename T>
+		//T* GetComponent(int entity)
+		//{
+		//	return GetComponentArray<T>()->GetComponent(entity)
+		//}
 		
 		
 	private:
+		EntityManager* m_entity = nullptr;
 		std::unordered_map<const char*, std::shared_ptr<IComponent>> mComponentArrays{};
 		// Convenience function to get the statically casted pointer to the ComponentArray of type T.
 		template<typename T>
@@ -123,4 +130,19 @@ namespace emp {
 		}
 	};
 	
+	template<typename T>
+	inline void ComponentManager::AddComponent(int id, T component)
+	{
+		component.Init();
+		const char* typeName = typeid(T).name();
+			for each (auto entity in m_entity->GetEntities())
+			{
+				if (entity->id == id)  {
+					entity->AddComponent(typeName);
+					break;
+				}
+			}
+		GetComponentArray<T>()->InsertData(id, component);
+	}
+
 }

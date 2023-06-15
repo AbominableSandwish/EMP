@@ -1,10 +1,11 @@
 #include <glm/glm.hpp>
+#include <core/component.h>
 
 namespace emp {
 	class Matrice4;
 	class Vector3;
 	class Vector4;
-	class Transform
+	class Transform : public Component
 	{
 	public:
 		float angle_x, angle_y, angle_z;
@@ -36,6 +37,7 @@ namespace emp {
 		void SetScale(float w, float l);
 		void SetScale(float w, float h, float p);
 
+		void Inspect();
 		/*void SetParent(int entity_parent)
 		{
 			this->parent = entity_parent;

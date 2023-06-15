@@ -1,6 +1,8 @@
 #include <components/transform.h>
 #include <math/matrice.h>
 #include <glm/glm.hpp>
+#include "imgui.h"
+#include "imgui_internal.h"
 
 namespace emp {
 	Transform::Transform() {
@@ -119,6 +121,122 @@ namespace emp {
 		Matrice4 scale = ScalingMatrix(Vector3(w, h, p));
 		Matrice4 matrice = this->matrice->matrice4;
 		this->matrice->SetMatrice(matrice * scale);
+	}
+
+	void Transform::Inspect()
+	{
+
+		emp::Vector3 position = GetPosition();
+		emp::Vector3 scale = GetScale();
+		ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
+		ImGui::Text(" Transform: ");
+		ImGui::PopStyleColor();
+		int input_position[3] = { position.x, position.y, position.z };
+		int input_rotation[3] = { angle_x , angle_y, angle_z };
+		float input_scale[3] = { scale.x, scale.y, scale.z };
+
+
+		bool value_changed = false;
+
+		const char* format[3] = { "X:%1d",  "Y:%1d",  "Z:%1d" };
+		static const char* fmt_table_float[3] = { "%0.1f",   "%0.1f",   "%0.1f" }; // Short display 
+		ImGui::BeginGroup();
+		ImGui::Text("   Position: ");
+		ImGui::SameLine();
+
+
+		ImGuiContext& g = *GImGui;
+		ImGui::PushID("##Position");
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		for (int i = 0; i < 3; i++)
+		{
+			ImGui::PushID(i);
+			if (i > 0)
+				ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
+			value_changed |= ImGui::DragInt("", &input_position[i], 1.0f, -1000, 1000, format[i]);
+			ImGui::PopID();
+			ImGui::PopItemWidth();
+		}
+		ImGui::PopID();
+		const char* label_end = ImGui::FindRenderedTextEnd("##Position");
+		if ("##Position" != label_end)
+		{
+			ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+			ImGui::TextEx("##Position", label_end);
+		}
+		ImGui::EndGroup();
+
+
+		ImGui::BeginGroup();
+		ImGui::Text("   Rotation: ");
+		ImGui::SameLine();
+
+
+		ImGui::PushID("##Rotation");
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		for (int i = 0; i < 3; i++)
+		{
+			ImGui::PushID(i);
+			if (i > 0)
+				ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
+			value_changed |= ImGui::DragInt("", &input_rotation[i], 1.0f, 0, 360, format[i]);
+			ImGui::PopID();
+			ImGui::PopItemWidth();
+		}
+		ImGui::PopID();
+		label_end = ImGui::FindRenderedTextEnd("##Rotation");
+		if ("##Rotation" != label_end)
+		{
+			ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+			ImGui::TextEx("##Rotation", label_end);
+		}
+
+		ImGui::EndGroup();
+
+		if (value_changed) {
+			Reset();
+			SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
+			SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
+			SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
+			SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
+			value_changed = false;
+		}
+
+		ImGui::BeginGroup();
+		ImGui::Text("   Scale:    ");
+		ImGui::SameLine();
+
+
+		ImGui::PushID("##Scale");
+		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		for (int i = 0; i < 3; i++)
+		{
+			ImGui::PushID(i);
+			if (i > 0)
+				ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
+			value_changed |= ImGui::DragFloat("", &input_scale[i], 0.1f, -10.0f, 10.0f, fmt_table_float[i]);
+			ImGui::PopID();
+			ImGui::PopItemWidth();
+		}
+		ImGui::PopID();
+		label_end = ImGui::FindRenderedTextEnd("##Scale");
+		if ("##Scale" != label_end)
+		{
+			ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
+			ImGui::TextEx("##Scale", label_end);
+		}
+
+		ImGui::EndGroup();
+
+		if (value_changed) {
+			Reset();
+			SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
+			SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
+			SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
+			SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
+			SetScale(input_scale[0], input_scale[1], input_scale[2]);
+		}
+
 	}
 
 	Matrice4 Transform::ScalingMatrix(Vector3 scale)

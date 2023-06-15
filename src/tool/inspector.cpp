@@ -1,15 +1,17 @@
 #include <tool/inspector.h>
 #include "core/log.h"
 #include <core/engine.h>
+#include <core/component.h>
 #include <core/entity.h>
 #include "graphic/graphic.h"
-#include <core/component.h>
+
 #include <math/matrice.h>
 #include <components/transform.h>
 #include <components/cube.h>
 #include <components/circle.h>
 #include <components/model.h>
 #include <components/light.h>
+#include <components/triangle.h>
 #include "imgui.h"
 #include "imgui_internal.h"
 
@@ -52,6 +54,43 @@ namespace emp {
     {
     }
 
+    //Get all Component
+    std::vector<emp::Component*> GetAllComponent(int entity, emp::Engine* m_engine)
+    {
+        std::vector<emp::Component*> vector = std::vector<emp::Component*>();
+        //get list of components
+        std::vector<string> components = m_engine->GetEntityManager()->GetEntityComponents(entity-1);
+
+        for each (string component in components)
+        {
+            if (component == "Transform") {
+                emp::Transform& transform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(entity);
+                vector.push_back(&transform);
+            }
+            if (component == "Triangle") {
+                //
+                emp::Triangle& triangle = m_engine->GetComponentManager()->GetComponent<emp::Triangle>(entity);
+                vector.push_back(&triangle);
+            }
+            if (component == "DirectionalLight") {
+                //
+                emp::DirectionalLight& directional = m_engine->GetComponentManager()->GetComponent<emp::DirectionalLight>(entity);
+                vector.push_back(&directional);
+            }
+            if (component == "PointLight") {
+                //
+                emp::PointLight& point = m_engine->GetComponentManager()->GetComponent<emp::PointLight>(entity);
+                vector.push_back(&point);
+            }
+            if (component == "SpotLight") {
+                //
+                emp::SpotLight& spot = m_engine->GetComponentManager()->GetComponent<emp::SpotLight>(entity);
+                vector.push_back(&spot);
+            }
+        }
+        return vector;
+    }
+
     float col2[4] = { 0, 0, 0.0f, 0.0f };
 
     void Inspector::Draw()
@@ -74,124 +113,17 @@ namespace emp {
                 entity->SetName(buffer);
             }
 
-            ImGui::Separator();
-            emp::Transform& tranform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
-
-            float angle_x = tranform.angle_x;
-            float angle_y = tranform.angle_y;
-            float angle_z = tranform.angle_z;
-
-            emp::Vector3 position = tranform.GetPosition();
-            emp::Vector3 scale = tranform.GetScale();
-            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-            ImGui::Text(" Transform: ");
-            ImGui::PopStyleColor();
-            int input_position[3] = { position.x, position.y, position.z};
-            int input_rotation[3] = { angle_x , angle_y, angle_z };
-            float input_scale[3] = { scale.x, scale.y, scale.z };
-          
-
             bool value_changed = false;
-         
-            const char* format[3] = { "X:%1d",  "Y:%1d",  "Z:%1d" };
-            static const char* fmt_table_float[3]= { "%0.1f",   "%0.1f",   "%0.1f" }; // Short display 
-            ImGui::BeginGroup();
-            ImGui::Text("   Position: ");
-            ImGui::SameLine();
-
-
+            static const char* fmt_table_float[3] = { "%0.1f",   "%0.1f",   "%0.1f" }; // Short display 
             ImGuiContext& g = *GImGui;
-            ImGui::PushID("##Position");
-            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-            for (int i = 0; i < 3; i++)
-            {
-                ImGui::PushID(i);
-                if (i > 0)
-                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
-                value_changed |= ImGui::DragInt("", &input_position[i], 1.0f, -1000, 1000, format[i]);
-                ImGui::PopID();
-                ImGui::PopItemWidth();
+
+            ImGui::Separator();
+          /*  emp::Transform& transform = m_engine->GetComponentManager()->GetComponent<emp::Transform>(Target);
+            transform.Inspect();*/
+           
+            for each(auto comp in GetAllComponent(Target, m_engine)) {
+                comp->Inspect();
             }
-            ImGui::PopID();
-            const char* label_end = ImGui::FindRenderedTextEnd("##Position");
-            if ("##Position" != label_end)
-            {
-                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-                ImGui::TextEx("##Position", label_end);
-            }
-            ImGui::EndGroup();
-
-
-            ImGui::BeginGroup();
-            ImGui::Text("   Rotation: ");
-            ImGui::SameLine();
-
-
-            ImGui::PushID("##Rotation");
-            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-            for (int i = 0; i < 3; i++)
-            {
-                ImGui::PushID(i);
-                if (i > 0)
-                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
-                value_changed |= ImGui::DragInt("", &input_rotation[i], 1.0f, 0, 360, format[i]);
-                ImGui::PopID();
-                ImGui::PopItemWidth();
-            }
-            ImGui::PopID();
-            label_end = ImGui::FindRenderedTextEnd("##Rotation");
-            if ("##Rotation" != label_end)
-            {
-                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-                ImGui::TextEx("##Rotation", label_end);
-            }
-
-            ImGui::EndGroup();
-
-            if (value_changed) {
-                tranform.Reset();
-                tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
-                tranform.SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
-                tranform.SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
-                tranform.SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
-                value_changed = false;
-            }
-
-            ImGui::BeginGroup();
-            ImGui::Text("   Scale:    ");
-            ImGui::SameLine();
-
-
-            ImGui::PushID("##Scale");
-            ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-            for (int i = 0; i < 3; i++)
-            {
-                ImGui::PushID(i);
-                if (i > 0)
-                    ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
-                value_changed |= ImGui::DragFloat("", &input_scale[i], 0.1f, -10.0f, 10.0f, fmt_table_float[i]);
-                ImGui::PopID();
-                ImGui::PopItemWidth();
-            }
-            ImGui::PopID();
-            label_end = ImGui::FindRenderedTextEnd("##Scale");
-            if ("##Scale" != label_end)
-            {
-                ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-                ImGui::TextEx("##Scale", label_end);
-            }
-
-            ImGui::EndGroup();
-
-            if (value_changed) {
-                tranform.Reset();
-                tranform.SetPosition(emp::Vector3(input_position[0], input_position[1], input_position[2]));
-                tranform.SetRotation(input_rotation[0], emp::Vector3(1, 0, 0));
-                tranform.SetRotation(input_rotation[1], emp::Vector3(0, 1, 0));
-                tranform.SetRotation(input_rotation[2], emp::Vector3(0, 0, 1));
-                tranform.SetScale(input_scale[0], input_scale[1], input_scale[2]);
-            }
-
 
             ImGui::Separator();
 
@@ -224,112 +156,6 @@ namespace emp {
             //        }
             //    }
             //}
-
-            emp::DirectionalLight& light = m_engine->GetComponentManager()->GetComponent<emp::DirectionalLight>(Target);
-            if (light.entity == Target) {
-
-                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-                ImGui::Text(" Directional Light: ");
-                ImGui::PopStyleColor();
-
-                float direction[3] = { light.direction.x, light.direction.y, light.direction.z };
-
-                float specular[3] = { light.specular.r, light.specular.g, light.specular.b };
-                float diffuse[3] = { light.diffuse.r, light.diffuse.g, light.diffuse.b };
-                float ambient[3] = { light.ambient.r, light.ambient.g, light.ambient.b };
-
-                ImGui::BeginGroup();
-                ImGui::Text("   Direction:");
-                ImGui::SameLine();
-
-
-                ImGui::PushID("##Direction");
-                ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-                for (int i = 0; i < 3; i++)
-                {
-                    ImGui::PushID(i);
-                    if (i > 0)
-                        ImGui::SameLine(0, g.Style.ItemInnerSpacing.x);
-                    value_changed |= ImGui::DragFloat("", &direction[i], 0.1f, -1.0f, 1.0f, fmt_table_float[i]);
-                    ImGui::PopID();
-                    ImGui::PopItemWidth();
-                }
-                ImGui::PopID();
-                label_end = ImGui::FindRenderedTextEnd("##Direction");
-                if ("##Direction" != label_end)
-                {
-                    ImGui::SameLine(0.0f, g.Style.ItemInnerSpacing.x);
-                    ImGui::TextEx("##Direction", label_end);
-                }
-                ImGui::EndGroup();
-                if (value_changed) {
-                    light.SetDirection(glm::vec3(direction[0], direction[1], direction[2]));
-                    value_changed = false;
-                }
-
-
-                ImGui::Text("   Ambiant:  ");
-                ImGui::SameLine();
-                value_changed = ImGui::ColorEdit3("##AmbientLight", ambient);
-                if (value_changed) {
-                    light.SetAmbient(glm::vec3(ambient[0], ambient[1], ambient[2]));
-                    value_changed = false;
-                }
-
-                ImGui::Text("   Diffuse:  ");
-                ImGui::SameLine();
-                value_changed = ImGui::ColorEdit3("##DiffuseLight", diffuse);
-                if (value_changed) {
-                    light.SetDiffuse(glm::vec3(diffuse[0], diffuse[1], diffuse[2]));
-                    value_changed = false;
-                }
-
-                ImGui::Text("   Specular: ");
-                ImGui::SameLine();
-                value_changed = ImGui::ColorEdit3("##SpecularLight", specular);
-                if (value_changed) {
-                    light.SetSpecular(glm::vec3(specular[0], specular[1], specular[2]));
-                    value_changed = false;
-                }
-            }
-
-          
-            emp::PointLight& point_light = m_engine->GetComponentManager()->GetComponent<emp::PointLight>(Target);
-            if (point_light.entity == Target) {
-
-                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(0, 255, 0, 255));
-                ImGui::Text(" Point Light: ");
-                ImGui::PopStyleColor();
-              
-
-                float specular[3] = {point_light.specular.r, point_light.specular.g, point_light.specular.b};
-                float diffuse[3] = { point_light.diffuse.r, point_light.diffuse.g, point_light.diffuse.b };
-                float ambient[3] = { point_light.ambient.r, point_light.ambient.g, point_light.ambient.b };
-
-                ImGui::Text("   Ambiant:  ");
-                ImGui::SameLine();
-                value_changed = ImGui::ColorEdit3("##AmbientLight", ambient);
-                if (value_changed) {
-                    point_light.SetAmbient(glm::vec3(ambient[0], ambient[1], ambient[2]));
-                    value_changed = false;
-                }
-
-                ImGui::Text("   Diffuse:  ");
-                ImGui::SameLine();
-                value_changed = ImGui::ColorEdit3("##DiffuseLight", diffuse);
-                if (value_changed) {
-                    point_light.SetDiffuse(glm::vec3(diffuse[0], diffuse[1], diffuse[2]));
-                    value_changed = false;
-                }
-
-                ImGui::Text("   Specular: ");
-                ImGui::SameLine();
-                value_changed = ImGui::ColorEdit3("##SpecularLight", specular);
-                if (value_changed) {
-                    point_light.SetSpecular(glm::vec3(specular[0], specular[1], specular[2]));
-                    value_changed = false;
-                }
-            }
 
            /* emp::Circle& circle = m_engine->GetComponentManager()->GetComponent<emp::Circle>(Target);
             if (circle.entity == Target) {
