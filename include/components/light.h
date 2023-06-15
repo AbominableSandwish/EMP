@@ -1,12 +1,13 @@
 #include "core/system.h"
 #include "glm/gtx/transform.hpp"
+#include <core/component.h>
 
 namespace emp {
     class Engine;
     class ConfigGraphic;
     class Shader;
   
-    class PointLight {
+    class PointLight : public Component {
     public:
         PointLight(int entity)
         {
@@ -15,6 +16,7 @@ namespace emp {
 
         PointLight(int entity, float r, float g, float b, glm::vec3 ambiant, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic);
         void Init();
+        void Inspect();
 
         int entity;
 
@@ -55,7 +57,7 @@ namespace emp {
         }
     };
 
-    class SpotLight {
+    class SpotLight : public Component {
     public:
         SpotLight(int entity)
         {
@@ -64,6 +66,7 @@ namespace emp {
 
         SpotLight(int entity, float r, float g, float b, glm::vec3 direction, glm::vec3 ambiant, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, float cutOff, float outerCutOff);
         void Init();
+        void Inspect();
 
         int entity;
 
@@ -120,7 +123,7 @@ namespace emp {
     };
 
 
-    class DirectionalLight {
+    class DirectionalLight : public Component {
     public:
         DirectionalLight(int entity)
         {
@@ -154,6 +157,7 @@ namespace emp {
         void SetDirection(glm::vec3 direction) {
             this->direction = direction;
         }
+        void Inspect();
 
     };
 

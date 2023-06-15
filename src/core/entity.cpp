@@ -59,8 +59,16 @@ namespace emp
 	}
 
 	void Entity::AddComponent(string type)
-	{
-
+	{ 
+		string c;
+	    int i = 0;
+		for each (char car in type)
+		{
+			i++;
+			if (i > 11)
+				c += car;
+		}
+		this->components.push_back(c);
 	}
 
 	vector<string> Entity::GetComponents()
