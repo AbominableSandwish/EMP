@@ -82,6 +82,7 @@ cmake ..
 cmake --build .
 ```
 
-<h1>Galery</h1>
-<img src="https://github.com/AbominableSandwish/EMP/blob/main/gif/Sphere_5.gif" width="1000" height="1000" />
+# Galery
+
+![View](gif/Sphere_5.gif)
 ![AABBCollision](gif/AABBCollision.gif)
